@@ -118,7 +118,8 @@ class CoulombPotential(Potential):
             .reshape(-1, 2)
             .transpose()
         )
-        return cst.k * self.q ** 2 * (1 / norm(x[i] - x[j])).sum()
+        nxij = norm(x[i] - x[j])
+        return cst.k * self.q ** 2 * (1 / nxij).sum()
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
