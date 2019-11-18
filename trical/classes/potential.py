@@ -58,6 +58,12 @@ class Potential(object):
     def second_derivative(self, var1, var2):
         return self.d2phi(var1, var2)
 
+    def gradient(self):
+        pass
+
+    def hessian(self):
+        pass
+
     pass
 
 
