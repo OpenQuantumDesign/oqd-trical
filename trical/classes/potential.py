@@ -1,4 +1,4 @@
-from . import constants as cst
+from .. import constants as cst
 from ..misc.linalg import norm
 import itertools as itr
 import numpy as np
@@ -20,7 +20,9 @@ class Potential(object):
         pass
 
     def __add__(self, other):
-        params = self.params.update(other.params)
+        params = {}
+        params.update(self.params)
+        params.update(other.params)
         phi = lambda x: self.phi(x) + other.phi(x)
         dphi = lambda var: (lambda x: self.dphi(var)(x) + other.dphi(var)(x))
         d2phi = lambda var1, var2: (
@@ -29,7 +31,9 @@ class Potential(object):
         return Potential(phi, dphi, d2phi, **params)
 
     def __sub__(self, other):
-        params = self.params.update(other.params)
+        params = {}
+        params.update(self.params)
+        params.update(other.params)
         phi = lambda x: self.phi(x) - other.phi(x)
         dphi = lambda var: (lambda x: self.dphi(var)(x) - other.dphi(var)(x))
         d2phi = lambda var1, var2: (
@@ -196,8 +200,8 @@ class PolynomialPotential(Potential):
         pass
 
     def __call__(self, x):
-        return {1: poly.polyval, 2: poly.polyval2d, 3: polyval3d}[self.dim](
-            *x.tranpose(), self.alpha
+        return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
+            *x.transpose(), self.alpha
         ).sum()
 
     def first_derivative(self, var):
@@ -207,7 +211,7 @@ class PolynomialPotential(Potential):
         beta = poly.polyder(self.alpha, axis=a)
 
         def dphi_dai(x):
-            return {1: poly.polyval, 2: poly.polyval2d, 3: polyval3d}[self.dim](
+            return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
                 *x[i], beta
             )
 
@@ -224,7 +228,7 @@ class PolynomialPotential(Potential):
 
         def d2phi_daidbj(x):
             if i == j:
-                return {1: poly.polyval, 2: poly.polyval2d, 3: polyval3d}[self.dim](
+                return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
                     *x[i], gamma
                 )
             else:

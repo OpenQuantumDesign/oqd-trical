@@ -1,4 +1,4 @@
-from . import constants as cst
+from .. import constants as cst
 from .potential import CoulombPotential
 from matplotlib import pyplot as plt
 import numpy as np
@@ -6,7 +6,7 @@ import numpy as np
 
 class TrappedIons(object):
     def __init__(self, N, *ps, **kwargs):
-        super(IonChain, self).__init__()
+        super(TrappedIons, self).__init__()
 
         params = {"l": 1e-6, "m": cst.m_a["Yb171"], "q": cst.e}
         params.update(kwargs)
