@@ -1,6 +1,7 @@
 from ..misc.linalg import norm
 import itertools as itr
 import numpy as np
+from numpy.polynomial import polynomial as poly
 
 
 class Potential(object):
@@ -79,9 +80,9 @@ class CoulombPotential(Potential):
         )
         return 1 / norm(x[i] - x[j])
 
-    def first_derivative(var):
+    def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:])
+        i = int(var[1:]) - 1
         j = np.delete(np.arange(self.N, dtype=int), i)
 
         def dphi_dai(x):
@@ -92,11 +93,11 @@ class CoulombPotential(Potential):
 
         return dphi_dai
 
-    def second_derivative(var1, var2):
+    def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:])
-        j = int(var2[1:])
+        i = int(var1[1:]) - 1
+        j = int(var2[1:]) - 1
 
         def d2phi_daidbj(x):
             if i == j:
@@ -127,9 +128,11 @@ class CoulombPotential(Potential):
 
 
 class PolynomialPotential(Potential):
-    def __init__(self, **kwargs):
+    def __init__(self, alpha, **kwargs):
 
-        params = {}
+        self.alpha = alpha
+
+        params = {"deg": alpha.shape, "dim": len(alpha.shape)}
         params.update(kwargs)
 
         super(PolynomialPotential, self).__init__(
@@ -137,13 +140,41 @@ class PolynomialPotential(Potential):
         )
         pass
 
-    def __call__(self):
-        pass
+    def __call__(self, x):
+        return {1: poly.polyval, 2: poly.polyval2d, 3: polyval3d}[self.dim](
+            *x.tranpose(), self.alpha
+        ).sum()
 
-    def first_derivative(var):
-        pass
+    def first_derivative(self, var):
+        a = {"x": 0, "y": 1, "z": 2}[var[0]]
+        i = int(var[1]) - 1
 
-    def second_derivative(var1, var2):
-        pass
+        beta = poly.polyder(self.alpha, axis=a)
+
+        def dphi_dai(x):
+            return {1: poly.polyval, 2: poly.polyval2d, 3: polyval3d}[self.dim](
+                *x[i], beta
+            )
+
+        return dphi_dai
+
+    def second_derivative(self, var1, var2):
+        a = {"x": 0, "y": 1, "z": 2}[var1[0]]
+        b = {"x": 0, "y": 1, "z": 2}[var2[0]]
+        i = int(var1[1]) - 1
+        j = int(var2[1]) - 1
+
+        beta = poly.polyder(self.alpha, axis=a)
+        gamma = poly.polyder(beta, axis=b)
+
+        def d2phi_daidbj(x):
+            if i == j:
+                return {1: poly.polyval, 2: poly.polyval2d, 3: polyval3d}[self.dim](
+                    *x[i], gamma
+                )
+            else:
+                return 0
+
+        return d2phi_daidbj
 
     pass
