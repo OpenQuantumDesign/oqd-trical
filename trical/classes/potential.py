@@ -1,3 +1,4 @@
+from . import constants as cst
 from ..misc.linalg import norm
 import itertools as itr
 import numpy as np
@@ -97,7 +98,7 @@ class Potential(object):
 class CoulombPotential(Potential):
     def __init__(self, N, **kwargs):
 
-        params = {"dim": 3, "N": N}
+        params = {"dim": 3, "N": N, "q": cst.e}
         params.update(kwargs)
 
         super(CoulombPotential, self).__init__(
@@ -111,7 +112,7 @@ class CoulombPotential(Potential):
             .reshape(-1, 2)
             .transpose()
         )
-        return 1 / norm(x[i] - x[j])
+        return cst.k * self.q ** 2 * (1 / norm(x[i] - x[j])).sum()
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
@@ -122,7 +123,7 @@ class CoulombPotential(Potential):
             xia = x[i, a]
             xja = x[j, a]
             nxij = norm(x[i] - x[j])
-            return ((xja - xia) / nxij ** 3).sum()
+            return cst.k * self.q ** 2 * ((xja - xia) / nxij ** 3).sum()
 
         return dphi_dai
 
@@ -141,9 +142,17 @@ class CoulombPotential(Potential):
                 xkb = x[k, b]
                 nxik = norm(x[i] - x[k])
                 if a == b:
-                    return ((-1 / nxik ** 3 + 3 * (xka - xia) ** 2 / nxik ** 5)).sum()
+                    return (
+                        cst.k
+                        * self.q ** 2
+                        * ((-1 / nxik ** 3 + 3 * (xka - xia) ** 2 / nxik ** 5)).sum()
+                    )
                 else:
-                    return (3 * (xka - xia) * (xkb - xib) / nxik ** 5).sum()
+                    return (
+                        cst.k
+                        * self.q ** 2
+                        * (3 * (xka - xia) * (xkb - xib) / nxik ** 5).sum()
+                    )
             else:
                 xia = x[i, a]
                 xja = x[j, a]
@@ -151,9 +160,17 @@ class CoulombPotential(Potential):
                 xjb = x[j, b]
                 nxij = norm(x[i] - x[j])
                 if a == b:
-                    return 1 / nxij ** 3 - 3 * (xja - xia) ** 2 / nxij ** 5
+                    return (
+                        cst.k
+                        * self.q ** 2
+                        * (1 / nxij ** 3 - 3 * (xja - xia) ** 2 / nxij ** 5)
+                    )
                 else:
-                    return -3 * (xja - xia) * (xjb - xib) / nxij ** 5
+                    return (
+                        cst.k
+                        * self.q ** 2
+                        * (-3 * (xja - xia) * (xjb - xib) / nxij ** 5)
+                    )
 
         return d2phi_daidbj
 
