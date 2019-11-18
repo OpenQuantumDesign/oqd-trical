@@ -15,12 +15,12 @@ class TrappedIons(object):
         self.N = N
         self.ps = np.array(ps)
 
-        self.cp = CoulombPotential(N, self.q)
+        self.cp = CoulombPotential(N, q=self.q)
         self.fp = self.cp + self.ps.sum()
         pass
 
     def equilibrium_position(self, opt):
-        pass
+        return opt(self.fp)
 
     def normal_modes(self):
         pass
