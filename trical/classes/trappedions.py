@@ -20,7 +20,8 @@ class TrappedIons(object):
         pass
 
     def equilibrium_position(self, opt):
-        return opt(self.fp)
+        self.x_ep = opt(self.fp)
+        return self.x_ep
 
     def normal_modes(self):
         pass
