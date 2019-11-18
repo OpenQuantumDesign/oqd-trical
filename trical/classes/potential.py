@@ -52,7 +52,7 @@ class Potential(object):
     def first_derivative(self, var):
         return self.dphi(var)
 
-    def second_derivatice(self, var1, var2):
+    def second_derivative(self, var1, var2):
         return self.d2phi(var1, var2)
 
     pass
@@ -60,10 +60,22 @@ class Potential(object):
 
 class CoulombPotential(Potential):
     def __init__(self, **kwargs):
-        super(CoulombPotential, self).__init__()
+
+        params = {}
+        params.update(kwargs)
+
+        super(CoulombPotential, self).__init__(
+            self.__call__, self.first_derivative, self.second_derivative, **params
+        )
         pass
 
     def __call__(self):
+        pass
+
+    def first_derivative(var):
+        pass
+
+    def second_derivative(var1, var2):
         pass
 
     pass
@@ -71,10 +83,22 @@ class CoulombPotential(Potential):
 
 class PolynomialPotential(Potential):
     def __init__(self, **kwargs):
-        super(PolynomialPotential, self).__init__()
+
+        params = {}
+        params.update(kwargs)
+
+        super(PolynomialPotential, self).__init__(
+            self.__call__, self.first_derivative, self.second_derivative, **params
+        )
         pass
 
     def __call__(self):
+        pass
+
+    def first_derivative(var):
+        pass
+
+    def second_derivative(var1, var2):
         pass
 
     pass
