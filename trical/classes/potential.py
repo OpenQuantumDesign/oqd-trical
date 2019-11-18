@@ -60,21 +60,21 @@ class Potential(object):
 
     def gradient(self):
         def grad_phi(x):
-            _grad_phi = np.empty(self.N * self.dim)
+            grad_phi_x = np.empty(self.N * self.dim)
 
             i = 0
             for var in itr.product(
                 ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
             ):
-                _grad_phi[i] = self.dphi(var)(x)
+                grad_phi_x[i] = self.dphi(var)(x)
                 i += 1
-            return _grad_phi
+            return grad_phi_x
 
         return grad_phi
 
     def hessian(self):
         def hess_phi(x):
-            _hess_phi = np.empty((self.N * self.dim, self.N * self.dim))
+            hess_phi_x = np.empty((self.N * self.dim, self.N * self.dim))
 
             i = 0
             for var1 in itr.product(
@@ -84,10 +84,10 @@ class Potential(object):
                 for var2 in itr.product(
                     ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
                 ):
-                    _hess_phi[i, j] = self.d2phi(var1, var2)(x)
+                    hess_phi_x[i, j] = self.d2phi(var1, var2)(x)
                     j += 1
                 i += 1
-            return _hess_phi
+            return hess_phi_x
 
         return hess_phi
 
