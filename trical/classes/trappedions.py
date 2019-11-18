@@ -8,7 +8,7 @@ class TrappedIons(object):
     def __init__(self, N, *ps, **kwargs):
         super(TrappedIons, self).__init__()
 
-        params = {"l": 1e-6, "m": cst.m_a["Yb171"], "q": cst.e}
+        params = {"dim": 3, "l": 1e-6, "m": cst.m_a["Yb171"], "q": cst.e}
         params.update(kwargs)
         self.__dict__.update(params)
 
@@ -21,11 +21,9 @@ class TrappedIons(object):
 
     def equilibrium_position(self, opt):
         ndcp = self.cp.nondimensionalize(self.l)
-        ndps = np.apply_along_axis(lambda p: p.nondimensionalize(), self.ps)
-        ndfp = self.ndcp + self.ndps.sum()
-
-        self.x_ep = opt(ndfp) * self.l
-        return self.x_ep
+        ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
+        ndfp = ndcp + ndps.sum()
+        pass
 
     def normal_modes(self):
         pass
