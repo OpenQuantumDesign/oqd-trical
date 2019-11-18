@@ -59,31 +59,36 @@ class Potential(object):
         return self.d2phi(var1, var2)
 
     def gradient(self):
-        grad_phi = np.empty(self.N * self.dim, dtype="O")
+        def grad_phi(x):
+            _grad_phi = np.empty(self.N * self.dim)
 
-        i = 0
-        for var in itr.product(
-            ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
-        ):
-            grad_phi[i] = self.dphi(var)
-            i += 1
+            i = 0
+            for var in itr.product(
+                ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
+            ):
+                _grad_phi[i] = self.dphi(var)(x)
+                i += 1
+            return _grad_phi
 
         return grad_phi
 
     def hessian(self):
-        hess_phi = np.empty((self.N * self.dim, self.N * self.dim), dtype="O")
+        def hess_phi(x):
+            _hess_phi = np.empty((self.N * self.dim, self.N * self.dim))
 
-        i = 0
-        for var1 in itr.product(
-            ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
-        ):
-            j = 0
-            for var2 in itr.product(
+            i = 0
+            for var1 in itr.product(
                 ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
             ):
-                hess_phi[i, j] = self.d2phi(var1, var2)
-                j += 1
-            i += 1
+                j = 0
+                for var2 in itr.product(
+                    ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
+                ):
+                    _hess_phi[i, j] = self.d2phi(var1, var2)(x)
+                    j += 1
+                i += 1
+            return _hess_phi
+
         return hess_phi
 
     pass
