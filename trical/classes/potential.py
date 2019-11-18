@@ -59,10 +59,32 @@ class Potential(object):
         return self.d2phi(var1, var2)
 
     def gradient(self):
-        pass
+        grad_phi = np.empty(self.N * self.dim, dtype="O")
+
+        i = 0
+        for var in itr.product(
+            ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
+        ):
+            grad_phi[i] = self.dphi(var)
+            i += 1
+
+        return grad_phi
 
     def hessian(self):
-        pass
+        hess_phi = np.empty((self.N * self.dim, self.N * self.dim), dtype="O")
+
+        i = 0
+        for var1 in itr.product(
+            ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
+        ):
+            j = 0
+            for var2 in itr.product(
+                ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
+            ):
+                hess_phi[i, j] = self.d2phi(var1, var2)
+                j += 1
+            i += 1
+        return hess_phi
 
     pass
 
@@ -88,7 +110,7 @@ class CoulombPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:]) - 1
+        i = int(var[1:][0]) - 1
         j = np.delete(np.arange(self.N, dtype=int), i)
 
         def dphi_dai(x):
@@ -102,21 +124,21 @@ class CoulombPotential(Potential):
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:]) - 1
-        j = int(var2[1:]) - 1
+        i = int(var1[1:][0]) - 1
+        j = int(var2[1:][0]) - 1
 
         def d2phi_daidbj(x):
             if i == j:
-                j = np.delete(np.arange(self.N, dtype=int), i)
+                k = np.delete(np.arange(self.N, dtype=int), i)
                 xia = x[i, a]
-                xja = x[j, a]
+                xka = x[k, a]
                 xib = x[i, b]
-                xjb = x[j, b]
-                nxij = norm(x[i] - x[j])
+                xkb = x[k, b]
+                nxik = norm(x[i] - x[k])
                 if a == b:
-                    return ((-1 / nxij ** 3 + 3 * (xja - xia) ** 2 / nxij ** 5)).sum()
+                    return ((-1 / nxik ** 3 + 3 * (xka - xia) ** 2 / nxik ** 5)).sum()
                 else:
-                    return (3 * (xja - xia) * (xjb - xib) / nxij ** 5).sum()
+                    return (3 * (xka - xia) * (xkb - xib) / nxik ** 5).sum()
             else:
                 xia = x[i, a]
                 xja = x[j, a]
@@ -153,7 +175,7 @@ class PolynomialPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1]) - 1
+        i = int(var[1][0]) - 1
 
         beta = poly.polyder(self.alpha, axis=a)
 
@@ -167,8 +189,8 @@ class PolynomialPotential(Potential):
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1]) - 1
-        j = int(var2[1]) - 1
+        i = int(var1[1][0]) - 1
+        j = int(var2[1][0]) - 1
 
         beta = poly.polyder(self.alpha, axis=a)
         gamma = poly.polyder(beta, axis=b)
