@@ -1,4 +1,5 @@
 from .. import constants as cst
+from ..misc.optimize import dflt_opt
 from .potential import CoulombPotential
 from matplotlib import pyplot as plt
 import numpy as np
@@ -15,15 +16,21 @@ class TrappedIons(object):
         self.N = N
         self.ps = np.array(ps)
 
-        self.cp = CoulombPotential(N, q=self.q)
+        self.cp = CoulombPotential(N, dim=self.dim, q=self.q)
         self.fp = self.cp + self.ps.sum()
         pass
 
-    def equilibrium_position(self, opt):
+    def equilibrium_position(self, opt=dflt_opt):
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
         ndfp = ndcp + ndps.sum()
-        pass
+
+        _ndfp = lambda x: ndfp(x.reshape(self.dim, self.N).transpose())
+
+        self.x_ep = (
+            opt(self.N, self.dim)(_ndfp).reshape(self.dim, self.N).transpose() * self.l
+        )
+        return self.x_ep
 
     def normal_modes(self):
         pass
