@@ -163,7 +163,7 @@ class CoulombPotential(Potential):
 class PolynomialPotential(Potential):
     def __init__(self, alpha, **kwargs):
 
-        self.alpha = alpha
+        self.alpha = np.array(alpha)
 
         params = {"deg": alpha.shape, "dim": len(alpha.shape)}
         params.update(kwargs)
