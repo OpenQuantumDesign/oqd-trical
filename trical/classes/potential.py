@@ -181,7 +181,7 @@ class CoulombPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        return self / (cst.k * cst.e ** 2 * l)
+        return self / (cst.k * cst.e ** 2)
 
     pass
 
@@ -240,7 +240,7 @@ class PolynomialPotential(Potential):
         alpha = (
             l ** np.indices(self.alpha.shape).sum(0)
             * self.alpha
-            / (cst.k * cst.e ** 2 * l)
+            * (l / (cst.k * cst.e ** 2))
         )
         return PolynomialPotential(alpha)
 
