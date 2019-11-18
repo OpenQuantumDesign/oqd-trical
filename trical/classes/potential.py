@@ -1,3 +1,5 @@
+from ..misc.linalg import norm
+import itertools as itr
 import numpy as np
 
 
@@ -9,7 +11,7 @@ class Potential(object):
         self.dphi = dphi
         self.d2phi = d2phi
 
-        params = {}
+        params = {"dim": 3}
         params.update(kwargs)
         self.__dict__.update(params)
         self.params = params
@@ -59,9 +61,9 @@ class Potential(object):
 
 
 class CoulombPotential(Potential):
-    def __init__(self, **kwargs):
+    def __init__(self, N, **kwargs):
 
-        params = {}
+        params = {"dim": 3, "N": N}
         params.update(kwargs)
 
         super(CoulombPotential, self).__init__(
@@ -69,14 +71,57 @@ class CoulombPotential(Potential):
         )
         pass
 
-    def __call__(self):
-        pass
+    def __call__(self, x):
+        i, j = (
+            np.fromiter(itr.chain(*itr.combinations(range(self.N), 2)), dtype=int)
+            .reshape(-1, 2)
+            .transpose()
+        )
+        return 1 / norm(x[i] - x[j])
 
     def first_derivative(var):
-        pass
+        a = {"x": 0, "y": 1, "z": 2}[var[0]]
+        i = int(var[1:])
+        j = np.delete(np.arange(self.N, dtype=int), i)
+
+        def dphi_dai(x):
+            xia = x[i, a]
+            xja = x[j, a]
+            nxij = norm(x[i] - x[j])
+            return ((xja - xia) / nxij ** 3).sum()
+
+        return dphi_dai
 
     def second_derivative(var1, var2):
-        pass
+        a = {"x": 0, "y": 1, "z": 2}[var1[0]]
+        b = {"x": 0, "y": 1, "z": 2}[var2[0]]
+        i = int(var1[1:])
+        j = int(var2[1:])
+
+        def d2phi_daidbj(x):
+            if i == j:
+                j = np.delete(np.arange(self.N, dtype=int), i)
+                xia = x[i, a]
+                xja = x[j, a]
+                xib = x[i, b]
+                xjb = x[j, b]
+                nxij = norm(x[i] - x[j])
+                if a == b:
+                    return ((-1 / nxij ** 3 + 3 * (xja - xia) ** 2 / nxij ** 5)).sum()
+                else:
+                    return (3 * (xja - xia) * (xjb - xib) / nxij ** 5).sum()
+            else:
+                xia = x[i, a]
+                xja = x[j, a]
+                xib = x[i, b]
+                xjb = x[j, b]
+                nxij = norm(x[i] - x[j])
+                if a == b:
+                    return 1 / nxij ** 3 - 3 * (xja - xia) ** 2 / nxij ** 5
+                else:
+                    return -3 * (xja - xia) * (xjb - xib) / nxij ** 5
+
+        return d2phi_daidbj
 
     pass
 
