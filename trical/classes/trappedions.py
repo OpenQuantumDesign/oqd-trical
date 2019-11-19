@@ -1,4 +1,5 @@
 from .. import constants as cst
+from ..misc.linalg import norm
 from ..misc.optimize import dflt_opt
 from .potential import CoulombPotential
 from matplotlib import pyplot as plt
@@ -39,11 +40,30 @@ class TrappedIons(object):
 
         hess_phi = ndfp.hessian()
 
-        self.equilibrium_position()
+        if "x_ep" not in self.__dict__.keys():
+            self.equilibrium_position()
 
         hess_phi_x_ep = hess_phi(self.x_ep / self.l)
 
-        self.w, self.b = np.linalg.eig(hess_phi_x_ep)
+        w, b = np.linalg.eigh(hess_phi_x_ep)
+        w = np.sqrt(w * cst.k * cst.e ** 2 / (self.m * self.l ** 3))
+
+        idcs = np.lexsort(
+            np.concatenate(
+                (
+                    w.reshape(1, -1),
+                    np.array(
+                        [
+                            np.round(norm(b[i * self.N : (i + 1) * self.N].transpose()))
+                            for i in range(self.dim)
+                        ]
+                    ),
+                )
+            )
+        )
+
+        self.w, self.b = w[idcs], b[:, idcs]
+
         return self.w, self.b
 
     pass
