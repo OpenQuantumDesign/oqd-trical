@@ -174,8 +174,8 @@ class Potential(object):
         Calculates the second derivative of the potential with respect to two variables
         
         Args:
-            var1 (TYPE): first derivative variable
-            var2 (TYPE): second derivative variable
+            var1 (str): first derivative variable
+            var2 (str): second derivative variable
         
         Returns:
             func(1-D or 2-D array of float) -> float: Function corresponding to the
@@ -226,7 +226,7 @@ class Potential(object):
             """
             Function corresponding to the Hessian of the potential
             
-            Args:
+            Args:s
                 x (1-D or 2-D array of float): Position of the ions
             
             Returns:
@@ -255,15 +255,21 @@ class Potential(object):
 
 class CoulombPotential(Potential):
 
-    """SUMMARY
+    """
+    Object representing a Coulomb potential
     """
     
     def __init__(self, N, **kwargs):
-        """SUMMARY
+        """
+        Initialization function for a CoulombPotential object
         
         Args:
-            N (TYPE): DESCRIPTION
-            **kwargs: DESCRIPTION
+            N (int): Number of ions
+         
+        Kwargs:
+            dim (int, optional): Dimension of the system
+            N (int, optional): Number of Ions
+            q (float, optional): Charge of an ion
         """
         params = {"dim": 3, "N": N, "q": cst.e}
         params.update(kwargs)
@@ -274,13 +280,14 @@ class CoulombPotential(Potential):
         pass
 
     def __call__(self, x):
-        """SUMMARY
+        """
+        Evaluates the Coulomb potential given the position of the ions
         
         Args:
-            x (TYPE): DESCRIPTION
+            x (1-D or 2-D array of floats): Position of the ions
         
         Returns:
-            TYPE: DESCRIPTION
+            float: value of the Coulomb potential given the position of the ions
         """
         i, j = (
             np.fromiter(itr.chain(*itr.combinations(range(self.N), 2)), dtype=int)
@@ -291,23 +298,31 @@ class CoulombPotential(Potential):
         return cst.k * self.q ** 2 * (1 / nxij).sum()
 
     def first_derivative(self, var):
-        """SUMMARY
+        """
+        Calculates the first derivative of the Coulomb potential with respect to a variable
         
         Args:
-            var (TYPE): DESCRIPTION
+            var (str): Derivative variable
+        
+        Returns:
+            func(1-D or 2-D array of float) -> float: Function corresponding to the
+            first derivative of the Coulomb potential with respect to the derivative
+            variable
         """
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if type(var) == str else var[1:][0]) - 1
         j = np.delete(np.arange(self.N, dtype=int), i)
 
         def dphi_dai(x):
-            """SUMMARY
+            """
+            Function corresponding to a first derivative of the Coulomb potential
             
-            Args:
-                x (TYPE): DESCRIPTION
+            Args:s
+                x (1-D or 2-D array of float): Position of the ions
             
             Returns:
-                TYPE: DESCRIPTION
+                float: Value of a first derivative of the Coulomb potential given the
+                position of the ions
             """
             xia = x[i, a]
             xja = x[j, a]
@@ -317,11 +332,18 @@ class CoulombPotential(Potential):
         return dphi_dai
 
     def second_derivative(self, var1, var2):
-        """SUMMARY
+        """
+        Calculates the second derivative of the Coulomb potential with respect to two 
+        variables
         
         Args:
-            var1 (TYPE): DESCRIPTION
-            var2 (TYPE): DESCRIPTION
+            var1 (str): first derivative variable
+            var2 (str): second derivative variable
+        
+        Returns:
+            func(1-D or 2-D array of float) -> float: Function corresponding to the
+            second derivative of the Coulomb potential with respect to the derivative
+            variables
         """
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
@@ -330,13 +352,15 @@ class CoulombPotential(Potential):
         print(i,j)
 
         def d2phi_daidbj(x):
-            """SUMMARY
+            """
+            Function corresponding to a second derivative of the Coulomb potential
             
-            Args:
-                x (TYPE): DESCRIPTION
+            Args:s
+                x (1-D or 2-D array of float): Position of the ions
             
             Returns:
-                TYPE: DESCRIPTION
+                float: Value of a second derivative of the Coulomb potential given the
+                position of the ions
             """
             if i == j:
                 k = np.delete(np.arange(self.N, dtype=int), i)
@@ -379,13 +403,14 @@ class CoulombPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        """SUMMARY
+        """
+        Nondimensionalizes the Coulomb potential using a length scale
         
         Args:
-            l (TYPE): DESCRIPTION
+            l (float): A length scale
         
         Returns:
-            TYPE: DESCRIPTION
+            Potential: Nondimensionalized Coulomb potential
         """
         return self / (cst.k * cst.e ** 2)
 
@@ -394,18 +419,19 @@ class CoulombPotential(Potential):
 
 class PolynomialPotential(Potential):
 
-    """SUMMARY
+    """
+    Object representing a Polynomial potential
     
     Attributes:
-        alpha (TYPE): DESCRIPTION
+        alpha (1-D, 2-D or 3-D array of float): Polynomial coefficients
     """
     
-    def __init__(self, alpha, **kwargs):
-        """SUMMARY
+    def __init__(self, alpha):
+        """
+        Initialization function for a PolynomialPotential object
         
         Args:
-            alpha (TYPE): DESCRIPTION
-            **kwargs: DESCRIPTION
+            alpha (1-D, 2-D or 3-D array of float): Polynomial coefficients
         """
         self.alpha = np.array(alpha)
 
@@ -418,23 +444,30 @@ class PolynomialPotential(Potential):
         pass
 
     def __call__(self, x):
-        """SUMMARY
+        """
+        Evaluates the polynomial potential given the position of the ions
         
         Args:
-            x (TYPE): DESCRIPTION
+            x (1-D or 2-D array of floats): Position of the ions
         
         Returns:
-            TYPE: DESCRIPTION
+            float: value of the polynomial potential given the position of the ions
         """
         return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
             *x.transpose(), self.alpha
         ).sum()
 
     def first_derivative(self, var):
-        """SUMMARY
+        """
+        Calculates the first derivative of the polynomial potential with respect to a variable
         
         Args:
-            var (TYPE): DESCRIPTION
+            var (str): Derivative variable
+        
+        Returns:
+            func(1-D or 2-D array of float) -> float: Function corresponding to the
+            first derivative of the polynomial potential with respect to the derivative
+            variable
         """
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if type(var) == str else var[1:][0]) - 1
@@ -442,13 +475,15 @@ class PolynomialPotential(Potential):
         beta = poly.polyder(self.alpha, axis=a)
 
         def dphi_dai(x):
-            """SUMMARY
+            """
+            Function corresponding to a first derivative of the polynomial potential
             
-            Args:
-                x (TYPE): DESCRIPTION
+            Args:s
+                x (1-D or 2-D array of float): Position of the ions
             
             Returns:
-                TYPE: DESCRIPTION
+                float: Value of a first derivative of the polynomial potential given the
+                position of the ions
             """
             return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
                 *x[i], beta
@@ -457,11 +492,18 @@ class PolynomialPotential(Potential):
         return dphi_dai
 
     def second_derivative(self, var1, var2):
-        """SUMMARY
+        """
+        Calculates the second derivative of the polynomial potential with respect to two 
+        variables
         
         Args:
-            var1 (TYPE): DESCRIPTION
-            var2 (TYPE): DESCRIPTION
+            var1 (str): first derivative variable
+            var2 (str): second derivative variable
+        
+        Returns:
+            func(1-D or 2-D array of float) -> float: Function corresponding to the
+            second derivative of the polynomial potential with respect to the derivative
+            variables
         """
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
@@ -472,13 +514,15 @@ class PolynomialPotential(Potential):
         gamma = poly.polyder(beta, axis=b)
 
         def d2phi_daidbj(x):
-            """SUMMARY
+            """
+            Function corresponding to a second derivative of the polynomial potential
             
-            Args:
-                x (TYPE): DESCRIPTION
+            Args:s
+                x (1-D or 2-D array of float): Position of the ions
             
             Returns:
-                TYPE: DESCRIPTION
+                float: Value of a second derivative of the polynomial potential given the
+                position of the ions
             """
             if i == j:
                 return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[
@@ -490,13 +534,14 @@ class PolynomialPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        """SUMMARY
+        """
+        Nondimensionalizes the polynomial potential using a length scale
         
         Args:
-            l (TYPE): DESCRIPTION
+            l (float): A length scale
         
         Returns:
-            TYPE: DESCRIPTION
+            PolynomialPotential: Nondimensionalized polynomial potential
         """
         alpha = (
             l ** np.indices(self.alpha.shape).sum(0)
