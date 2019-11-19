@@ -1,21 +1,25 @@
-"""SUMMARY
+"""
+Defines the SpinLattice class and its subclasses representing a spin lattice system or a
+simulation of a spin lattice system
 """
 import numpy as np
 
 
 class SpinLattice(object):
 
-    """SUMMARY
+    """
+    Object representing a spin lattice system
     
     Attributes:
-        J (TYPE): DESCRIPTION
+        J (2-D array of float): Interaction graph of the system
     """
     
     def __init__(self, J):
-        """SUMMARY
+        """
+        Initialization function for a SpinLattice object
         
         Args:
-            J (TYPE): DESCRIPTION
+            J (2-D array of float): Interaction graph of the system
         """
         super(SpinLattice, self).__init__()
 
@@ -27,24 +31,26 @@ class SpinLattice(object):
 
 class SimulatedSpinLattice(SpinLattice):
 
-    """SUMMARY
+    """
+    Object representing a spin lattice system simulated by a trapped ion system
     
     Attributes:
-        ic (TYPE): DESCRIPTION
-        mu (TYPE): DESCRIPTION
-        Omega (TYPE): DESCRIPTION
+        ti (TrappedIons): A trapped ion system
+        mu (float or 1-D array of float): Raman beatnote detunings
+        Omega (1-D or 2-D array of float): Rabi frequencies
     """
     
-    def __init__(self, ic, mu, Omega, **kwargs):
-        """SUMMARY
+    def __init__(self, ti, mu, Omega, **kwargs):
+        """
+        Initialization function for a SimulatedSpinLattice object
         
         Args:
-            ic (TYPE): DESCRIPTION
-            mu (TYPE): DESCRIPTION
-            Omega (TYPE): DESCRIPTION
-            **kwargs: DESCRIPTION
+            ti (TrappedIons): A trapped ion system
+            mu (float or 1-D array of float): Raman beatnote detunings
+            Omega (1-D or 2-D array of float): Rabi frequencies
+        Kwargs:
         """
-        self.ic = ic
+        self.ti = ti
         self.mu = mu
         self.Omega = Omega
 
