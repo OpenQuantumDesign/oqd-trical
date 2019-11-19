@@ -436,7 +436,6 @@ class PolynomialPotential(Potential):
         self.alpha = np.array(alpha)
 
         params = {"deg": alpha.shape, "dim": len(alpha.shape)}
-        params.update(kwargs)
 
         super(PolynomialPotential, self).__init__(
             self.__call__, self.first_derivative, self.second_derivative, **params
