@@ -1,4 +1,6 @@
-"""SUMMARY
+"""
+Defines the Potential class and its subclasses representing potentials associated with
+a trapped ions system
 """
 from .. import constants as cst
 from ..misc.linalg import norm
@@ -9,23 +11,44 @@ from numpy.polynomial import polynomial as poly
 
 class Potential(object):
 
-    """SUMMARY
+    """
+    Object representing a general potential
     
     Attributes:
-        d2phi (TYPE): DESCRIPTION
-        dphi (TYPE): DESCRIPTION
-        params (TYPE): DESCRIPTION
-        phi (TYPE): DESCRIPTION
+        d2phi (func(str,str) -> (func(1-D or 2-D array of float) -> float)): Function that 
+        takes two strings representing the derivative variables and outputs the function
+        corresponding to the derivative of the potential with respect to the derivative
+        variables
+        dphi (func(str) -> (func(1-D or 2-D array of float) -> float)): Function that 
+        takes a string representing the derivative variable and outputs the function
+        corresponding to the derivative of the potential with respect to the derivative
+        variable
+        phi (func(1-D or 2-D array of float)): Function representing the potential
+        params (dict): Other relevant parameters of the Potential object
     """
     
     def __init__(self, phi, dphi, d2phi, **kwargs):
-        """SUMMARY
+        """
+        Initialization function for a Potential object
         
         Args:
-            phi (TYPE): DESCRIPTION
-            dphi (TYPE): DESCRIPTION
-            d2phi (TYPE): DESCRIPTION
-            **kwargs: DESCRIPTION
+            phi (func(1-D or 2-D array of float)): Function representing the potential
+            dphi (func(str,str) -> (func(1-D or 2-D array of float) -> float)): 
+            Function that takes a string representing the derivative variable and outputs
+            the function corresponding to the derivative of the potential with respect to
+            the derivative variable
+            d2phi (func(str) -> (func(1-D or 2-D array of float) -> float)): Function that
+            takes two strings representing the derivative variables and outputs the function
+            corresponding to the derivative of the potential with respect to the 
+            derivative variables
+         
+        Kwargs:
+            deg (int or array of int, optional): Degree of the polynomial potential
+            dim (int, optional): Dimension of the system
+            m (float, optional): Mass of an ion
+            N (int, optional): Number of Ions
+            q (float, optional): Charge of an ion
+
         """
         super(Potential, self).__init__()
 
@@ -40,13 +63,14 @@ class Potential(object):
         pass
 
     def __add__(self, other):
-        """SUMMARY
+        """
+        Adds two Potential objects
         
         Args:
-            other (TYPE): DESCRIPTION
+            other (Potential): Potential object of interest
         
         Returns:
-            TYPE: DESCRIPTION
+            Potential: Addition of the potentials 
         """
         params = {}
         params.update(self.params)
@@ -59,13 +83,14 @@ class Potential(object):
         return Potential(phi, dphi, d2phi, **params)
 
     def __sub__(self, other):
-        """SUMMARY
+        """
+        Subtracts two Potential objects
         
         Args:
-            other (TYPE): DESCRIPTION
+            other (Potential): Potential object of interest
         
         Returns:
-            TYPE: DESCRIPTION
+            Potential: Subtraction of the potentials 
         """
         params = {}
         params.update(self.params)
@@ -78,13 +103,14 @@ class Potential(object):
         return Potential(phi, dphi, d2phi, **params)
 
     def __mul__(self, multiplier):
-        """SUMMARY
+        """
+        Multiplies Potential objects by some multiplier
         
         Args:
-            multiplier (TYPE): DESCRIPTION
+            multiplier (float): Scalar to multiply the potential by
         
         Returns:
-            TYPE: DESCRIPTION
+            Potential: The potential multiplied by the multiplier
         """
         phi = lambda x: self.phi(x) * multiplier
         dphi = lambda var: (lambda x: self.dphi(var)(x) * multiplier)
@@ -92,24 +118,26 @@ class Potential(object):
         return Potential(phi, dphi, d2phi, **self.params)
 
     def __rmul__(self, multiplier):
-        """SUMMARY
+        """
+        Multiplies Potential objects by some multiplier
         
         Args:
-            multiplier (TYPE): DESCRIPTION
+            multiplier (float): Scalar to multiply the potential by
         
         Returns:
-            TYPE: DESCRIPTION
+            Potential: The potential multiplied by the multiplier
         """
         return self * multiplier
 
     def __truediv__(self, divisor):
-        """SUMMARY
+        """
+        Divides Potential objects by some divisor
         
         Args:
-            divisor (TYPE): DESCRIPTION
+            divisor (float): Scalar to divide the potential by
         
         Returns:
-            TYPE: DESCRIPTION
+            Potential: The potential divided by the divisor
         """
         phi = lambda x: self.phi(x) / divisor
         dphi = lambda var: (lambda x: self.dphi(var)(x) / divisor)
@@ -117,50 +145,62 @@ class Potential(object):
         return Potential(phi, dphi, d2phi, **self.params)
 
     def __call__(self, x):
-        """SUMMARY
+        """
+        Evaluates the potential given the position of the ions
         
         Args:
-            x (TYPE): DESCRIPTION
+            x (1-D or 2-D array of floats): Position of the ions
         
         Returns:
-            TYPE: DESCRIPTION
+            float: value of the potential given the position of the ions
         """
         return self.phi(x)
 
     def first_derivative(self, var):
-        """SUMMARY
+        """
+        Calculates the first derivative of the potential with respect to a variable
         
         Args:
-            var (TYPE): DESCRIPTION
+            var (str): Derivative variable
         
         Returns:
-            TYPE: DESCRIPTION
+            func(1-D or 2-D array of float) -> float: Function corresponding to the
+            first derivative of the potential with respect to the derivative variable
         """
         return self.dphi(var)
 
     def second_derivative(self, var1, var2):
-        """SUMMARY
+        """
+        Calculates the second derivative of the potential with respect to two variables
         
         Args:
-            var1 (TYPE): DESCRIPTION
-            var2 (TYPE): DESCRIPTION
+            var1 (TYPE): first derivative variable
+            var2 (TYPE): second derivative variable
         
         Returns:
-            TYPE: DESCRIPTION
+            func(1-D or 2-D array of float) -> float: Function corresponding to the
+            second derivative of the potential with respect to the derivative variables
         """
         return self.d2phi(var1, var2)
 
     def gradient(self):
-        """SUMMARY
+        """
+        Calculates the gradient of the potential
+
+        Returns:
+            func(1-D or 2-D array of float) -> 1-D array of float: Function corresponding
+            to the gradient of the potential
         """
         def grad_phi(x):
-            """SUMMARY
+            """
+            Function corresponding to the gradient of the potential
             
             Args:
-                x (TYPE): DESCRIPTION
+                x (1-D or 2-D array of float): Position of the ions
             
             Returns:
-                TYPE: DESCRIPTION
+                1-D array of float: Value of the gradient of the potential given the
+                position of the ions
             """
             grad_phi_x = np.empty(self.N * self.dim)
 
@@ -175,16 +215,23 @@ class Potential(object):
         return grad_phi
 
     def hessian(self):
-        """SUMMARY
+        """
+        Calculates the Hessian of the potential
+
+        Returns:
+            func(1-D or 2-D array of float) -> 2-D array of float: Function corresponding
+            to the Hessian of the potential
         """
         def hess_phi(x):
-            """SUMMARY
+            """
+            Function corresponding to the Hessian of the potential
             
             Args:
-                x (TYPE): DESCRIPTION
+                x (1-D or 2-D array of float): Position of the ions
             
             Returns:
-                TYPE: DESCRIPTION
+                1-D array of float: Value of the Hessian of the potential given the
+                position of the ions
             """
             hess_phi_x = np.empty((self.N * self.dim, self.N * self.dim))
 
