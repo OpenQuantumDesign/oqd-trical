@@ -66,7 +66,7 @@ class TrappedIons(object):
             potential of the system with respect to the position of the ions
         
         Returns:
-            1-D array of float: Equilibrium position of the ions
+            1D or 2-D array of float: Equilibrium position of the ions
         """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
