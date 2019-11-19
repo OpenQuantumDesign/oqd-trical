@@ -349,7 +349,6 @@ class CoulombPotential(Potential):
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
         i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
         j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
-        print(i,j)
 
         def d2phi_daidbj(x):
             """
