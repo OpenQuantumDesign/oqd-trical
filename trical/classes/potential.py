@@ -4,6 +4,7 @@ a trapped ions system
 """
 from .. import constants as cst
 from ..misc.linalg import norm
+from ..misc.setalg import intersection
 import itertools as itr
 import numpy as np
 from numpy.polynomial import polynomial as poly
@@ -26,7 +27,7 @@ class Potential(object):
         phi (func(1-D or 2-D array of float)): Function representing the potential
         params (dict): Other relevant parameters of the Potential object
     """
-    
+
     def __init__(self, phi, dphi, d2phi, **kwargs):
         """
         Initialization function for a Potential object
@@ -72,6 +73,9 @@ class Potential(object):
         Returns:
             Potential: Addition of the potentials 
         """
+        for i in intersection(self.params.keys(), other.params.keys()):
+            assert self.params[i] == other.params[i]
+        
         params = {}
         params.update(self.params)
         params.update(other.params)
@@ -92,6 +96,9 @@ class Potential(object):
         Returns:
             Potential: Subtraction of the potentials 
         """
+        for i in intersection(self.params.keys(), other.params.keys()):
+            assert self.params[i] == other.params[i]
+
         params = {}
         params.update(self.params)
         params.update(other.params)
@@ -191,6 +198,7 @@ class Potential(object):
             func(1-D or 2-D array of float) -> 1-D array of float: Function corresponding
             to the gradient of the potential
         """
+
         def grad_phi(x):
             """
             Function corresponding to the gradient of the potential
@@ -222,6 +230,7 @@ class Potential(object):
             func(1-D or 2-D array of float) -> 2-D array of float: Function corresponding
             to the Hessian of the potential
         """
+
         def hess_phi(x):
             """
             Function corresponding to the Hessian of the potential
@@ -258,7 +267,7 @@ class CoulombPotential(Potential):
     """
     Object representing a Coulomb potential
     """
-    
+
     def __init__(self, N, **kwargs):
         """
         Initialization function for a CoulombPotential object
@@ -424,7 +433,7 @@ class PolynomialPotential(Potential):
     Attributes:
         alpha (1-D, 2-D or 3-D array of float): Polynomial coefficients
     """
-    
+
     def __init__(self, alpha):
         """
         Initialization function for a PolynomialPotential object
