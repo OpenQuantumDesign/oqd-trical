@@ -1,3 +1,5 @@
+"""SUMMARY
+"""
 from .. import constants as cst
 from ..misc.linalg import norm
 import itertools as itr
@@ -6,7 +8,25 @@ from numpy.polynomial import polynomial as poly
 
 
 class Potential(object):
+
+    """SUMMARY
+    
+    Attributes:
+        d2phi (TYPE): DESCRIPTION
+        dphi (TYPE): DESCRIPTION
+        params (TYPE): DESCRIPTION
+        phi (TYPE): DESCRIPTION
+    """
+    
     def __init__(self, phi, dphi, d2phi, **kwargs):
+        """SUMMARY
+        
+        Args:
+            phi (TYPE): DESCRIPTION
+            dphi (TYPE): DESCRIPTION
+            d2phi (TYPE): DESCRIPTION
+            **kwargs: DESCRIPTION
+        """
         super(Potential, self).__init__()
 
         self.phi = phi
@@ -20,6 +40,14 @@ class Potential(object):
         pass
 
     def __add__(self, other):
+        """SUMMARY
+        
+        Args:
+            other (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         params = {}
         params.update(self.params)
         params.update(other.params)
@@ -31,6 +59,14 @@ class Potential(object):
         return Potential(phi, dphi, d2phi, **params)
 
     def __sub__(self, other):
+        """SUMMARY
+        
+        Args:
+            other (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         params = {}
         params.update(self.params)
         params.update(other.params)
@@ -42,31 +78,90 @@ class Potential(object):
         return Potential(phi, dphi, d2phi, **params)
 
     def __mul__(self, multiplier):
+        """SUMMARY
+        
+        Args:
+            multiplier (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         phi = lambda x: self.phi(x) * multiplier
         dphi = lambda var: (lambda x: self.dphi(var)(x) * multiplier)
         d2phi = lambda var1, var2: (lambda x: self.d2phi(var1, var2)(x) * multiplier)
         return Potential(phi, dphi, d2phi, **self.params)
 
     def __rmul__(self, multiplier):
+        """SUMMARY
+        
+        Args:
+            multiplier (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         return self * multiplier
 
     def __truediv__(self, divisor):
+        """SUMMARY
+        
+        Args:
+            divisor (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         phi = lambda x: self.phi(x) / divisor
         dphi = lambda var: (lambda x: self.dphi(var)(x) / divisor)
         d2phi = lambda var1, var2: (lambda x: self.d2phi(var1, var2)(x) / divisor)
         return Potential(phi, dphi, d2phi, **self.params)
 
     def __call__(self, x):
+        """SUMMARY
+        
+        Args:
+            x (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         return self.phi(x)
 
     def first_derivative(self, var):
+        """SUMMARY
+        
+        Args:
+            var (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         return self.dphi(var)
 
     def second_derivative(self, var1, var2):
+        """SUMMARY
+        
+        Args:
+            var1 (TYPE): DESCRIPTION
+            var2 (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         return self.d2phi(var1, var2)
 
     def gradient(self):
+        """SUMMARY
+        """
         def grad_phi(x):
+            """SUMMARY
+            
+            Args:
+                x (TYPE): DESCRIPTION
+            
+            Returns:
+                TYPE: DESCRIPTION
+            """
             grad_phi_x = np.empty(self.N * self.dim)
 
             i = 0
@@ -80,7 +175,17 @@ class Potential(object):
         return grad_phi
 
     def hessian(self):
+        """SUMMARY
+        """
         def hess_phi(x):
+            """SUMMARY
+            
+            Args:
+                x (TYPE): DESCRIPTION
+            
+            Returns:
+                TYPE: DESCRIPTION
+            """
             hess_phi_x = np.empty((self.N * self.dim, self.N * self.dim))
 
             i = 0
@@ -102,8 +207,17 @@ class Potential(object):
 
 
 class CoulombPotential(Potential):
-    def __init__(self, N, **kwargs):
 
+    """SUMMARY
+    """
+    
+    def __init__(self, N, **kwargs):
+        """SUMMARY
+        
+        Args:
+            N (TYPE): DESCRIPTION
+            **kwargs: DESCRIPTION
+        """
         params = {"dim": 3, "N": N, "q": cst.e}
         params.update(kwargs)
 
@@ -113,6 +227,14 @@ class CoulombPotential(Potential):
         pass
 
     def __call__(self, x):
+        """SUMMARY
+        
+        Args:
+            x (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         i, j = (
             np.fromiter(itr.chain(*itr.combinations(range(self.N), 2)), dtype=int)
             .reshape(-1, 2)
@@ -122,11 +244,24 @@ class CoulombPotential(Potential):
         return cst.k * self.q ** 2 * (1 / nxij).sum()
 
     def first_derivative(self, var):
+        """SUMMARY
+        
+        Args:
+            var (TYPE): DESCRIPTION
+        """
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if type(var) == str else var[1:][0]) - 1
         j = np.delete(np.arange(self.N, dtype=int), i)
 
         def dphi_dai(x):
+            """SUMMARY
+            
+            Args:
+                x (TYPE): DESCRIPTION
+            
+            Returns:
+                TYPE: DESCRIPTION
+            """
             xia = x[i, a]
             xja = x[j, a]
             nxij = norm(x[i] - x[j])
@@ -135,6 +270,12 @@ class CoulombPotential(Potential):
         return dphi_dai
 
     def second_derivative(self, var1, var2):
+        """SUMMARY
+        
+        Args:
+            var1 (TYPE): DESCRIPTION
+            var2 (TYPE): DESCRIPTION
+        """
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
         i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
@@ -142,6 +283,14 @@ class CoulombPotential(Potential):
         print(i,j)
 
         def d2phi_daidbj(x):
+            """SUMMARY
+            
+            Args:
+                x (TYPE): DESCRIPTION
+            
+            Returns:
+                TYPE: DESCRIPTION
+            """
             if i == j:
                 k = np.delete(np.arange(self.N, dtype=int), i)
                 xia = x[i, a]
@@ -183,14 +332,34 @@ class CoulombPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
+        """SUMMARY
+        
+        Args:
+            l (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         return self / (cst.k * cst.e ** 2)
 
     pass
 
 
 class PolynomialPotential(Potential):
-    def __init__(self, alpha, **kwargs):
 
+    """SUMMARY
+    
+    Attributes:
+        alpha (TYPE): DESCRIPTION
+    """
+    
+    def __init__(self, alpha, **kwargs):
+        """SUMMARY
+        
+        Args:
+            alpha (TYPE): DESCRIPTION
+            **kwargs: DESCRIPTION
+        """
         self.alpha = np.array(alpha)
 
         params = {"deg": alpha.shape, "dim": len(alpha.shape)}
@@ -202,17 +371,38 @@ class PolynomialPotential(Potential):
         pass
 
     def __call__(self, x):
+        """SUMMARY
+        
+        Args:
+            x (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
             *x.transpose(), self.alpha
         ).sum()
 
     def first_derivative(self, var):
+        """SUMMARY
+        
+        Args:
+            var (TYPE): DESCRIPTION
+        """
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if type(var) == str else var[1:][0]) - 1
 
         beta = poly.polyder(self.alpha, axis=a)
 
         def dphi_dai(x):
+            """SUMMARY
+            
+            Args:
+                x (TYPE): DESCRIPTION
+            
+            Returns:
+                TYPE: DESCRIPTION
+            """
             return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
                 *x[i], beta
             )
@@ -220,6 +410,12 @@ class PolynomialPotential(Potential):
         return dphi_dai
 
     def second_derivative(self, var1, var2):
+        """SUMMARY
+        
+        Args:
+            var1 (TYPE): DESCRIPTION
+            var2 (TYPE): DESCRIPTION
+        """
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
         i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
@@ -229,6 +425,14 @@ class PolynomialPotential(Potential):
         gamma = poly.polyder(beta, axis=b)
 
         def d2phi_daidbj(x):
+            """SUMMARY
+            
+            Args:
+                x (TYPE): DESCRIPTION
+            
+            Returns:
+                TYPE: DESCRIPTION
+            """
             if i == j:
                 return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[
                     self.dim
@@ -239,6 +443,14 @@ class PolynomialPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
+        """SUMMARY
+        
+        Args:
+            l (TYPE): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         alpha = (
             l ** np.indices(self.alpha.shape).sum(0)
             * self.alpha
