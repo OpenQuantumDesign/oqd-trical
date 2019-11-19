@@ -1,3 +1,5 @@
+"""SUMMARY
+"""
 from .. import constants as cst
 from ..misc.linalg import norm
 from ..misc.optimize import dflt_opt
@@ -7,7 +9,25 @@ import numpy as np
 
 
 class TrappedIons(object):
+
+    """SUMMARY
+    
+    Attributes:
+        cp (TYPE): DESCRIPTION
+        fp (TYPE): DESCRIPTION
+        N (TYPE): DESCRIPTION
+        ps (TYPE): DESCRIPTION
+        x_ep (TYPE): DESCRIPTION
+    """
+    
     def __init__(self, N, *ps, **kwargs):
+        """SUMMARY
+        
+        Args:
+            N (TYPE): DESCRIPTION
+            *ps: DESCRIPTION
+            **kwargs: DESCRIPTION
+        """
         super(TrappedIons, self).__init__()
 
         params = {"dim": 3, "l": 1e-6, "m": cst.m_a["Yb171"], "q": cst.e}
@@ -22,6 +42,14 @@ class TrappedIons(object):
         pass
 
     def equilibrium_position(self, opt=dflt_opt):
+        """SUMMARY
+        
+        Args:
+            opt (TYPE, optional): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
         ndfp = ndcp + ndps.sum()
@@ -34,6 +62,11 @@ class TrappedIons(object):
         return self.x_ep
 
     def normal_modes(self):
+        """SUMMARY
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
         ndfp = ndcp + ndps.sum()
