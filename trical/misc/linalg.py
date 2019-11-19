@@ -9,9 +9,9 @@ def norm(x):
     Computes the norm of an array over the last axis
     
     Args:
-        x (N-dim array): Array of interest
+        x (N-dim array of float): Array of interest
     
     Returns:
-        (N-1)-dim array: Norm of the array of interest over the last axis
+        (N-1)-dim array of float: Norm of the array of interest over the last axis
     """
     return np.sqrt((x ** 2).sum(-1))
