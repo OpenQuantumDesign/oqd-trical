@@ -123,7 +123,7 @@ class CoulombPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:][0]) - 1
+        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
         j = np.delete(np.arange(self.N, dtype=int), i)
 
         def dphi_dai(x):
@@ -137,8 +137,9 @@ class CoulombPotential(Potential):
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:][0]) - 1
-        j = int(var2[1:][0]) - 1
+        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
+        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
+        print(i,j)
 
         def d2phi_daidbj(x):
             if i == j:
@@ -207,7 +208,7 @@ class PolynomialPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:][0]) - 1
+        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
 
         beta = poly.polyder(self.alpha, axis=a)
 
@@ -221,8 +222,8 @@ class PolynomialPotential(Potential):
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:][0]) - 1
-        j = int(var2[1:][0]) - 1
+        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
+        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
 
         beta = poly.polyder(self.alpha, axis=a)
         gamma = poly.polyder(beta, axis=b)
