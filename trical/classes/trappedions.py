@@ -44,7 +44,12 @@ class TrappedIons(object):
         """
         super(TrappedIons, self).__init__()
 
-        params = {"dim": 3, "l": 1e-6, "m": cst.m_a["Yb171"], "q": cst.e}
+        params = {
+            "dim": ps[0].dim if "dim" in ps[0].__dict__.keys() else 3,
+            "l": 1e-6,
+            "m": cst.m_a["Yb171"],
+            "q": cst.e,
+        }
         params.update(kwargs)
         self.__dict__.update(params)
 
