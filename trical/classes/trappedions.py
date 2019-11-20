@@ -107,22 +107,21 @@ class TrappedIons(object):
 
         _b = np.copy(b)
         _b[np.abs(_b) < 1e-3] = 0
-
-        idcs = np.lexsort(
-            np.concatenate(
-                (
-                    w.reshape(1, -1),
-                    np.array(
-                        [
-                            np.round(
-                                norm(_b[i * self.N : (i + 1) * self.N].transpose()), 3
-                            )
-                            for i in range(self.dim)
-                        ]
-                    ),
-                )
-            )
+        _n = np.array(
+            [
+                np.round(norm(_b[i * self.N : (i + 1) * self.N].transpose()), 3)
+                for i in range(self.dim)
+            ]
         )
+        _s = np.sign(_b)
+        _s[_s == 0] = 1
+        _s = np.einsum(
+            "ij," * (self.dim - 1) + "ij->ij",
+            *[_s[i * self.N : (i + 1) * self.N] for i in range(self.dim)]
+        )
+        _s = ((_s == -1).sum(0) == self.N)
+
+        idcs = np.lexsort(np.concatenate((w.reshape(1, -1), _s.reshape(1, -1), _n)))
 
         self.w, self.b = w[idcs], b[:, idcs]
         return self.w, self.b
