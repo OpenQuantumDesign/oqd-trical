@@ -105,13 +105,18 @@ class TrappedIons(object):
         w, b = np.linalg.eigh(hess_phi_x_ep)
         w = np.sqrt(w * cst.k * cst.e ** 2 / (self.m * self.l ** 3))
 
+        _b = np.copy(b)
+        _b[np.abs(_b) < 1e-3] = 0
+
         idcs = np.lexsort(
             np.concatenate(
                 (
                     w.reshape(1, -1),
                     np.array(
                         [
-                            np.round(norm(b[i * self.N : (i + 1) * self.N].transpose()))
+                            np.round(
+                                norm(_b[i * self.N : (i + 1) * self.N].transpose()), 3
+                            )
                             for i in range(self.dim)
                         ]
                     ),
