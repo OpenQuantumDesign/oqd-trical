@@ -44,7 +44,6 @@ class Potential(object):
             derivative variables
          
         Kwargs:
-            deg (int or array of int, optional): Degree of the polynomial potential
             dim (int, optional): Dimension of the system
             m (float, optional): Mass of an ion
             N (int, optional): Number of Ions
@@ -75,7 +74,7 @@ class Potential(object):
         """
         for i in intersection(self.params.keys(), other.params.keys()):
             assert self.params[i] == other.params[i]
-        
+
         params = {}
         params.update(self.params)
         params.update(other.params)
@@ -276,8 +275,8 @@ class CoulombPotential(Potential):
             N (int): Number of ions
          
         Kwargs:
+            N (int): Number of Ions
             dim (int, optional): Dimension of the system
-            N (int, optional): Number of Ions
             q (float, optional): Charge of an ion
         """
         params = {"dim": 3, "N": N, "q": cst.e}
@@ -326,7 +325,7 @@ class CoulombPotential(Potential):
             """
             Function corresponding to a first derivative of the Coulomb potential
             
-            Args:s
+            Args:
                 x (1-D or 2-D array of float): Position of the ions
             
             Returns:
@@ -432,6 +431,8 @@ class PolynomialPotential(Potential):
     
     Attributes:
         alpha (1-D, 2-D or 3-D array of float): Polynomial coefficients
+        deg (int or 1-D array of int): Degree of Polynomial
+        dim (int, optional): Dimension of the system
     """
 
     def __init__(self, alpha):
@@ -442,8 +443,9 @@ class PolynomialPotential(Potential):
             alpha (1-D, 2-D or 3-D array of float): Polynomial coefficients
         """
         self.alpha = np.array(alpha)
+        self.deg = alpha.shape()
 
-        params = {"deg": alpha.shape, "dim": len(alpha.shape)}
+        params = {"dim": len(alpha.shape)}
 
         super(PolynomialPotential, self).__init__(
             self.__call__, self.first_derivative, self.second_derivative, **params
