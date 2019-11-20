@@ -258,6 +258,21 @@ class Potential(object):
 
         return hess_phi
 
+    def update_params(self, **kwargs):
+        """
+        Updates parameters of Potential object
+         
+        Kwargs:
+            dim (int, optional): Dimension of the system
+            m (float, optional): Mass of an ion
+            N (int, optional): Number of Ions
+            q (float, optional): Charge of an ion
+        
+        """
+        self.params.update(kwargs)
+        self.__dict__.update(self.params)
+        pass
+
     pass
 
 
