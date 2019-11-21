@@ -118,6 +118,8 @@ class TrappedIons(object):
 
         assert len(x_pa) == self.dim
 
+        x_pa = x_pa[np.lexsort(np.round(np.abs(x_pa).transpose(), 3))]
+
         b_pa = np.einsum("ij,jn->in", x_pa, self.b.reshape(self.dim, -1)).reshape(
             self.dim * self.N, -1
         )
