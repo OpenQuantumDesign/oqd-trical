@@ -111,7 +111,7 @@ class TrappedIons(object):
         return self.w, self.b
 
     def principle_axis(self, tol=1e-3):
-        if "w" not in self.__dict__.keys() or "b" not in self.__dict__.keys():
+        if np.isin(np.array(["w", "b"]), np.array(self.__dict__.keys())).sum() != 2:
             self.normal_modes()
 
         x_pa = orthonormal_subset(self.b.reshape(self.dim, -1).transpose(), tol=tol)
