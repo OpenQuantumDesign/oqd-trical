@@ -23,4 +23,11 @@ def dflt_opt(ti):
             np.concatenate([np.zeros(ti.N)] * (ti.dim - 1)),
             np.linspace(-(ti.N - 1) / 2, (ti.N - 1) / 2, ti.N),
         )
-    return lambda f: opt.minimize(f, x_guess, method="SLSQP").x
+
+    def _dflt_opt(f):
+        res = opt.minimize(f, x_guess, method="SLSQP")
+        assert res.success
+        return res.x
+
+    return _dflt_opt
+        
