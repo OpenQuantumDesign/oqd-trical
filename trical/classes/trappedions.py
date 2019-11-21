@@ -65,9 +65,8 @@ class TrappedIons(object):
         Function that calculates the equilibrium position of the ions
         
         Args:
-            opt (TYPE, optional): DESCRIPTION
-            opt (func(TrappedIons) -> func(func(1-D array of float)-> 1-D array of float)
-            , optional): Generator of an optimization function that minimizes the
+            opt (func(TrappedIons) -> (func(func(1-D array of float) -> 1-D array of float)):
+            Generator of an optimization function that minimizes the
             potential of the system with respect to the position of the ions
         
         Returns:
