@@ -2,7 +2,7 @@
 Defines the TrappedIons class representing a trapped ions system
 """
 from .. import constants as cst
-from ..misc.linalg import norm
+from ..misc.linalg import norm, orthonormal_subset
 from ..misc.optimize import dflt_opt
 from .potential import CoulombPotential
 from matplotlib import pyplot as plt
@@ -105,25 +105,37 @@ class TrappedIons(object):
         w, b = np.linalg.eigh(hess_phi_x_ep)
         w = np.sqrt(w * cst.k * cst.e ** 2 / (self.m * self.l ** 3))
 
-        _b = np.copy(b)
-        _b[np.abs(_b) < 1e-3] = 0
-        _n = np.array(
-            [
-                np.round(norm(_b[i * self.N : (i + 1) * self.N].transpose()), 3)
-                for i in range(self.dim)
-            ]
-        )
-        _s = np.sign(_b)
-        _s[_s == 0] = 1
-        _s = np.einsum(
-            "ij," * (self.dim - 1) + "ij->ij",
-            *[_s[i * self.N : (i + 1) * self.N] for i in range(self.dim)]
-        )
-        _s = ((_s == -1).sum(0) == self.N)
-
-        idcs = np.lexsort(np.concatenate((w.reshape(1, -1), _s.reshape(1, -1), _n)))
+        idcs = np.argsort(w)
 
         self.w, self.b = w[idcs], b[:, idcs]
         return self.w, self.b
+
+    def principle_axis(self, tol=1e-3):
+        if "w" not in self.__dict__.keys() or "b" not in self.__dict__.keys():
+            self.normal_modes()
+
+        x_pa = orthonormal_subset(
+            self.b.reshape(self.dim, -1).transpose(), tol=tol
+        ).transpose()
+
+        assert len(x_pa) == self.dim
+
+        b_pa = np.einsum(
+            "ij,jn->in", x_pa.transpose(), self.b.reshape(self.dim, -1)
+        ).reshape(self.dim * self.N, -1)
+        w_pa = self.w
+
+        n = np.array(
+            np.round(
+                [
+                    norm(b_pa[i * self.N : (i + 1) * self.N].transpose())
+                    for i in range(self.dim)
+                ]
+            )
+        )
+        idcs = np.lexsort(np.concatenate((w_pa.reshape(1, -1), n)))
+
+        self.x_pa, self.w_pa, self.b_pa = x_pa, w_pa[idcs], b_pa[:, idcs]
+        return self.x_pa, self.w_pa, self.b_pa
 
     pass
