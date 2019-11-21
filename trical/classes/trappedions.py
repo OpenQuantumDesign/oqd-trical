@@ -105,7 +105,7 @@ class TrappedIons(object):
         w, b = np.linalg.eigh(hess_phi_x_ep)
         w = np.sqrt(w * cst.k * cst.e ** 2 / (self.m * self.l ** 3))
 
-        idcs = np.argsort(w)
+        idcs = np.argsort(np.flip(w))
 
         self.w, self.b = w[idcs], b[:, idcs]
         return self.w, self.b
@@ -133,7 +133,7 @@ class TrappedIons(object):
                 ]
             )
         )
-        idcs = np.lexsort(np.concatenate((w_pa.reshape(1, -1), n)))
+        idcs = np.lexsort(np.concatenate((np.flip(w_pa).reshape(1, -1), n)))
 
         self.x_pa, self.w_pa, self.b_pa = x_pa, w_pa[idcs], b_pa[:, idcs]
         return self.x_pa, self.w_pa, self.b_pa
