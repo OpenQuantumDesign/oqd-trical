@@ -2,6 +2,7 @@
 Defines the SpinLattice class and its subclasses representing a spin lattice system or a
 simulation of a spin lattice system
 """
+from .. import constants as cst
 import numpy as np
 
 
@@ -13,7 +14,7 @@ class SpinLattice(object):
     Attributes:
         J (2-D array of float): Interaction graph of the system
     """
-    
+
     def __init__(self, J):
         """
         Initialization function for a SpinLattice object
@@ -39,7 +40,7 @@ class SimulatedSpinLattice(SpinLattice):
         mu (float or 1-D array of float): Raman beatnote detunings
         Omega (1-D or 2-D array of float): Rabi frequencies
     """
-    
+
     def __init__(self, ti, mu, Omega, **kwargs):
         """
         Initialization function for a SimulatedSpinLattice object
@@ -51,10 +52,47 @@ class SimulatedSpinLattice(SpinLattice):
         Kwargs:
         """
         self.ti = ti
-        self.mu = mu
-        self.Omega = Omega
+        self.mu = np.array(mu)
+        self.Omega = np.array(Omega)
 
-        super(SimulatedSpinLattice, self).__init__()
+        self.m = ti.m
+        self.N = ti.N
+
+        params = {"dir": "x", "k": np.pi * 2 / 355e-9}
+        params.update(kwargs)
+        self.__dict__.update(params)
+        self.params = params
+
+        if (
+            np.isin(
+                np.array(["x_pa", "w_pa", "b_pa"]), np.array(self.__dict__.keys())
+            ).sum()
+            != 3
+        ):
+            self.ti.principle_axis()
+
+        a = {"x": 0, "y": 1, "z": 2}[self.dir]
+        self.w = self.ti.w_pa[a * self.N : (a + 1) * self.N]
+        self.b = self.ti.b_pa[
+            a * self.N : (a + 1) * self.N, a * self.N : (a + 1) * self.N
+        ]
+
+        super(SimulatedSpinLattice, self).__init__(self.interaction_graph())
         pass
+
+    def interaction_graph(self):
+        eta = np.einsum(
+            "in,n->in", self.b, 2 * self.k * np.sqrt(cst.hbar / (2 * self.m * self.w))
+        )
+        zeta = np.einsum("im,in->imn", self.Omega, eta)
+        J = np.einsum(
+            "ij,imn,jmn,n,mn->ij",
+            1 - np.identity(self.N),
+            zeta,
+            zeta,
+            self.w,
+            1 / np.subtract.outer(self.mu ** 2, self.w ** 2),
+        )
+        return J
 
     pass
