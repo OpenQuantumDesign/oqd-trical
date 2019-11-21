@@ -138,4 +138,19 @@ class TrappedIons(object):
         self.x_pa, self.w_pa, self.b_pa = x_pa, w_pa[idcs], b_pa[:, idcs]
         return self.x_pa, self.w_pa, self.b_pa
 
+    def update_params(self, **kwargs):
+        """
+        Updates parameters of TrappedIons object
+         
+        Kwargs:
+            dim (int, optional): Dimension of the system
+            l (float, optional): Length scale of the system
+            m (float, optional): Mass of an ion
+            q (float, optional): Charge of an ion
+        
+        """
+        self.params.update(kwargs)
+        self.__dict__.update(self.params)
+        pass
+
     pass
