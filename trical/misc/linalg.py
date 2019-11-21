@@ -32,7 +32,7 @@ def spherical_to_cartesian(x):
 
 
 def rotation_matrix(n, theta):
-    n = n / norm(n)
+    n = np.einsum("ni,n->ni", n, 1 / norm(n))
     R = np.einsum("ni,nj,n->nij", n, n, 1 - np.cos(theta))
     R += np.einsum("n,ij->nij", np.cos(theta), np.identity(3))
     R[:, np.triu_indices(3, 1)[0], np.triu_indices(3, 1)[1]] += np.einsum(
@@ -42,3 +42,21 @@ def rotation_matrix(n, theta):
         "i,ni,n->ni", np.array([1, -1, 1]), np.flip(n, 1), np.sin(theta)
     )
     return R
+
+
+def orthonormal_subset(x, tol=1e-3):
+    x = np.einsum("ni,n->ni", x, 1 / norm(x))
+    i = 0
+    while i < len(x):
+        idcs = (
+            np.logical_not(
+                np.isclose(np.einsum("i,ni->n", x[i], x[i + 1 :]), 0, atol=tol)
+            ).nonzero()[0]
+            + i
+            + 1
+        )
+        print(i, idcs)
+        x = np.delete(x, idcs, axis=0)
+        print(x)
+        i += 1
+    return x
