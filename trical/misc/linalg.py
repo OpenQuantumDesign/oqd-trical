@@ -55,8 +55,6 @@ def orthonormal_subset(x, tol=1e-3):
             + i
             + 1
         )
-        print(i, idcs)
         x = np.delete(x, idcs, axis=0)
-        print(x)
         i += 1
     return x
