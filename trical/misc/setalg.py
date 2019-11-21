@@ -15,4 +15,4 @@ def intersection(a1, a2):
     Returns:
         1-D array: Intersection between the two given arrays
     """
-    return np.array(a1)[np.isin(np.array(a1), np.array(a2))]
+    return [i for i in a1 if i in a2]
