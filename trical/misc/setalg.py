@@ -1,6 +1,7 @@
 """
 Relevant set algebra functions for TrICal
 """
+import numpy as np
 
 
 def intersection(a1, a2):
