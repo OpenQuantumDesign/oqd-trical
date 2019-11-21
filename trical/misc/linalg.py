@@ -17,15 +17,28 @@ def norm(x):
     return np.sqrt((x ** 2).sum(-1))
 
 
-def cartesian_to_spherical(x, y, z):
-    r = np.hypot(np.hypot(x, y), z)
-    phi = np.arctan2(np.hypot(x, y), z)
-    theta = np.arctan2(y, x)
-    return r, phi, theta
+def cartesian_to_spherical(x):
+    _r = np.hypot(np.hypot(x[0], x[1]), x[2])
+    _phi = np.arctan2(np.hypot(x[0], x[1]), x[2])
+    _theta = np.arctan2(x[1], x[0])
+    return np.array([_r, _phi, _theta])
 
 
-def spherical_to_cartesian(r, phi, theta):
-    x = r * np.sin(phi) * np.cos(theta)
-    y = r * np.sin(phi) * np.sin(theta)
-    z = r * np.cos(phi)
-    return x, y, z
+def spherical_to_cartesian(x):
+    _x = x[0] * np.sin(x[1]) * np.cos(x[2])
+    _y = x[0] * np.sin(x[1]) * np.sin(x[2])
+    _z = x[0] * np.cos(x[1])
+    return np.array([_x, _y, _z])
+
+
+def rotation_matrix(n, theta):
+    n = n / norm(n)
+    R = np.einsum("ni,nj,n->nij", n, n, 1 - np.cos(theta))
+    R += np.einsum("n,ij->nij", np.cos(theta), np.identity(3))
+    R[:, np.triu_indices(3, 1)[0], np.triu_indices(3, 1)[1]] += np.einsum(
+        "i,ni,n->ni", np.array([-1, 1, -1]), np.flip(n, 1), np.sin(theta)
+    )
+    R[:, np.triu_indices(3, 1)[1], np.triu_indices(3, 1)[0]] += np.einsum(
+        "i,ni,n->ni", np.array([1, -1, 1]), np.flip(n, 1), np.sin(theta)
+    )
+    return R
