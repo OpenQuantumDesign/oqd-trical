@@ -114,15 +114,13 @@ class TrappedIons(object):
         if "w" not in self.__dict__.keys() or "b" not in self.__dict__.keys():
             self.normal_modes()
 
-        x_pa = orthonormal_subset(
-            self.b.reshape(self.dim, -1).transpose(), tol=tol
-        ).transpose()
+        x_pa = orthonormal_subset(self.b.reshape(self.dim, -1).transpose(), tol=tol)
 
         assert len(x_pa) == self.dim
 
-        b_pa = np.einsum(
-            "ij,jn->in", x_pa.transpose(), self.b.reshape(self.dim, -1)
-        ).reshape(self.dim * self.N, -1)
+        b_pa = np.einsum("ij,jn->in", x_pa, self.b.reshape(self.dim, -1)).reshape(
+            self.dim * self.N, -1
+        )
         w_pa = self.w
 
         n = np.array(
