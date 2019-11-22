@@ -104,6 +104,10 @@ class TrappedIons(object):
         w, b = np.linalg.eigh(hess_phi_x_ep)
         w = np.sqrt(w * cst.k * cst.e ** 2 / (self.m * self.l ** 3))
 
+        _b = np.round(np.copy(b), 3).transpose()
+        s = (np.sign(_b).sum(1) >= 0) * 2 - 1
+        b = np.einsum("n,in->in", s, b)
+
         idcs = np.argsort(np.flip(w, axis=0))
 
         self.w, self.b = w[idcs], b[:, idcs]
