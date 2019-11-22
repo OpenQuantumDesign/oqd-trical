@@ -27,6 +27,9 @@ class SpinLattice(object):
         self.J = J
         pass
 
+    def plot_interaction_graph(self, **kwargs):
+        pass
+
     pass
 
 
@@ -81,6 +84,11 @@ class SimulatedSpinLattice(SpinLattice):
         pass
 
     def interaction_graph(self):
+        """SUMMARY
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         eta = np.einsum(
             "in,n->in", self.b, 2 * self.k * np.sqrt(cst.hbar / (2 * self.m * self.w))
         )
@@ -94,5 +102,21 @@ class SimulatedSpinLattice(SpinLattice):
             1 / np.subtract.outer(self.mu ** 2, self.w ** 2),
         )
         return J
+
+    def plot_raman_beatnote_detunings(self, **kwargs):
+        """SUMMARY
+        
+        Args:
+            **kwargs: DESCRIPTION
+        """
+        pass
+
+    def plot_rabi_frequencies(self, **kwargs):
+        """SUMMARY
+        
+        Args:
+            **kwargs: DESCRIPTION
+        """
+        pass
 
     pass

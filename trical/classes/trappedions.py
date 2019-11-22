@@ -110,6 +110,14 @@ class TrappedIons(object):
         return self.w, self.b
 
     def principle_axis(self, tol=1e-3):
+        """SUMMARY
+        
+        Args:
+            tol (float, optional): DESCRIPTION
+        
+        Returns:
+            TYPE: DESCRIPTION
+        """
         if np.isin(np.array(["w", "b"]), np.array(self.__dict__.keys())).sum() != 2:
             self.normal_modes()
 
@@ -117,9 +125,16 @@ class TrappedIons(object):
 
         assert len(x_pa) == self.dim
 
-        s = (np.sign(x_pa).sum(1) >= 0) * 2 - 1
+        _x_pa = np.round(np.copy(x_pa), 3)
+        s = (np.sign(_x_pa).sum(1) >= 0) * 2 - 1
         x_pa = np.einsum("n,ni->ni", s, x_pa)
-        x_pa = x_pa[np.lexsort(np.round(x_pa.transpose(), 3))]
+
+        _x_pa = np.round(np.copy(x_pa), 3)
+        idcs = np.lexsort(
+            np.concatenate((_x_pa.transpose(), np.abs(_x_pa)[:, -1].reshape(1, -1)))
+        )
+
+        x_pa = x_pa[idcs]
 
         b_pa = np.einsum("ij,jn->in", x_pa, self.b.reshape(self.dim, -1)).reshape(
             self.dim * self.N, -1
@@ -127,11 +142,11 @@ class TrappedIons(object):
         w_pa = self.w
 
         _b = np.round(np.copy(b_pa), 3).transpose()
-        _s = (np.sign(_b).sum(1) >= 0) * 2 - 1
-        b_pa = np.einsum("n,in->in", _s, b_pa)
+        s = (np.sign(_b).sum(1) >= 0) * 2 - 1
+        b_pa = np.einsum("n,in->in", s, b_pa)
 
-        n = np.array(
-            np.round(
+        n = np.round(
+            np.array(
                 [
                     norm(b_pa[i * self.N : (i + 1) * self.N].transpose())
                     for i in range(self.dim)
@@ -156,6 +171,22 @@ class TrappedIons(object):
         """
         self.params.update(kwargs)
         self.__dict__.update(self.params)
+        pass
+
+    def plot_equilibrium_position(self, **kwargs):
+        """SUMMARY
+        
+        Args:
+            **kwargs: DESCRIPTION
+        """
+        pass
+
+    def plot_normal_modes(self, **kwargs):
+        """SUMMARY
+        
+        Args:
+            **kwargs: DESCRIPTION
+        """
         pass
 
     pass
