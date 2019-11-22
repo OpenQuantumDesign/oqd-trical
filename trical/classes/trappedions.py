@@ -131,7 +131,7 @@ class TrappedIons(object):
 
         _x_pa = np.round(np.copy(x_pa), 3)
         idcs = np.lexsort(
-            np.concatenate((_x_pa.transpose(), np.abs(_x_pa)[:, -1].reshape(1, -1)))
+            np.concatenate((_x_pa.transpose(), np.abs(_x_pa).transpose()))
         )
 
         x_pa = x_pa[idcs]
