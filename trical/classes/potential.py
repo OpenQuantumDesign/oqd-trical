@@ -8,6 +8,7 @@ from ..misc.setalg import intersection
 import itertools as itr
 import numpy as np
 from numpy.polynomial import polynomial as poly
+import sympy
 
 
 class Potential(object):
@@ -553,7 +554,7 @@ class PolynomialPotential(Potential):
                     self.dim
                 ](*x[i], gamma)
             else:
-                return 0
+                return 0.0
 
         return d2phi_daidbj
 
@@ -573,5 +574,149 @@ class PolynomialPotential(Potential):
             * (l / (cst.k * cst.e ** 2))
         )
         return PolynomialPotential(alpha)
+
+    pass
+
+
+class SymbolicPotential(Potential):
+
+    """
+    Object representing a symbolically defined potential
+    
+    Attributes:
+        expr (sympy): Symbolic expression of the potential
+        dim (int, optional): Dimension of the system
+    """
+
+    def __init__(self, expr, **kwargs):
+        """
+        Initialization function for a SymbolicPotential object
+        
+        Args:
+            expr (sympy): Symbolic expression of the potential
+        Kwargs:
+            dim (int, optional): Dimension of the system
+        """
+        self.expr = expr
+
+        params = {"dim": 3}
+        params.update(kwargs)
+        self.__dict__.update(params)
+        self.params = params
+
+        self.symbol = [sympy.Symbol(["x", "y", "z"][i]) for i in range(self.dim)]
+
+        super(SymbolicPotential, self).__init__(
+            self.__call__, self.first_derivative, self.second_derivative, **params
+        )
+        pass
+
+    def __call__(self, x):
+        """
+        Evaluates the symbolically defined potential given the position of the ions
+        
+        Args:
+            x (1-D or 2-D array of floats): Position of the ions
+        
+        Returns:
+            float: value of the symbolically defined potential given the position of the ions
+        """
+        return np.array(
+            [
+                float(self.expr.evalf(subs={k: v for (k, v) in zip(self.symbol, i)}))
+                for i in x
+            ]
+        ).sum()
+
+    def first_derivative(self, var):
+        """
+        Calculates the first derivative of the symbolically defined potential with respect to a
+        variable
+        
+        Args:
+            var (str): Derivative variable
+        
+        Returns:
+            func(1-D or 2-D array of float) -> float: Function corresponding to the
+            first derivative of the symbolically defined potential with respect to the derivative
+            variable
+        """
+        a = {"x": 0, "y": 1, "z": 2}[var[0]]
+        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
+
+        def dphi_dai(x):
+            """
+            Function corresponding to a first derivative of the symbolically defined potential
+            
+            Args:s
+                x (1-D or 2-D array of float): Position of the ions
+            
+            Returns:
+                float: Value of a first derivative of the symbolically defined potential given the
+                position of the ions
+            """
+            return float(
+                sympy.diff(self.expr, self.symbol[a]).evalf(
+                    subs={k: v for (k, v) in zip(self.symbol, x[i])}
+                )
+            )
+
+        return dphi_dai
+
+    def second_derivative(self, var1, var2):
+        """
+        Calculates the second derivative of the symbolically defined potential with respect to two 
+        variables
+        
+        Args:
+            var1 (str): first derivative variable
+            var2 (str): second derivative variable
+        
+        Returns:
+            func(1-D or 2-D array of float) -> float: Function corresponding to the
+            second derivative of the symbolically defined potential with respect to the derivative
+            variables
+        """
+        a = {"x": 0, "y": 1, "z": 2}[var1[0]]
+        b = {"x": 0, "y": 1, "z": 2}[var2[0]]
+        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
+        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
+
+        def d2phi_daidbj(x):
+            """
+            Function corresponding to a second derivative of the symbolically defined potential
+            
+            Args:s
+                x (1-D or 2-D array of float): Position of the ions
+            
+            Returns:
+                float: Value of a second derivative of the symbolically defined potential given the
+                position of the ions
+            """
+            if i == j:
+                return float(
+                    sympy.diff(self.expr, self.symbol[a], self.symbol[b]).evalf(
+                        subs={k: v for (k, v) in zip(self.symbol, x[i])}
+                    )
+                )
+            else:
+                return 0.0
+
+        return d2phi_daidbj
+
+    def nondimensionalize(self, l):
+        """
+        Nondimensionalizes the symbolically defined potential using a length scale
+        
+        Args:
+            l (float): A length scale
+        
+        Returns:
+            PolynomialPotential: Nondimensionalized symbolically defined potential
+        """
+        expr = self.expr.subs({k: k * l for k in self.symbol}) * (
+            l / (cst.k * cst.e ** 2)
+        )
+        return SymbolicPotential(expr, **self.params)
 
     pass
