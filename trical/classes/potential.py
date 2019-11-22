@@ -621,12 +621,8 @@ class SymbolicPotential(Potential):
         Returns:
             float: value of the symbolically defined potential given the position of the ions
         """
-        return np.array(
-            [
-                float(self.expr.evalf(subs={k: v for (k, v) in zip(self.symbol, i)}))
-                for i in x
-            ]
-        ).sum()
+        phi = sympy.utilities.lambdify(self.symbol, self.expr)
+        return phi(*x.transpose()).sum()
 
     def first_derivative(self, var):
         """
@@ -644,22 +640,9 @@ class SymbolicPotential(Potential):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if type(var) == str else var[1:][0]) - 1
 
-        def dphi_dai(x):
-            """
-            Function corresponding to a first derivative of the symbolically defined potential
-            
-            Args:s
-                x (1-D or 2-D array of float): Position of the ions
-            
-            Returns:
-                float: Value of a first derivative of the symbolically defined potential given the
-                position of the ions
-            """
-            return float(
-                sympy.diff(self.expr, self.symbol[a]).evalf(
-                    subs={k: v for (k, v) in zip(self.symbol, x[i])}
-                )
-            )
+        dphi_dai = lambda x: sympy.utilities.lambdify(
+            self.symbol, sympy.diff(self.expr, self.symbol[a])
+        )(*x[i])
 
         return dphi_dai
 
@@ -682,25 +665,12 @@ class SymbolicPotential(Potential):
         i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
         j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
 
-        def d2phi_daidbj(x):
-            """
-            Function corresponding to a second derivative of the symbolically defined potential
-            
-            Args:s
-                x (1-D or 2-D array of float): Position of the ions
-            
-            Returns:
-                float: Value of a second derivative of the symbolically defined potential given the
-                position of the ions
-            """
-            if i == j:
-                return float(
-                    sympy.diff(self.expr, self.symbol[a], self.symbol[b]).evalf(
-                        subs={k: v for (k, v) in zip(self.symbol, x[i])}
-                    )
-                )
-            else:
-                return 0.0
+        if i == j:
+            d2phi_daidbj = lambda x: sympy.utilities.lambdify(
+                self.symbol, sympy.diff(self.expr, self.symbol[a], self.symbol[b])
+            )(*x[i])
+        else:
+            d2phi_daidbj = lambda x: 0
 
         return d2phi_daidbj
 
