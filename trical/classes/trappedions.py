@@ -189,4 +189,12 @@ class TrappedIons(object):
         """
         pass
 
+    def plot_principle_axis(self, **kwargs):
+        """SUMMARY
+        
+        Args:
+            **kwargs: DESCRIPTION
+        """
+        pass
+
     pass
