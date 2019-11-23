@@ -605,6 +605,7 @@ class SymbolicPotential(Potential):
         self.params = params
 
         self.symbol = [sympy.Symbol(["x", "y", "z"][i]) for i in range(self.dim)]
+        self.lambdified_expr = sympy.utilities.lambdify(self.symbol, expr)
 
         super(SymbolicPotential, self).__init__(
             self.__call__, self.first_derivative, self.second_derivative, **params
@@ -621,8 +622,7 @@ class SymbolicPotential(Potential):
         Returns:
             float: value of the symbolically defined potential given the position of the ions
         """
-        phi = sympy.utilities.lambdify(self.symbol, self.expr)
-        return phi(*x.transpose()).sum()
+        return self.lambdified_expr(*x.transpose()).sum()
 
     def first_derivative(self, var):
         """
