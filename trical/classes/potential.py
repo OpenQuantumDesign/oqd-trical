@@ -499,20 +499,9 @@ class PolynomialPotential(Potential):
 
         beta = poly.polyder(self.alpha, axis=a)
 
-        def dphi_dai(x):
-            """
-            Function corresponding to a first derivative of the polynomial potential
-
-            Args:s
-                x (1-D or 2-D array of float): Position of the ions
-
-            Returns:
-                float: Value of a first derivative of the polynomial potential given the
-                position of the ions
-            """
-            return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
-                *x[i], beta
-            )
+        dphi_dai = lambda x: {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[
+            self.dim
+        ](*x[i], beta)
 
         return dphi_dai
 
@@ -538,23 +527,14 @@ class PolynomialPotential(Potential):
         beta = poly.polyder(self.alpha, axis=a)
         gamma = poly.polyder(beta, axis=b)
 
-        def d2phi_daidbj(x):
-            """
-            Function corresponding to a second derivative of the polynomial potential
-
-            Args:s
-                x (1-D or 2-D array of float): Position of the ions
-
-            Returns:
-                float: Value of a second derivative of the polynomial potential given the
-                position of the ions
-            """
-            if i == j:
-                return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[
-                    self.dim
-                ](*x[i], gamma)
-            else:
-                return 0.0
+        if i == j:
+            d2phi_daidbj = lambda x: {
+                1: poly.polyval,
+                2: poly.polyval2d,
+                3: poly.polyval3d,
+            }[self.dim](*x[i], gamma)
+        else:
+            d2phi_daidbj = lambda x: 0.0
 
         return d2phi_daidbj
 
