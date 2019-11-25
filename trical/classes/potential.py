@@ -459,7 +459,7 @@ class PolynomialPotential(Potential):
             alpha (1-D, 2-D or 3-D array of float): Polynomial coefficients
         """
         self.alpha = np.array(alpha)
-        self.deg = alpha.shape - 1
+        self.deg = np.array(alpha.shape) - 1
 
         params = {"dim": len(alpha.shape)}
 
