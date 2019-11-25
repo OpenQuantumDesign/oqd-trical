@@ -84,10 +84,13 @@ class SimulatedSpinLattice(SpinLattice):
         pass
 
     def interaction_graph(self):
-        """SUMMARY
+        """
+        Function that calculates the simulated interaction graph
         
         Returns:
-            TYPE: DESCRIPTION
+            2-D array of float: Simulated interaction graph corresponding to the trapped ion
+            system, the Raman beatnote detunings and the Rabi frequencies passed to the
+            SimulatedSpinLattice
         """
         eta = np.einsum(
             "in,n->in", self.b, 2 * self.k * np.sqrt(cst.hbar / (2 * self.m * self.w))
