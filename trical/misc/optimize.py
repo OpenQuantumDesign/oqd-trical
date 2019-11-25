@@ -30,4 +30,15 @@ def dflt_opt(ti):
         return res.x
 
     return _dflt_opt
-        
+
+
+def dflt_ls_opt(deg):
+    shape = np.array(deg) + 1
+    alpha_guess = np.zeros(np.prod(shape))
+
+    def _dflt_ls_opt(f):
+        res = opt.least_squares(f, alpha_guess)
+        assert res.success
+        return res.x
+
+    return _dflt_ls_opt
