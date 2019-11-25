@@ -114,13 +114,16 @@ class TrappedIons(object):
         return self.w, self.b
 
     def principle_axis(self, tol=1e-3):
-        """SUMMARY
-        
-        Args:
-            tol (float, optional): DESCRIPTION
+        """
+        Function that calculates the principle axis of the system
         
         Returns:
-            TYPE: DESCRIPTION
+            2-D array of float: Principle axis
+            1-D array of float: Normal mode frequencies of the system in the principle axis
+            coordinate system
+            2-D array of float: Normal mode eigenvectors of the system in the principle axis
+            coordinate system
+
         """
         if np.isin(np.array(["w", "b"]), np.array(self.__dict__.keys())).sum() != 2:
             self.normal_modes()
