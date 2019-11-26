@@ -33,11 +33,9 @@ def dflt_opt(ti):
 
 
 def dflt_ls_opt(deg):
-    shape = np.array(deg) + 1
-
     def _dflt_ls_opt(a, b):
         res = opt.lsq_linear(a, b)
         assert res.success
-        return res.x.reshape(shape)
+        return res.x
 
     return _dflt_ls_opt

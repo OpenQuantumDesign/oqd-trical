@@ -11,4 +11,4 @@ def multivariate_polyfit(x, vals, deg, opt=dflt_ls_opt):
         *x.transpose(), deg
     )
     b = vals
-    return opt(deg)(a, b)
+    return opt(deg)(a, b).reshape(shape)
