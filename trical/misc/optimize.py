@@ -34,11 +34,10 @@ def dflt_opt(ti):
 
 def dflt_ls_opt(deg):
     shape = np.array(deg) + 1
-    alpha_guess = np.zeros(np.prod(shape))
 
-    def _dflt_ls_opt(f):
-        res = opt.least_squares(f, alpha_guess)
+    def _dflt_ls_opt(a, b):
+        res = opt.lsq_linear(a, b)
         assert res.success
-        return res.x
+        return res.x.reshape(shape)
 
     return _dflt_ls_opt
