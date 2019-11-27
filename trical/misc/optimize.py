@@ -13,8 +13,7 @@ def dflt_opt(ti):
         ti (TrappedIons): TrappedIons object of interest
     
     Returns:
-        func(func(1-D array of float) -> 1-D array float): Optimizer for a function f 
-        that returns the minimum value of f
+        func(func(1-D array of float) -> 1-D array float): Minimizer
     """
     if ti.dim == 1:
         x_guess = np.linspace(-(ti.N - 1) / 2, (ti.N - 1) / 2, ti.N)
@@ -33,6 +32,15 @@ def dflt_opt(ti):
 
 
 def dflt_ls_opt(deg):
+    """
+    Generator of default least square optimizer for multivariate_polyfit
+    
+    Args:
+        deg (1-D array of int): Degree of polynomial to fit
+    
+    Returns:
+        func(2-D array of float, 1-D array of float) -> 1-D array float): Least square optimizer
+    """
     def _dflt_ls_opt(a, b):
         res = opt.lsq_linear(a, b)
         assert res.success
