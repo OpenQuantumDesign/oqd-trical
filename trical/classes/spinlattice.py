@@ -95,7 +95,9 @@ class SimulatedSpinLattice(SpinLattice):
         eta = np.einsum(
             "in,n->in", self.b, 2 * self.k * np.sqrt(cst.hbar / (2 * self.m * self.w))
         )
+        self.eta = eta
         zeta = np.einsum("im,in->imn", self.Omega, eta)
+        self.zeta = zeta
         J = np.einsum(
             "ij,imn,jmn,n,mn->ij",
             1 - np.identity(self.N),
