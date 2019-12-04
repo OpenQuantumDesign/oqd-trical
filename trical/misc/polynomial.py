@@ -12,3 +12,7 @@ def multivariate_polyfit(x, vals, deg, opt=dflt_ls_opt):
     )
     b = vals
     return opt(deg)(a, b).reshape(shape)
+
+
+def polygrad(N, alpha):
+    pass
