@@ -1,3 +1,4 @@
+from ..classes import Empty
 import json
 
 
@@ -13,3 +14,12 @@ def load_data(filename):
     data_dict = json.load(f)
     f.close()
     return data_dict
+
+
+def save_object(object, filename):
+    save_data(object.__dict__, filename)
+    pass
+
+
+def load_object(filename):
+    return Empty(load_data(filename))
