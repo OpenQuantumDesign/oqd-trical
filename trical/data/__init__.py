@@ -1,1 +1,1 @@
-from .data import save_data, load_data, save_object, load_object
+from .data import save_dict, load_dict, save_object, load_object
