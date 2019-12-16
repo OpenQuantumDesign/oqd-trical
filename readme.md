@@ -4,7 +4,7 @@
 This is a package for simulating a chain of trapped ions. The aim of this package is to remove the need for rewriting the same code to calculate equilibrium spacing, normal modes, and $J_{ij}$ every time a trap is being designed.
 
 ## Class Structure
-![class structure](tutorial/class_structure.png)
+![class structure](class_structure.png)
 
 The basic form of the class structure is shown in the diagram. Typically in an ion trap there are three major terms in the potential; the DC part, the RF part and the coulomb part. In this code the user will input the DC and RF parts into the potential class. For the RF potential the pondermotive approximation will have to be taken before inputing the potential into the code. 
 
@@ -123,7 +123,7 @@ lscale = micro  # a length scaling may have to be applied for fitting to converg
 # specify the degree polynomial which has to be fitted along x, y, and z. In this case since we know the
 # function is harmonic we're fitting to 2nd degree
 deg = np.array([2, 2, 2])
-p = polynomial.multivariate_polyfit(R / lscale, vals, deg) / lscale ** np.indices(deg+1).sum(0)
+p = polynomial.multivariate_polyfit(R, vals, deg, l=lscale)
 potential_grid = PolynomialPotential(p)
 print(p)
 ```
@@ -160,7 +160,7 @@ print("Fitting Alpha from a Grid:   ", a3.equilibrium_position()[:, 2] / micro)
 
     Input Alpha values Directly: [-3.93817181 -1.24528026  1.24528     3.93817157]
     Symbolic Potential Function:  [-3.9381719  -1.24528033  1.24528004  3.93817162]
-    Fitting Alpha from a Grid:    [-3.93817163 -1.24528005  1.24528016  3.93817172]
+    Fitting Alpha from a Grid:    [-3.93817184 -1.24528027  1.24527998  3.93817154]
     
 
 ## SimulatedSpinLattice 
