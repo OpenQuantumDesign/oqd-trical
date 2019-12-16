@@ -1,6 +1,5 @@
 """
-Defines the Potential class and its subclasses representing potentials associated with
-a trapped ions system
+Defines the Potential class and its subclasses representing potentials associated with a trapped ions system
 """
 from .. import constants as cst
 from ..misc.linalg import norm
@@ -17,14 +16,8 @@ class Potential(object):
     Object representing a general potential
 
     Attributes:
-        d2phi (func(str,str) -> (func(1-D or 2-D array of float) -> float)): Function that
-        takes two strings representing the derivative variables and outputs the function
-        corresponding to the derivative of the potential with respect to the derivative
-        variables
-        dphi (func(str) -> (func(1-D or 2-D array of float) -> float)): Function that
-        takes a string representing the derivative variable and outputs the function
-        corresponding to the derivative of the potential with respect to the derivative
-        variable
+        d2phi (func(str,str) -> (func(1-D or 2-D array of float) -> float)): Function that takes two strings representing the derivative variables and outputs the function corresponding to the derivative of the potential with respect to the derivative variables
+        dphi (func(str) -> (func(1-D or 2-D array of float) -> float)): Function that takes a string representing the derivative variable and outputs the function corresponding to the derivative of the potential with respect to the derivative variable
         phi (func(1-D or 2-D array of float)): Function representing the potential
         params (dict): Other relevant parameters of the Potential object
     """
@@ -35,14 +28,8 @@ class Potential(object):
 
         Args:
             phi (func(1-D or 2-D array of float)): Function representing the potential
-            dphi (func(str,str) -> (func(1-D or 2-D array of float) -> float)):
-            Function that takes a string representing the derivative variable and outputs
-            the function corresponding to the derivative of the potential with respect to
-            the derivative variable
-            d2phi (func(str) -> (func(1-D or 2-D array of float) -> float)): Function that
-            takes two strings representing the derivative variables and outputs the function
-            corresponding to the derivative of the potential with respect to the
-            derivative variables
+            dphi (func(str,str) -> (func(1-D or 2-D array of float) -> float)): Function that takes a string representing the derivative variable and outputs the function corresponding to the derivative of the potential with respect to the derivative variable
+            d2phi (func(str) -> (func(1-D or 2-D array of float) -> float)): Function that takes two strings representing the derivative variables and outputs the function corresponding to the derivative of the potential with respect to the derivative variables
 
         Kwargs:
             dim (int, optional): Dimension of the system
@@ -171,8 +158,7 @@ class Potential(object):
             var (str): Derivative variable
 
         Returns:
-            func(1-D or 2-D array of float) -> float: Function corresponding to the
-            first derivative of the potential with respect to the derivative variable
+            func(1-D or 2-D array of float) -> float: Function corresponding to the first derivative of the potential with respect to the derivative variable
         """
         return self.dphi(var)
 
@@ -185,8 +171,7 @@ class Potential(object):
             var2 (str): second derivative variable
 
         Returns:
-            func(1-D or 2-D array of float) -> float: Function corresponding to the
-            second derivative of the potential with respect to the derivative variables
+            func(1-D or 2-D array of float) -> float: Function corresponding to the second derivative of the potential with respect to the derivative variables
         """
         return self.d2phi(var1, var2)
 
@@ -195,8 +180,7 @@ class Potential(object):
         Calculates the gradient of the potential
 
         Returns:
-            func(1-D or 2-D array of float) -> 1-D array of float: Function corresponding
-            to the gradient of the potential
+            func(1-D or 2-D array of float) -> 1-D array of float: Function corresponding to the gradient of the potential
         """
 
         def grad_phi(x):
@@ -207,8 +191,7 @@ class Potential(object):
                 x (1-D or 2-D array of float): Position of the ions
 
             Returns:
-                1-D array of float: Value of the gradient of the potential given the
-                position of the ions
+                1-D array of float: Value of the gradient of the potential given the position of the ions
             """
             grad_phi_x = np.empty(self.N * self.dim)
 
@@ -227,8 +210,7 @@ class Potential(object):
         Calculates the Hessian of the potential
 
         Returns:
-            func(1-D or 2-D array of float) -> 2-D array of float: Function corresponding
-            to the Hessian of the potential
+            func(1-D or 2-D array of float) -> 2-D array of float: Function corresponding to the Hessian of the potential
         """
 
         def hess_phi(x):
@@ -239,8 +221,7 @@ class Potential(object):
                 x (1-D or 2-D array of float): Position of the ions
 
             Returns:
-                1-D array of float: Value of the Hessian of the potential given the
-                position of the ions
+                1-D array of float: Value of the Hessian of the potential given the position of the ions
             """
             hess_phi_x = np.empty((self.N * self.dim, self.N * self.dim))
 
@@ -329,9 +310,7 @@ class CoulombPotential(Potential):
             var (str): Derivative variable
 
         Returns:
-            func(1-D or 2-D array of float) -> float: Function corresponding to the
-            first derivative of the Coulomb potential with respect to the derivative
-            variable
+            func(1-D or 2-D array of float) -> float: Function corresponding to the first derivative of the Coulomb potential with respect to the derivative variable
         """
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if type(var) == str else var[1:][0]) - 1
@@ -345,8 +324,7 @@ class CoulombPotential(Potential):
                 x (1-D or 2-D array of float): Position of the ions
 
             Returns:
-                float: Value of a first derivative of the Coulomb potential given the
-                position of the ions
+                float: Value of a first derivative of the Coulomb potential given the position of the ions
             """
             xia = x[i, a]
             xja = x[j, a]
@@ -357,17 +335,14 @@ class CoulombPotential(Potential):
 
     def second_derivative(self, var1, var2):
         """
-        Calculates the second derivative of the Coulomb potential with respect to two
-        variables
+        Calculates the second derivative of the Coulomb potential with respect to two variables
 
         Args:
             var1 (str): first derivative variable
             var2 (str): second derivative variable
 
         Returns:
-            func(1-D or 2-D array of float) -> float: Function corresponding to the
-            second derivative of the Coulomb potential with respect to the derivative
-            variables
+            func(1-D or 2-D array of float) -> float: Function corresponding to the second derivative of the Coulomb potential with respect to the derivative variables
         """
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
@@ -382,8 +357,7 @@ class CoulombPotential(Potential):
                 x (1-D or 2-D array of float): Position of the ions
 
             Returns:
-                float: Value of a second derivative of the Coulomb potential given the
-                position of the ions
+                float: Value of a second derivative of the Coulomb potential given the position of the ions
             """
             if i == j:
                 k = np.delete(np.arange(self.N, dtype=int), i)
@@ -490,9 +464,7 @@ class PolynomialPotential(Potential):
             var (str): Derivative variable
 
         Returns:
-            func(1-D or 2-D array of float) -> float: Function corresponding to the
-            first derivative of the polynomial potential with respect to the derivative
-            variable
+            func(1-D or 2-D array of float) -> float: Function corresponding to the first derivative of the polynomial potential with respect to the derivative variable
         """
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if type(var) == str else var[1:][0]) - 1
@@ -515,9 +487,7 @@ class PolynomialPotential(Potential):
             var2 (str): second derivative variable
 
         Returns:
-            func(1-D or 2-D array of float) -> float: Function corresponding to the
-            second derivative of the polynomial potential with respect to the derivative
-            variables
+            func(1-D or 2-D array of float) -> float: Function corresponding to the second derivative of the polynomial potential with respect to the derivative variables
         """
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
@@ -606,16 +576,13 @@ class SymbolicPotential(Potential):
 
     def first_derivative(self, var):
         """
-        Calculates the first derivative of the symbolically defined potential with respect to a
-        variable
+        Calculates the first derivative of the symbolically defined potential with respect to a variable
 
         Args:
             var (str): Derivative variable
 
         Returns:
-            func(1-D or 2-D array of float) -> float: Function corresponding to the
-            first derivative of the symbolically defined potential with respect to the derivative
-            variable
+            func(1-D or 2-D array of float) -> float: Function corresponding to the first derivative of the symbolically defined potential with respect to the derivative variable
         """
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if type(var) == str else var[1:][0]) - 1
@@ -628,17 +595,14 @@ class SymbolicPotential(Potential):
 
     def second_derivative(self, var1, var2):
         """
-        Calculates the second derivative of the symbolically defined potential with respect to two
-        variables
+        Calculates the second derivative of the symbolically defined potential with respect to two variables
 
         Args:
             var1 (str): first derivative variable
             var2 (str): second derivative variable
 
         Returns:
-            func(1-D or 2-D array of float) -> float: Function corresponding to the
-            second derivative of the symbolically defined potential with respect to the derivative
-            variables
+            func(1-D or 2-D array of float) -> float: Function corresponding to the second derivative of the symbolically defined potential with respect to the derivative variables
         """
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]

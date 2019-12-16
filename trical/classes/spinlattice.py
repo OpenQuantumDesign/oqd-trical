@@ -1,6 +1,5 @@
 """
-Defines the SpinLattice class and its subclasses representing a spin lattice system or a
-simulation of a spin lattice system
+Defines the SpinLattice class and its subclasses representing a spin lattice system or a simulation of a spin lattice system
 """
 from .. import constants as cst
 import numpy as np
@@ -88,9 +87,7 @@ class SimulatedSpinLattice(SpinLattice):
         Function that calculates the simulated interaction graph
         
         Returns:
-            2-D array of float: Simulated interaction graph corresponding to the trapped ion
-            system, the Raman beatnote detunings and the Rabi frequencies passed to the
-            SimulatedSpinLattice
+            2-D array of float: Simulated interaction graph corresponding to the trapped ion system, the Raman beatnote detunings and the Rabi frequencies passed to the SimulatedSpinLattice
         """
         eta = np.einsum(
             "in,n->in", self.b, 2 * self.k * np.sqrt(cst.hbar / (2 * self.m * self.w))

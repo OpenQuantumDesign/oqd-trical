@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.2" />
-<title>trical.misc.optimize API documentation</title>
-<meta name="description" content="Relevant optimization functions for TrICal" />
+<title>trical.classes.empty API documentation</title>
+<meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,154 +17,36 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>trical.misc.optimize</code></h1>
+<h1 class="title">Module <code>trical.classes.empty</code></h1>
 </header>
 <section id="section-intro">
-<p>Relevant optimization functions for TrICal</p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-Relevant optimization functions for TrICal
-&#34;&#34;&#34;
-import numpy as np
-from scipy import optimize as opt
-
-
-def dflt_opt(ti):
-    &#34;&#34;&#34;
-    Generator of default optimizer for equilibrium_position method of TrappedIons
-    
-    Args:
-        ti (TrappedIons): TrappedIons object of interest
-    
-    Returns:
-        func(func(1-D array of float) -&gt; 1-D array float): Minimizer
-    &#34;&#34;&#34;
-    if ti.dim == 1:
-        x_guess = np.linspace(-(ti.N - 1) / 2, (ti.N - 1) / 2, ti.N)
-    else:
-        x_guess = np.append(
-            np.concatenate([np.zeros(ti.N)] * (ti.dim - 1)),
-            np.linspace(-(ti.N - 1) / 2, (ti.N - 1) / 2, ti.N),
-        )
-
-    def _dflt_opt(f):
-        res = opt.minimize(f, x_guess, method=&#34;SLSQP&#34;)
-        assert res.success
-        return res.x
-
-    return _dflt_opt
-
-
-def dflt_ls_opt(deg):
-    &#34;&#34;&#34;
-    Generator of default least square optimizer for multivariate_polyfit
-    
-    Args:
-        deg (1-D array of int): Degree of polynomial to fit
-    
-    Returns:
-        func(2-D array of float, 1-D array of float) -&gt; 1-D array float): Least square optimizer
-    &#34;&#34;&#34;
-    def _dflt_ls_opt(a, b):
-        res = opt.lsq_linear(a, b)
-        assert res.success
-        return res.x
-
-    return _dflt_ls_opt</code></pre>
-</details>
 </section>
 <section>
 </section>
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="trical.misc.optimize.dflt_ls_opt"><code class="name flex">
-<span>def <span class="ident">dflt_ls_opt</span></span>(<span>deg)</span>
+<dt id="trical.classes.empty.Empty"><code class="flex name class">
+<span>class <span class="ident">Empty</span></span>
+<span>(</span><span>**kwargs)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Generator of default least square optimizer for multivariate_polyfit</p>
-<h2 id="args">Args</h2>
-<p>deg (1-D array of int): Degree of polynomial to fit</p>
-<h2 id="returns">Returns</h2>
+<section class="desc"></section>
+<h3>Methods</h3>
 <dl>
-<dt><code>func</code>(<code>2</code>-<code>D</code> <code>array</code> of <code>float</code>, <code>1</code>-<code>D</code> <code>array</code> of <code>float</code>) -&gt; <code>1</code>-<code>D</code> <code>array</code> <code>float</code>): <code>Least</code> <code>square</code> <code>optimizer</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def dflt_ls_opt(deg):
-    &#34;&#34;&#34;
-    Generator of default least square optimizer for multivariate_polyfit
-    
-    Args:
-        deg (1-D array of int): Degree of polynomial to fit
-    
-    Returns:
-        func(2-D array of float, 1-D array of float) -&gt; 1-D array float): Least square optimizer
-    &#34;&#34;&#34;
-    def _dflt_ls_opt(a, b):
-        res = opt.lsq_linear(a, b)
-        assert res.success
-        return res.x
-
-    return _dflt_ls_opt</code></pre>
-</details>
-</dd>
-<dt id="trical.misc.optimize.dflt_opt"><code class="name flex">
-<span>def <span class="ident">dflt_opt</span></span>(<span>ti)</span>
+<dt id="trical.classes.empty.Empty.update"><code class="name flex">
+<span>def <span class="ident">update</span></span>(<span>self, **kwargs)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Generator of default optimizer for equilibrium_position method of TrappedIons</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>ti</code></strong> :&ensp;<code>TrappedIons</code></dt>
-<dd>TrappedIons object of interest</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>func</code>(<code>func</code>(<code>1</code>-<code>D</code> <code>array</code> of <code>float</code>) -&gt; <code>1</code>-<code>D</code> <code>array</code> <code>float</code>): <code>Minimizer</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def dflt_opt(ti):
-    &#34;&#34;&#34;
-    Generator of default optimizer for equilibrium_position method of TrappedIons
-    
-    Args:
-        ti (TrappedIons): TrappedIons object of interest
-    
-    Returns:
-        func(func(1-D array of float) -&gt; 1-D array float): Minimizer
-    &#34;&#34;&#34;
-    if ti.dim == 1:
-        x_guess = np.linspace(-(ti.N - 1) / 2, (ti.N - 1) / 2, ti.N)
-    else:
-        x_guess = np.append(
-            np.concatenate([np.zeros(ti.N)] * (ti.dim - 1)),
-            np.linspace(-(ti.N - 1) / 2, (ti.N - 1) / 2, ti.N),
-        )
-
-    def _dflt_opt(f):
-        res = opt.minimize(f, x_guess, method=&#34;SLSQP&#34;)
-        assert res.success
-        return res.x
-
-    return _dflt_opt</code></pre>
-</details>
+<section class="desc"></section>
 </dd>
 </dl>
-</section>
-<section>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -175,13 +57,17 @@ def dflt_ls_opt(deg):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="trical.misc" href="index.html">trical.misc</a></code></li>
+<li><code><a title="trical.classes" href="index.html">trical.classes</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="trical.classes.empty.Empty" href="#trical.classes.empty.Empty">Empty</a></code></h4>
 <ul class="">
-<li><code><a title="trical.misc.optimize.dflt_ls_opt" href="#trical.misc.optimize.dflt_ls_opt">dflt_ls_opt</a></code></li>
-<li><code><a title="trical.misc.optimize.dflt_opt" href="#trical.misc.optimize.dflt_opt">dflt_opt</a></code></li>
+<li><code><a title="trical.classes.empty.Empty.update" href="#trical.classes.empty.Empty.update">update</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -65,9 +65,7 @@ class TrappedIons(object):
         Function that calculates the equilibrium position of the ions
         
         Args:
-            opt (func(TrappedIons) -> (func(func(1-D array of float) -> 1-D array of float)):
-            Generator of an optimization function that minimizes the
-            potential of the system with respect to the position of the ions
+            opt (func(TrappedIons) -> (func(func(1-D array of float) -> 1-D array of float)): Generator of an optimization function that minimizes the potential of the system with respect to the position of the ions
         
         Returns:
             1D or 2-D array of float: Equilibrium position of the ions
@@ -119,10 +117,8 @@ class TrappedIons(object):
         
         Returns:
             2-D array of float: Principle axis
-            1-D array of float: Normal mode frequencies of the system in the principle axis
-            coordinate system
-            2-D array of float: Normal mode eigenvectors of the system in the principle axis
-            coordinate system
+            1-D array of float: Normal mode frequencies of the system in the principle axis coordinate system
+            2-D array of float: Normal mode eigenvectors of the system in the principle axis coordinate system
 
         """
         if np.isin(np.array(["w", "b"]), np.array(self.__dict__.keys())).sum() != 2:
