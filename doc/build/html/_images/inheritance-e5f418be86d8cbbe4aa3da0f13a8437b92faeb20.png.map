@@ -1,0 +1,6 @@
+<map id="inheritanced9a8bce8bb" name="inheritanced9a8bce8bb">
+<area shape="rect" id="node1" href="#trical.classes.potential.CoulombPotential" target="_top" title="trical.classes.potential.CoulombPotential" alt="" coords="283,5,565,31"/>
+<area shape="rect" id="node2" href="#trical.classes.potential.Potential" target="_top" title="[summary]" alt="" coords="5,55,229,80"/>
+<area shape="rect" id="node3" href="#trical.classes.potential.PolynomialPotential" target="_top" title="trical.classes.potential.PolynomialPotential" alt="" coords="277,55,571,80"/>
+<area shape="rect" id="node4" href="#trical.classes.potential.SymbolicPotential" target="_top" title="trical.classes.potential.SymbolicPotential" alt="" coords="283,104,565,129"/>
+</map>
