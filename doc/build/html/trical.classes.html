@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>trical.classes package &#8212; TrICal: Trapped Ion Calculator  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="trical.data package" href="trical.data.html" />
+    <link rel="prev" title="trical package" href="trical.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="trical.data.html" title="trical.data package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="trical.html" title="trical package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">TrICal: Trapped Ion Calculator  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="trical.html" accesskey="U">trical package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="trical-classes-package">
+<h1>trical.classes package<a class="headerlink" href="#trical-classes-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-trical.classes.empty">
+<span id="trical-classes-empty-module"></span><h2>trical.classes.empty module<a class="headerlink" href="#module-trical.classes.empty" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="trical.classes.empty.Empty">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.empty.</code><code class="sig-name descname">Empty</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.empty.Empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="trical.classes.empty.Empty.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.empty.Empty.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-trical.classes.potential">
+<span id="trical-classes-potential-module"></span><h2>trical.classes.potential module<a class="headerlink" href="#module-trical.classes.potential" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="trical.classes.potential.CoulombPotential">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">CoulombPotential</code><span class="sig-paren">(</span><em class="sig-param">N</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.CoulombPotential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.Potential" title="trical.classes.potential.Potential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.Potential</span></code></a></p>
+<dl class="method">
+<dt id="trical.classes.potential.CoulombPotential.first_derivative">
+<code class="sig-name descname">first_derivative</code><span class="sig-paren">(</span><em class="sig-param">var</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.CoulombPotential.first_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>var</strong> (<em>str</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>func</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.CoulombPotential.nondimensionalize">
+<code class="sig-name descname">nondimensionalize</code><span class="sig-paren">(</span><em class="sig-param">l</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.CoulombPotential.nondimensionalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>l</strong> (<em>float</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#trical.classes.potential.Potential" title="trical.classes.potential.Potential">Potential</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.CoulombPotential.second_derivative">
+<code class="sig-name descname">second_derivative</code><span class="sig-paren">(</span><em class="sig-param">var1</em>, <em class="sig-param">var2</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.CoulombPotential.second_derivative" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="trical.classes.potential.PolynomialPotential">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">PolynomialPotential</code><span class="sig-paren">(</span><em class="sig-param">alpha</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.PolynomialPotential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.Potential" title="trical.classes.potential.Potential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.Potential</span></code></a></p>
+<dl class="method">
+<dt id="trical.classes.potential.PolynomialPotential.first_derivative">
+<code class="sig-name descname">first_derivative</code><span class="sig-paren">(</span><em class="sig-param">var</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.PolynomialPotential.first_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>var</strong> (<em>str</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>func</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.PolynomialPotential.nondimensionalize">
+<code class="sig-name descname">nondimensionalize</code><span class="sig-paren">(</span><em class="sig-param">l</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.PolynomialPotential.nondimensionalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>l</strong> (<em>float</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#trical.classes.potential.Potential" title="trical.classes.potential.Potential">Potential</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.PolynomialPotential.second_derivative">
+<code class="sig-name descname">second_derivative</code><span class="sig-paren">(</span><em class="sig-param">var1</em>, <em class="sig-param">var2</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.PolynomialPotential.second_derivative" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="trical.classes.potential.Potential">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">Potential</code><span class="sig-paren">(</span><em class="sig-param">phi</em>, <em class="sig-param">dphi</em>, <em class="sig-param">d2phi</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.Potential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>[summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phi</strong> (<em>func</em>) – [description]</p></li>
+<li><p><strong>dphi</strong> (<em>func</em>) – [description]</p></li>
+<li><p><strong>d2phi</strong> (<em>func</em>) – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>dim</strong> (int) – [description]</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="trical.classes.potential.Potential.first_derivative">
+<code class="sig-name descname">first_derivative</code><span class="sig-paren">(</span><em class="sig-param">var</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.Potential.first_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>var</strong> (<em>str</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>func</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.Potential.gradient">
+<code class="sig-name descname">gradient</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.Potential.gradient" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.Potential.hessian">
+<code class="sig-name descname">hessian</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.Potential.hessian" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.Potential.second_derivative">
+<code class="sig-name descname">second_derivative</code><span class="sig-paren">(</span><em class="sig-param">var1</em>, <em class="sig-param">var2</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.Potential.second_derivative" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.Potential.update_params">
+<code class="sig-name descname">update_params</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.Potential.update_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="trical.classes.potential.SymbolicPotential">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">SymbolicPotential</code><span class="sig-paren">(</span><em class="sig-param">expr</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.SymbolicPotential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.Potential" title="trical.classes.potential.Potential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.Potential</span></code></a></p>
+<dl class="method">
+<dt id="trical.classes.potential.SymbolicPotential.first_derivative">
+<code class="sig-name descname">first_derivative</code><span class="sig-paren">(</span><em class="sig-param">var</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.SymbolicPotential.first_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>var</strong> (<em>str</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>func</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.SymbolicPotential.nondimensionalize">
+<code class="sig-name descname">nondimensionalize</code><span class="sig-paren">(</span><em class="sig-param">l</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.SymbolicPotential.nondimensionalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>l</strong> (<em>float</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#trical.classes.potential.Potential" title="trical.classes.potential.Potential">Potential</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.SymbolicPotential.second_derivative">
+<code class="sig-name descname">second_derivative</code><span class="sig-paren">(</span><em class="sig-param">var1</em>, <em class="sig-param">var2</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.potential.SymbolicPotential.second_derivative" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-trical.classes.spinlattice">
+<span id="trical-classes-spinlattice-module"></span><h2>trical.classes.spinlattice module<a class="headerlink" href="#module-trical.classes.spinlattice" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="trical.classes.spinlattice.SimulatedSpinLattice">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.spinlattice.</code><code class="sig-name descname">SimulatedSpinLattice</code><span class="sig-paren">(</span><em class="sig-param">ti</em>, <em class="sig-param">mu</em>, <em class="sig-param">Omega</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.spinlattice.SimulatedSpinLattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#trical.classes.spinlattice.SpinLattice" title="trical.classes.spinlattice.SpinLattice"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.spinlattice.SpinLattice</span></code></a></p>
+<dl class="method">
+<dt id="trical.classes.spinlattice.SimulatedSpinLattice.interaction_graph">
+<code class="sig-name descname">interaction_graph</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.spinlattice.SimulatedSpinLattice.interaction_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.spinlattice.SimulatedSpinLattice.plot_rabi_frequencies">
+<code class="sig-name descname">plot_rabi_frequencies</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.spinlattice.SimulatedSpinLattice.plot_rabi_frequencies" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.spinlattice.SimulatedSpinLattice.plot_raman_beatnote_detunings">
+<code class="sig-name descname">plot_raman_beatnote_detunings</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.spinlattice.SimulatedSpinLattice.plot_raman_beatnote_detunings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="trical.classes.spinlattice.SpinLattice">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.spinlattice.</code><code class="sig-name descname">SpinLattice</code><span class="sig-paren">(</span><em class="sig-param">J</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.spinlattice.SpinLattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="trical.classes.spinlattice.SpinLattice.plot_interaction_graph">
+<code class="sig-name descname">plot_interaction_graph</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.spinlattice.SpinLattice.plot_interaction_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-trical.classes.trappedions">
+<span id="trical-classes-trappedions-module"></span><h2>trical.classes.trappedions module<a class="headerlink" href="#module-trical.classes.trappedions" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="trical.classes.trappedions.TrappedIons">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.trappedions.</code><code class="sig-name descname">TrappedIons</code><span class="sig-paren">(</span><em class="sig-param">N</em>, <em class="sig-param">*ps</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.trappedions.TrappedIons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="trical.classes.trappedions.TrappedIons.equilibrium_position">
+<code class="sig-name descname">equilibrium_position</code><span class="sig-paren">(</span><em class="sig-param">opt=&lt;function dflt_opt&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.trappedions.TrappedIons.equilibrium_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.trappedions.TrappedIons.normal_modes">
+<code class="sig-name descname">normal_modes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.trappedions.TrappedIons.normal_modes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.trappedions.TrappedIons.plot_equilibrium_position">
+<code class="sig-name descname">plot_equilibrium_position</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.trappedions.TrappedIons.plot_equilibrium_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.trappedions.TrappedIons.plot_normal_modes">
+<code class="sig-name descname">plot_normal_modes</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.trappedions.TrappedIons.plot_normal_modes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.trappedions.TrappedIons.plot_principle_axis">
+<code class="sig-name descname">plot_principle_axis</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.trappedions.TrappedIons.plot_principle_axis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.trappedions.TrappedIons.principle_axis">
+<code class="sig-name descname">principle_axis</code><span class="sig-paren">(</span><em class="sig-param">tol=0.001</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.trappedions.TrappedIons.principle_axis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.trappedions.TrappedIons.update_params">
+<code class="sig-name descname">update_params</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#trical.classes.trappedions.TrappedIons.update_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">trical.classes package</a><ul>
+<li><a class="reference internal" href="#module-trical.classes.empty">trical.classes.empty module</a></li>
+<li><a class="reference internal" href="#module-trical.classes.potential">trical.classes.potential module</a></li>
+<li><a class="reference internal" href="#module-trical.classes.spinlattice">trical.classes.spinlattice module</a></li>
+<li><a class="reference internal" href="#module-trical.classes.trappedions">trical.classes.trappedions module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="trical.html"
+                        title="previous chapter">trical package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="trical.data.html"
+                        title="next chapter">trical.data package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/trical.classes.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="trical.data.html" title="trical.data package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="trical.html" title="trical package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">TrICal: Trapped Ion Calculator  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="trical.html" >trical package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, QITI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.0.
+    </div>
+  </body>
+</html>

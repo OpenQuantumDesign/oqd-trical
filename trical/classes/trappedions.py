@@ -1,7 +1,4 @@
-"""
-Defines the TrappedIons class representing a trapped ions system
-"""
-from .. import constants as cst
+from ..misc import constants as cst
 from ..misc.linalg import norm, orthonormal_subset
 from ..misc.optimize import dflt_opt
 from .potential import CoulombPotential
@@ -10,38 +7,7 @@ import numpy as np
 
 
 class TrappedIons(object):
-
-    """
-    Object representing a system of trapped ions
-    
-    Attributes:
-        b (2-D array of float): Normal mode eigenvectors of the system
-        cp (CoulombPotential): Coulomb potential associated with the system
-        dim (int): Dimension of the system
-        fp (Potential): Total potential of the system
-        l (float): Length scale of the system
-        m (float): Mass of an ion
-        N (int): Number of ions
-        ps (array of Potential): Non-Coulomb potentials associated with the system
-        q (float): Charge of an ion
-        x_ep (1D or 2-D array of float): Equilibrium position of the ions
-        w (1-D array of float): Normal mode frequencies of the system
-    """
-
     def __init__(self, N, *ps, **kwargs):
-        """
-        Initialization function for a TrappedIons object
-        
-        Args:
-            N (int): Number of Ions
-            ps (array of Potential): Non-Coulomb potentials associated with the system
-        
-        Kwargs:
-            dim (int, optional): Dimension of the system
-            l (float, optional): Length scale of the system
-            m (float, optional): Mass of an ion
-            q (float, optional): Charge of an ion
-        """
         super(TrappedIons, self).__init__()
 
         params = {
@@ -61,15 +27,6 @@ class TrappedIons(object):
         pass
 
     def equilibrium_position(self, opt=dflt_opt):
-        """
-        Function that calculates the equilibrium position of the ions
-        
-        Args:
-            opt (func(TrappedIons) -> (func(func(1-D array of float) -> 1-D array of float)): Generator of an optimization function that minimizes the potential of the system with respect to the position of the ions
-        
-        Returns:
-            1D or 2-D array of float: Equilibrium position of the ions
-        """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
         ndfp = ndcp + ndps.sum()
@@ -80,14 +37,6 @@ class TrappedIons(object):
         return self.x_ep
 
     def normal_modes(self):
-        """
-        Function that calculates the normal modes of the system
-        
-        Returns:
-            1-D array of float: Normal mode frequencies of the system
-            2-D array of float: Normal mode eigenvectors of the system
-
-        """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
         ndfp = ndcp + ndps.sum()
@@ -112,15 +61,6 @@ class TrappedIons(object):
         return self.w, self.b
 
     def principle_axis(self, tol=1e-3):
-        """
-        Function that calculates the principle axis of the system
-        
-        Returns:
-            2-D array of float: Principle axis
-            1-D array of float: Normal mode frequencies of the system in the principle axis coordinate system
-            2-D array of float: Normal mode eigenvectors of the system in the principle axis coordinate system
-
-        """
         if np.isin(np.array(["w", "b"]), np.array(self.__dict__.keys())).sum() != 2:
             self.normal_modes()
 
@@ -162,42 +102,17 @@ class TrappedIons(object):
         return self.x_pa, self.w_pa, self.b_pa
 
     def update_params(self, **kwargs):
-        """
-        Updates parameters of TrappedIons object
-         
-        Kwargs:
-            dim (int, optional): Dimension of the system
-            l (float, optional): Length scale of the system
-            m (float, optional): Mass of an ion
-            q (float, optional): Charge of an ion
-        
-        """
         self.params.update(kwargs)
         self.__dict__.update(self.params)
         pass
 
     def plot_equilibrium_position(self, **kwargs):
-        """SUMMARY
-        
-        Args:
-            **kwargs: DESCRIPTION
-        """
         pass
 
     def plot_normal_modes(self, **kwargs):
-        """SUMMARY
-        
-        Args:
-            **kwargs: DESCRIPTION
-        """
         pass
 
     def plot_principle_axis(self, **kwargs):
-        """SUMMARY
-        
-        Args:
-            **kwargs: DESCRIPTION
-        """
         pass
 
     pass
