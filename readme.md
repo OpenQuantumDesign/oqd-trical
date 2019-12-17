@@ -8,7 +8,7 @@ git clone https://github.com/QITI/TrICal
 ```
 
 ## Documentation
-Run the following commands in root to open the documentation,
+Run the following commands in the root of the repository to open the documentation,
 ```
 cd docs
 python open.py
