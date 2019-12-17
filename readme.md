@@ -1,5 +1,5 @@
-# TrICal: Trapped Ion Calculator
-A python package for simulating trapped ion systems.
+# Trapped Ions Calculator (TrICal)
+A python package for simulating systems of trapped ions.
 
 ## Installation
 Clone the repository using the following command,
