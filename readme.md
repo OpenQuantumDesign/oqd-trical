@@ -13,5 +13,3 @@ Run the following commands in root to open the documentation,
 cd docs
 python open.py
 ```
-
-## Tutorial
