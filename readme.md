@@ -4,7 +4,7 @@ A python package for simulating systems of trapped ions.
 ## Installation
 Clone the repository using the following command,
 ```
-git clone https://github.com/QITI/TrICal
+git clone https://github.com/QITI/TrICal.git
 ```
 
 ## Documentation

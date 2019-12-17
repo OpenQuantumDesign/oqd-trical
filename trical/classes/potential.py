@@ -8,19 +8,6 @@ import sympy
 
 
 class Potential(object):
-    """[summary]
-    
-    :param phi: [description]
-    :type phi: func
-    :param dphi: [description]
-    :type dphi: func
-    :param d2phi: [description]
-    :type d2phi: func
-
-    :Keyword Arguments:
-        * **dim** (int) -- [description]
-    """
-
     def __init__(self, phi, dphi, d2phi, **kwargs):
         super(Potential, self).__init__()
 
@@ -81,13 +68,6 @@ class Potential(object):
         return self.phi(x)
 
     def first_derivative(self, var):
-        """[summary]
-
-        :param var: [description]
-        :type var: str
-        :returns: [description]
-        :rtype: func
-        """
         return self.dphi(var)
 
     def second_derivative(self, var1, var2):
@@ -214,13 +194,6 @@ class CoulombPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        """[summary]
-        
-        :param l: [description]
-        :type l: float
-        :returns: [description]
-        :rtype: Potential
-        """
         return self / (cst.k * cst.e ** 2)
 
     pass
@@ -276,13 +249,6 @@ class PolynomialPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        """[summary]
-        
-        :param l: [description]
-        :type l: float
-        :returns: [description]
-        :rtype: Potential
-        """
         alpha = (
             l ** np.indices(self.alpha.shape).sum(0)
             * self.alpha
@@ -339,13 +305,6 @@ class SymbolicPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        """[summary]
-        
-        :param l: [description]
-        :type l: float
-        :returns: [description]
-        :rtype: Potential
-        """
         expr = self.expr.subs({k: k * l for k in self.symbol}) * (
             l / (cst.k * cst.e ** 2)
         )

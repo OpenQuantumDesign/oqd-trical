@@ -4,8 +4,14 @@
    contain the root `toctree` directive.
 
 Welcome to TrICal's documentation!
-==========================================================
-Trapped Ions Calculator (TrICal) is a python package for simulating trapped ion systems.
+==================================
+Trapped Ions Calculator (TrICal) is a python package for systems of trapped ions.
+
+Installation
+============
+Clone the `TrICal github repository <https://github.com/QITI/TrICal.git>`_ using the following command,::
+
+    git clone https://github.com/QITI/TrICal.git
 
 Contents
 ========

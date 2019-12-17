@@ -15,7 +15,7 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.join(__file__, "../../..")))
 
-import sphinx_rtd_theme
+import sphinx_math_dollar, sphinx_rtd_theme
 
 
 # -- Project information -----------------------------------------------------
@@ -32,7 +32,9 @@ author = "QITI"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
+    "sphinx_math_dollar",
     "sphinx_rtd_theme",
 ]
 

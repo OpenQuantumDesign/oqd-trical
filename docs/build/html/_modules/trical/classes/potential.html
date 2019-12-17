@@ -153,19 +153,6 @@
 
 
 <div class="viewcode-block" id="Potential"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.Potential">[docs]</a><span class="k">class</span> <span class="nc">Potential</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;[summary]</span>
-<span class="sd">    </span>
-<span class="sd">    :param phi: [description]</span>
-<span class="sd">    :type phi: func</span>
-<span class="sd">    :param dphi: [description]</span>
-<span class="sd">    :type dphi: func</span>
-<span class="sd">    :param d2phi: [description]</span>
-<span class="sd">    :type d2phi: func</span>
-
-<span class="sd">    :Keyword Arguments:</span>
-<span class="sd">        * **dim** (int) -- [description]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">dphi</span><span class="p">,</span> <span class="n">d2phi</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Potential</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -226,13 +213,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Potential.first_derivative"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.Potential.first_derivative">[docs]</a>    <span class="k">def</span> <span class="nf">first_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[summary]</span>
-
-<span class="sd">        :param var: [description]</span>
-<span class="sd">        :type var: str</span>
-<span class="sd">        :returns: [description]</span>
-<span class="sd">        :rtype: func</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dphi</span><span class="p">(</span><span class="n">var</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Potential.second_derivative"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.Potential.second_derivative">[docs]</a>    <span class="k">def</span> <span class="nf">second_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">):</span>
@@ -359,13 +339,6 @@
         <span class="k">return</span> <span class="n">d2phi_daidbj</span></div>
 
 <div class="viewcode-block" id="CoulombPotential.nondimensionalize"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.CoulombPotential.nondimensionalize">[docs]</a>    <span class="k">def</span> <span class="nf">nondimensionalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[summary]</span>
-<span class="sd">        </span>
-<span class="sd">        :param l: [description]</span>
-<span class="sd">        :type l: float</span>
-<span class="sd">        :returns: [description]</span>
-<span class="sd">        :rtype: Potential</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span> <span class="o">/</span> <span class="p">(</span><span class="n">cst</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">cst</span><span class="o">.</span><span class="n">e</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
 
     <span class="k">pass</span></div>
@@ -421,13 +394,6 @@
         <span class="k">return</span> <span class="n">d2phi_daidbj</span></div>
 
 <div class="viewcode-block" id="PolynomialPotential.nondimensionalize"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.PolynomialPotential.nondimensionalize">[docs]</a>    <span class="k">def</span> <span class="nf">nondimensionalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[summary]</span>
-<span class="sd">        </span>
-<span class="sd">        :param l: [description]</span>
-<span class="sd">        :type l: float</span>
-<span class="sd">        :returns: [description]</span>
-<span class="sd">        :rtype: Potential</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">l</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
@@ -484,13 +450,6 @@
         <span class="k">return</span> <span class="n">d2phi_daidbj</span></div>
 
 <div class="viewcode-block" id="SymbolicPotential.nondimensionalize"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.SymbolicPotential.nondimensionalize">[docs]</a>    <span class="k">def</span> <span class="nf">nondimensionalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[summary]</span>
-<span class="sd">        </span>
-<span class="sd">        :param l: [description]</span>
-<span class="sd">        :type l: float</span>
-<span class="sd">        :returns: [description]</span>
-<span class="sd">        :rtype: Potential</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">k</span> <span class="o">*</span> <span class="n">l</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span><span class="p">})</span> <span class="o">*</span> <span class="p">(</span>
             <span class="n">l</span> <span class="o">/</span> <span class="p">(</span><span class="n">cst</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">cst</span><span class="o">.</span><span class="n">e</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
         <span class="p">)</span>
