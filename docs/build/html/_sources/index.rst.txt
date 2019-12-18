@@ -9,7 +9,8 @@ Trapped Ions Calculator (TrICal) is a python package for systems of trapped ions
 
 Installation
 ============
-Clone the `TrICal github repository <https://github.com/QITI/TrICal.git>`_ using the following command,::
+Clone the `TrICal github repository <https://github.com/QITI/TrICal.git>`_ using the following command,
+::
 
     git clone https://github.com/QITI/TrICal.git
 
