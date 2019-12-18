@@ -7,7 +7,7 @@ import numpy as np
 
 
 class TrappedIons(object):
-    def __init__(self, N, *ps, **kwargs):
+    def __init__(self, N, *args, **kwargs):
         super(TrappedIons, self).__init__()
 
         params = {
