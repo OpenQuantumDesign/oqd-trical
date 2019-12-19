@@ -11,6 +11,7 @@ author = "QITI"
 
 exclude_patterns = []
 extensions = [
+    "nbsphinx",
     "sphinx.ext.autodoc",
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
@@ -20,4 +21,5 @@ extensions = [
 html_show_sourcelink = False
 html_static_path = ["_static"]
 html_theme = "sphinx_rtd_theme"
+source_suffix = [".rst", ".ipynb"]
 templates_path = ["_templates"]

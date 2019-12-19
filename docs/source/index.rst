@@ -9,8 +9,11 @@ Clone the `TrICal github repository <https://github.com/QITI/TrICal.git>`_ using
 
     git clone https://github.com/QITI/TrICal.git
 
-Contents
-========
+Tutorial
+======== 
+
+Packages and Modules
+====================
 
 .. toctree::
    :maxdepth: 4

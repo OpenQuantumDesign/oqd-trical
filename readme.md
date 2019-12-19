@@ -13,3 +13,10 @@ Run the following commands in the root of the repository to open the documentati
 cd docs
 python open.py
 ```
+
+## Tutorial
+Run the following commands in the root of the repository to open the tutorial,
+```
+cd tutorial
+jupyter notebook tutorial.ipynb
+```
