@@ -9,6 +9,9 @@ Clone the `TrICal github repository <https://github.com/QITI/TrICal.git>`_ using
 
     git clone https://github.com/QITI/TrICal.git
 
+Tutorial
+======== 
+
 Packages and Modules
 ====================
 
