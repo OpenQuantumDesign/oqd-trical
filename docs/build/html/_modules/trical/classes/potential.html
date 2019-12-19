@@ -25,7 +25,6 @@
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -155,6 +154,16 @@
 
 
 <div class="viewcode-block" id="Potential"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.Potential">[docs]</a><span class="k">class</span> <span class="nc">Potential</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object representing a general potential.</span>
+
+<span class="sd">    :param d2phi: Function that takes two strings representing the derivative variables and outputs the function corresponding to the derivative of the potential with respect to the derivative variables.</span>
+<span class="sd">    :type d2phi: :obj:`types.FunctionType`</span>
+<span class="sd">    :param dphi: Function that takes a string representing the derivative variable and outputs the function corresponding to the derivative of the potential with respect to the derivative variable.</span>
+<span class="sd">    :type dphi: :obj:`types.FunctionType`</span>
+<span class="sd">    :param phi: Function representing the potential.</span>
+<span class="sd">    :type phi: :obj:`types.FunctionType`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">dphi</span><span class="p">,</span> <span class="n">d2phi</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Potential</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -215,12 +224,37 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Potential.first_derivative"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.Potential.first_derivative">[docs]</a>    <span class="k">def</span> <span class="nf">first_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the first derivative of the potential with respect to a variable.</span>
+
+<span class="sd">        :param var: Derivative variable.</span>
+<span class="sd">        :type var: :obj:`str`</span>
+<span class="sd">        :returns: Function corresponding to the first derivative of the potential with respect to the derivative variable.</span>
+<span class="sd">        :rtype: :obj:`types.FunctionType`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dphi</span><span class="p">(</span><span class="n">var</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Potential.second_derivative"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.Potential.second_derivative">[docs]</a>    <span class="k">def</span> <span class="nf">second_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the second derivative of the potential with respect to two variables.</span>
+
+<span class="sd">        :param var1: first derivative variable.</span>
+<span class="sd">        :type var1: :obj:`str`</span>
+<span class="sd">        :param var2: second derivative variable.</span>
+<span class="sd">        :type var2: :obj:`str`</span>
+<span class="sd">        :returns: Function corresponding to the second derivative of the potential with respect to the derivative variables.</span>
+<span class="sd">        :rtype: :obj:`types.FunctionType`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">d2phi</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Potential.gradient"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.Potential.gradient">[docs]</a>    <span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the gradient of the potential</span>
+
+<span class="sd">        :returns: Function corresponding to the gradient of the potential</span>
+<span class="sd">        :rtype: :obj:`types.FunctionType`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">def</span> <span class="nf">grad_phi</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
             <span class="n">grad_phi_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
 
@@ -235,6 +269,13 @@
         <span class="k">return</span> <span class="n">grad_phi</span></div>
 
 <div class="viewcode-block" id="Potential.hessian"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.Potential.hessian">[docs]</a>    <span class="k">def</span> <span class="nf">hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the Hessian of the potential</span>
+<span class="sd">                </span>
+<span class="sd">        :returns: Function corresponding to the Hessian of the potential</span>
+<span class="sd">        :rtype: :obj:`types.FunctionType`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">def</span> <span class="nf">hess_phi</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
             <span class="n">hess_phi_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
 
@@ -254,6 +295,15 @@
         <span class="k">return</span> <span class="n">hess_phi</span></div>
 
 <div class="viewcode-block" id="Potential.update_params"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.Potential.update_params">[docs]</a>    <span class="k">def</span> <span class="nf">update_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates parameters, i.e. params attribute, of a Potential object.</span>
+<span class="sd">        </span>
+<span class="sd">        :Keyword Arguments:</span>
+<span class="sd">            * **dim** (:obj:`float`): Dimension of the system.</span>
+<span class="sd">            * **m** (:obj:`float`): Mass of an ion.</span>
+<span class="sd">            * **N** (:obj:`float`): Number of Ions.</span>
+<span class="sd">            * **q** (:obj:`dict`): Charge of an ion.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
         <span class="k">pass</span></div>
@@ -262,6 +312,11 @@
 
 
 <div class="viewcode-block" id="CoulombPotential"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.CoulombPotential">[docs]</a><span class="k">class</span> <span class="nc">CoulombPotential</span><span class="p">(</span><span class="n">Potential</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object representing a coulomb potential.</span>
+
+<span class="sd">    :param N: Number of ions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dim&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="n">N</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">cst</span><span class="o">.</span><span class="n">e</span><span class="p">}</span>
         <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
@@ -341,12 +396,25 @@
         <span class="k">return</span> <span class="n">d2phi_daidbj</span></div>
 
 <div class="viewcode-block" id="CoulombPotential.nondimensionalize"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.CoulombPotential.nondimensionalize">[docs]</a>    <span class="k">def</span> <span class="nf">nondimensionalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Nondimensionalizes a CoulombPotential with a length scale.</span>
+
+<span class="sd">        :param l: Length scale.</span>
+<span class="sd">        :type l: :obj:`float`</span>
+<span class="sd">        :returns: Potential representing the nondimensionalized coulomb potential.</span>
+<span class="sd">        :rtype: :obj:`trical.classes.potential.Potential`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span> <span class="o">/</span> <span class="p">(</span><span class="n">cst</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">cst</span><span class="o">.</span><span class="n">e</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
 
     <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="PolynomialPotential"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.PolynomialPotential">[docs]</a><span class="k">class</span> <span class="nc">PolynomialPotential</span><span class="p">(</span><span class="n">Potential</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object representing a polynomial potential.</span>
+
+<span class="sd">    :param alpha: Coefficients of the polynomial potential.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">alpha</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
@@ -396,6 +464,14 @@
         <span class="k">return</span> <span class="n">d2phi_daidbj</span></div>
 
 <div class="viewcode-block" id="PolynomialPotential.nondimensionalize"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.PolynomialPotential.nondimensionalize">[docs]</a>    <span class="k">def</span> <span class="nf">nondimensionalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Nondimensionalizes a PolynomialPotential with a length scale.</span>
+
+<span class="sd">        :param l: Length scale.</span>
+<span class="sd">        :type l: :obj:`float`</span>
+<span class="sd">        :returns: Nondimensionalized PolynomialPotential.</span>
+<span class="sd">        :rtype: :obj:`trical.classes.potential.PolynomialPotential`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">l</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
@@ -407,6 +483,11 @@
 
 
 <div class="viewcode-block" id="SymbolicPotential"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.SymbolicPotential">[docs]</a><span class="k">class</span> <span class="nc">SymbolicPotential</span><span class="p">(</span><span class="n">Potential</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object representing a symbolically defined potential.</span>
+
+<span class="sd">    :param expr: Symbolic expression of the potential.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">expr</span> <span class="o">=</span> <span class="n">expr</span>
 
@@ -452,6 +533,14 @@
         <span class="k">return</span> <span class="n">d2phi_daidbj</span></div>
 
 <div class="viewcode-block" id="SymbolicPotential.nondimensionalize"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.SymbolicPotential.nondimensionalize">[docs]</a>    <span class="k">def</span> <span class="nf">nondimensionalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Nondimensionalizes a SymbolicPotential with a length scale.</span>
+
+<span class="sd">        :param l: Length scale.</span>
+<span class="sd">        :type l: :obj:`float`</span>
+<span class="sd">        :returns: Nondimensionalized SymbolicPotential.</span>
+<span class="sd">        :rtype: :obj:`trical.classes.potential.SymbolicPotential`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">k</span> <span class="o">*</span> <span class="n">l</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span><span class="p">})</span> <span class="o">*</span> <span class="p">(</span>
             <span class="n">l</span> <span class="o">/</span> <span class="p">(</span><span class="n">cst</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">cst</span><span class="o">.</span><span class="n">e</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
         <span class="p">)</span>

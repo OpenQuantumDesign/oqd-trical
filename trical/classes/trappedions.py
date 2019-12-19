@@ -7,6 +7,12 @@ import numpy as np
 
 
 class TrappedIons(object):
+    """
+    Object representing a system of trapped ions.
+    
+    :param N: Number of ions.
+    :type N: :obj:`int`
+    """
     def __init__(self, N, *args, **kwargs):
         super(TrappedIons, self).__init__()
 
@@ -27,6 +33,14 @@ class TrappedIons(object):
         pass
 
     def equilibrium_position(self, opt=dflt_opt):
+        """
+        Function that calculates the equilibrium position of the ions.
+        
+        :param opt: Generator of the appropriate optimization function for finding the equilibrium position, defaults to :obj:`trical.misc.optimize.dflt_opt`
+        :type opt: :obj:`types.FunctionType`, optional
+        :returns: Equilibrium position of the ions.
+        :rtype: :obj:`numpy.ndarray`
+        """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
         ndfp = ndcp + ndps.sum()
@@ -37,6 +51,13 @@ class TrappedIons(object):
         return self.x_ep
 
     def normal_modes(self):
+        """
+        Function that calculates the normal modes of the system.
+        
+        :Returns:
+            * **w** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.
+            * **b** (:obj:`numpy.ndarray`): Normal mode eigenvectors of the system.
+        """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
         ndfp = ndcp + ndps.sum()
@@ -61,6 +82,14 @@ class TrappedIons(object):
         return self.w, self.b
 
     def principle_axis(self, tol=1e-3):
+        """
+        Function that calculates the principle axes of the system.
+        
+        :Returns:
+            * **x_pa** (:obj:`numpy.ndarray`): Principle axes of the system.
+            * **w_pa** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.
+            * **b_pa** (:obj:`numpy.ndarray`): Normal mode eigenvectors of the system in the principle axis coordinate system.
+        """
         if np.isin(np.array(["w", "b"]), np.array(self.__dict__.keys())).sum() != 2:
             self.normal_modes()
 
@@ -102,6 +131,15 @@ class TrappedIons(object):
         return self.x_pa, self.w_pa, self.b_pa
 
     def update_params(self, **kwargs):
+        """
+        Updates parameters, i.e. params attribute, of a TrappedIons object.
+        
+        :Keyword Arguments:
+            * **dim** (:obj:`float`): Dimension of the system.
+            * **l** (:obj:`float`): Length scale of the system.
+            * **m** (:obj:`float`): Mass of an ion.
+            * **q** (:obj:`dict`): Charge of an ion.
+        """
         self.params.update(kwargs)
         self.__dict__.update(self.params)
         pass

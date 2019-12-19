@@ -25,7 +25,6 @@
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
         <script type="text/javascript" src="_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -159,37 +158,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<div class="section" id="trical-misc-package">
+  <div class="section" id="trical-misc-package">
 <h1>trical.misc package<a class="headerlink" href="#trical-misc-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-trical.misc.constants">
 <span id="trical-misc-constants-module"></span><h2>trical.misc.constants module<a class="headerlink" href="#module-trical.misc.constants" title="Permalink to this headline">¶</a></h2>
+<p>Module containing relevant constants, in SI units, for TrICal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>e</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Elementary charge.</p></li>
+<li><p><strong>hbar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Reduced Planck constant.</p></li>
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Coulomb constant.</p></li>
+<li><p><strong>m_a</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>): Dictionary of atomic masses.</p></li>
+</ul>
+</dd>
+</dl>
 </div>
 <div class="section" id="module-trical.misc.linalg">
 <span id="trical-misc-linalg-module"></span><h2>trical.misc.linalg module<a class="headerlink" href="#module-trical.misc.linalg" title="Permalink to this headline">¶</a></h2>
+<p>Module containing relevant linear algebra functions for TrICal.</p>
 <dl class="function">
 <dt id="trical.misc.linalg.cartesian_to_spherical">
 <code class="sig-prename descclassname">trical.misc.linalg.</code><code class="sig-name descname">cartesian_to_spherical</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/misc/linalg.html#cartesian_to_spherical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.misc.linalg.cartesian_to_spherical" title="Permalink to this definition">¶</a></dt>
@@ -203,7 +190,22 @@
 <dl class="function">
 <dt id="trical.misc.linalg.orthonormal_subset">
 <code class="sig-prename descclassname">trical.misc.linalg.</code><code class="sig-name descname">orthonormal_subset</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">tol=0.001</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/misc/linalg.html#orthonormal_subset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.misc.linalg.orthonormal_subset" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Finds an approximate orthonormal subset of a set of vectors, after normalization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Set of vectors of interest.</p></li>
+<li><p><strong>tol</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – Tolerance when classifying 2 vectors as orthonormal , defaults to 1e-3.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Orthonormal subset of the set of vectors of interest, after normalization.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="trical.misc.linalg.rotation_matrix">
@@ -218,23 +220,67 @@
 </div>
 <div class="section" id="module-trical.misc.optimize">
 <span id="trical-misc-optimize-module"></span><h2>trical.misc.optimize module<a class="headerlink" href="#module-trical.misc.optimize" title="Permalink to this headline">¶</a></h2>
+<p>Module containing default optimization function generators for TrICal.</p>
 <dl class="function">
 <dt id="trical.misc.optimize.dflt_ls_opt">
 <code class="sig-prename descclassname">trical.misc.optimize.</code><code class="sig-name descname">dflt_ls_opt</code><span class="sig-paren">(</span><em class="sig-param">deg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/misc/optimize.html#dflt_ls_opt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.misc.optimize.dflt_ls_opt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Default optimization function generator for multivariate_polyfit function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>deg</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Degree of polynomial used in the fit.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Default optimization function that finds the best polynomial, of the specified degree, fit for the data .</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/types.html#types.FunctionType" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types.FunctionType</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="trical.misc.optimize.dflt_opt">
 <code class="sig-prename descclassname">trical.misc.optimize.</code><code class="sig-name descname">dflt_opt</code><span class="sig-paren">(</span><em class="sig-param">ti</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/misc/optimize.html#dflt_opt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.misc.optimize.dflt_opt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Default optimization function generator for equilibrium_position method of TrappedIons class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ti</strong> (<a class="reference internal" href="trical.classes.html#trical.classes.trappedions.TrappedIons" title="trical.classes.trappedions.TrappedIons"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trical.classes.trappedions.TrappedIons</span></code></a>) – Trapped ion system of interest.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Default optimization function that finds the equilibrium position of the trapped ions system of interest via the minimization of the potential.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/types.html#types.FunctionType" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types.FunctionType</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="module-trical.misc.polynomial">
 <span id="trical-misc-polynomial-module"></span><h2>trical.misc.polynomial module<a class="headerlink" href="#module-trical.misc.polynomial" title="Permalink to this headline">¶</a></h2>
+<p>Module containing relevant functions regarding polynomials for TrIcal.</p>
 <dl class="function">
 <dt id="trical.misc.polynomial.multivariate_polyfit">
 <code class="sig-prename descclassname">trical.misc.polynomial.</code><code class="sig-name descname">multivariate_polyfit</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">vals</em>, <em class="sig-param">deg</em>, <em class="sig-param">l=1</em>, <em class="sig-param">opt=&lt;function dflt_ls_opt&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/misc/polynomial.html#multivariate_polyfit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.misc.polynomial.multivariate_polyfit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Fits a set of data with a multivariate polynomial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Independent values.</p></li>
+<li><p><strong>vals</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Dependent value.</p></li>
+<li><p><strong>deg</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Degree of polynomial used in the fit.</p></li>
+<li><p><strong>l</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – Length scale used when fitting, defaults to 1.</p></li>
+<li><p><strong>opt</strong> (<a class="reference external" href="https://docs.python.org/3/library/types.html#types.FunctionType" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types.FunctionType</span></code></a>, optional) – Generator of the appropriate optimization function for the fit, defaults to <a class="reference internal" href="#trical.misc.optimize.dflt_ls_opt" title="trical.misc.optimize.dflt_ls_opt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trical.misc.optimize.dflt_ls_opt</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Coefficients of the best fit multivariate polynomial, of the specified degree.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="trical.misc.polynomial.polygrad">

@@ -25,7 +25,6 @@
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
         <script type="text/javascript" src="_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -156,53 +155,72 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<div class="section" id="trical-data-package">
+  <div class="section" id="trical-data-package">
 <h1>trical.data package<a class="headerlink" href="#trical-data-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-trical.data.data">
 <span id="trical-data-data-module"></span><h2>trical.data.data module<a class="headerlink" href="#module-trical.data.data" title="Permalink to this headline">¶</a></h2>
+<p>Module containing functions for saving and loading data for TrICal.</p>
 <dl class="function">
 <dt id="trical.data.data.load_dict">
 <code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">load_dict</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#load_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.load_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads a dictionary from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Path of file containing the dictionary to be loaded.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Loaded dictionary.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="trical.data.data.load_object">
 <code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">load_object</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#load_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.load_object" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads an instance of the Empty class with the attributes from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Path of file containing the attributes to be loaded.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Loaded instance of the Empty class.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="trical.classes.html#trical.classes.empty.Empty" title="trical.classes.empty.Empty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trical.classes.empty.Empty</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="trical.data.data.save_dict">
 <code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">save_dict</code><span class="sig-paren">(</span><em class="sig-param">data_dict</em>, <em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#save_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.save_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Saves a dictionary into a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) – Dictionary of interest</p></li>
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Path of file to save the dictionary in.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="trical.data.data.save_object">
 <code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">save_object</code><span class="sig-paren">(</span><em class="sig-param">object</em>, <em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#save_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.save_object" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Saves the attributes of an object, as a dictionary, into a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) – Dictionary of interest</p></li>
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a>) – Path of file to save the attriutes of the object in.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </div>

@@ -3,6 +3,12 @@ import numpy as np
 
 
 class SpinLattice(object):
+    """
+    Object representing a spin lattice system.
+
+    :param J: Interaction graph of the spin lattice system.
+    :type J: :obj:`numpy.ndarray`
+    """
     def __init__(self, J):
         super(SpinLattice, self).__init__()
 
@@ -16,6 +22,16 @@ class SpinLattice(object):
 
 
 class SimulatedSpinLattice(SpinLattice):
+    """
+    Object representing a spin lattice system simulated by a trapped ion system
+    
+    :param ti: A trapped ion system.
+    :type ti: :obj:`trical.classes.trappedions.TrappedIons`
+    :param mu: Raman beatnote detunings.
+    :type mu: :obj:`numpy.ndarray`
+    :param Omega: Rabi frequencies.
+    :type Omega: :obj:`numpy.ndarray`
+    """
     def __init__(self, ti, mu, Omega, **kwargs):
         self.ti = ti
         self.mu = np.array(mu)
@@ -47,6 +63,12 @@ class SimulatedSpinLattice(SpinLattice):
         pass
 
     def interaction_graph(self):
+        """
+        Calculates the interaction graph of the spin lattice simulated by the trapped ion system.
+        
+        :param J: Interaction graph of the spin lattice simulated by the trapped ion system.
+        :type J: :obj:`numpy.ndarray`
+        """
         eta = np.einsum(
             "in,n->in", self.b, 2 * self.k * np.sqrt(cst.hbar / (2 * self.m * self.w))
         )

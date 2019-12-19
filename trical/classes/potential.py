@@ -8,6 +8,16 @@ import sympy
 
 
 class Potential(object):
+    """
+    Object representing a general potential.
+
+    :param d2phi: Function that takes two strings representing the derivative variables and outputs the function corresponding to the derivative of the potential with respect to the derivative variables.
+    :type d2phi: :obj:`types.FunctionType`
+    :param dphi: Function that takes a string representing the derivative variable and outputs the function corresponding to the derivative of the potential with respect to the derivative variable.
+    :type dphi: :obj:`types.FunctionType`
+    :param phi: Function representing the potential.
+    :type phi: :obj:`types.FunctionType`
+    """
     def __init__(self, phi, dphi, d2phi, **kwargs):
         super(Potential, self).__init__()
 
@@ -68,12 +78,37 @@ class Potential(object):
         return self.phi(x)
 
     def first_derivative(self, var):
+        """
+        Calculates the first derivative of the potential with respect to a variable.
+
+        :param var: Derivative variable.
+        :type var: :obj:`str`
+        :returns: Function corresponding to the first derivative of the potential with respect to the derivative variable.
+        :rtype: :obj:`types.FunctionType`
+        """
         return self.dphi(var)
 
     def second_derivative(self, var1, var2):
+        """
+        Calculates the second derivative of the potential with respect to two variables.
+
+        :param var1: first derivative variable.
+        :type var1: :obj:`str`
+        :param var2: second derivative variable.
+        :type var2: :obj:`str`
+        :returns: Function corresponding to the second derivative of the potential with respect to the derivative variables.
+        :rtype: :obj:`types.FunctionType`
+        """
         return self.d2phi(var1, var2)
 
     def gradient(self):
+        """
+        Calculates the gradient of the potential
+
+        :returns: Function corresponding to the gradient of the potential
+        :rtype: :obj:`types.FunctionType`
+        """
+
         def grad_phi(x):
             grad_phi_x = np.empty(self.N * self.dim)
 
@@ -88,6 +123,13 @@ class Potential(object):
         return grad_phi
 
     def hessian(self):
+        """
+        Calculates the Hessian of the potential
+                
+        :returns: Function corresponding to the Hessian of the potential
+        :rtype: :obj:`types.FunctionType`
+        """
+
         def hess_phi(x):
             hess_phi_x = np.empty((self.N * self.dim, self.N * self.dim))
 
@@ -107,6 +149,15 @@ class Potential(object):
         return hess_phi
 
     def update_params(self, **kwargs):
+        """
+        Updates parameters, i.e. params attribute, of a Potential object.
+        
+        :Keyword Arguments:
+            * **dim** (:obj:`float`): Dimension of the system.
+            * **m** (:obj:`float`): Mass of an ion.
+            * **N** (:obj:`float`): Number of Ions.
+            * **q** (:obj:`dict`): Charge of an ion.
+        """
         self.params.update(kwargs)
         self.__dict__.update(self.params)
         pass
@@ -115,6 +166,11 @@ class Potential(object):
 
 
 class CoulombPotential(Potential):
+    """
+    Object representing a coulomb potential.
+
+    :param N: Number of ions.
+    """
     def __init__(self, N, **kwargs):
         params = {"dim": 3, "N": N, "q": cst.e}
         params.update(kwargs)
@@ -194,12 +250,25 @@ class CoulombPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
+        """
+        Nondimensionalizes a CoulombPotential with a length scale.
+
+        :param l: Length scale.
+        :type l: :obj:`float`
+        :returns: Potential representing the nondimensionalized coulomb potential.
+        :rtype: :obj:`trical.classes.potential.Potential`
+        """
         return self / (cst.k * cst.e ** 2)
 
     pass
 
 
 class PolynomialPotential(Potential):
+    """
+    Object representing a polynomial potential.
+
+    :param alpha: Coefficients of the polynomial potential.
+    """
     def __init__(self, alpha):
         self.alpha = np.array(alpha)
         self.deg = np.array(alpha.shape) - 1
@@ -249,6 +318,14 @@ class PolynomialPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
+        """
+        Nondimensionalizes a PolynomialPotential with a length scale.
+
+        :param l: Length scale.
+        :type l: :obj:`float`
+        :returns: Nondimensionalized PolynomialPotential.
+        :rtype: :obj:`trical.classes.potential.PolynomialPotential`
+        """
         alpha = (
             l ** np.indices(self.alpha.shape).sum(0)
             * self.alpha
@@ -260,6 +337,11 @@ class PolynomialPotential(Potential):
 
 
 class SymbolicPotential(Potential):
+    """
+    Object representing a symbolically defined potential.
+
+    :param expr: Symbolic expression of the potential.
+    """
     def __init__(self, expr, **kwargs):
         self.expr = expr
 
@@ -305,6 +387,14 @@ class SymbolicPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
+        """
+        Nondimensionalizes a SymbolicPotential with a length scale.
+
+        :param l: Length scale.
+        :type l: :obj:`float`
+        :returns: Nondimensionalized SymbolicPotential.
+        :rtype: :obj:`trical.classes.potential.SymbolicPotential`
+        """
         expr = self.expr.subs({k: k * l for k in self.symbol}) * (
             l / (cst.k * cst.e ** 2)
         )

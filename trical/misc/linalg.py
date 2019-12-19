@@ -1,3 +1,7 @@
+"""
+Module containing relevant linear algebra functions for TrICal.
+"""
+
 import numpy as np
 
 
@@ -33,6 +37,16 @@ def rotation_matrix(n, theta):
 
 
 def orthonormal_subset(x, tol=1e-3):
+    """
+    Finds an approximate orthonormal subset of a set of vectors, after normalization.
+
+    :param x: Set of vectors of interest.
+    :type x: :obj:`numpy.ndarray`
+    :param tol: Tolerance when classifying 2 vectors as orthonormal , defaults to 1e-3.
+    :type tol: :obj:`float`, optional
+    :returns: Orthonormal subset of the set of vectors of interest, after normalization.
+    :rtype: :obj:`numpy.ndarray`
+    """
     x = np.einsum("ni,n->ni", x, 1 / norm(x))
     i = 0
     while i < len(x):

@@ -25,7 +25,6 @@
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -154,6 +153,12 @@
 
 
 <div class="viewcode-block" id="TrappedIons"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.trappedions.TrappedIons">[docs]</a><span class="k">class</span> <span class="nc">TrappedIons</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object representing a system of trapped ions.</span>
+<span class="sd">    </span>
+<span class="sd">    :param N: Number of ions.</span>
+<span class="sd">    :type N: :obj:`int`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TrappedIons</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -174,6 +179,14 @@
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="TrappedIons.equilibrium_position"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.trappedions.TrappedIons.equilibrium_position">[docs]</a>    <span class="k">def</span> <span class="nf">equilibrium_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="n">dflt_opt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that calculates the equilibrium position of the ions.</span>
+<span class="sd">        </span>
+<span class="sd">        :param opt: Generator of the appropriate optimization function for finding the equilibrium position, defaults to :obj:`trical.misc.optimize.dflt_opt`</span>
+<span class="sd">        :type opt: :obj:`types.FunctionType`, optional</span>
+<span class="sd">        :returns: Equilibrium position of the ions.</span>
+<span class="sd">        :rtype: :obj:`numpy.ndarray`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ndcp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cp</span><span class="o">.</span><span class="n">nondimensionalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">)</span>
         <span class="n">ndps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">nondimensionalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="p">])</span>
         <span class="n">ndfp</span> <span class="o">=</span> <span class="n">ndcp</span> <span class="o">+</span> <span class="n">ndps</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -184,6 +197,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_ep</span></div>
 
 <div class="viewcode-block" id="TrappedIons.normal_modes"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.trappedions.TrappedIons.normal_modes">[docs]</a>    <span class="k">def</span> <span class="nf">normal_modes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that calculates the normal modes of the system.</span>
+<span class="sd">        </span>
+<span class="sd">        :Returns:</span>
+<span class="sd">            * **w** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.</span>
+<span class="sd">            * **b** (:obj:`numpy.ndarray`): Normal mode eigenvectors of the system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ndcp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cp</span><span class="o">.</span><span class="n">nondimensionalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">)</span>
         <span class="n">ndps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">nondimensionalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="p">])</span>
         <span class="n">ndfp</span> <span class="o">=</span> <span class="n">ndcp</span> <span class="o">+</span> <span class="n">ndps</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -208,6 +228,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span></div>
 
 <div class="viewcode-block" id="TrappedIons.principle_axis"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.trappedions.TrappedIons.principle_axis">[docs]</a>    <span class="k">def</span> <span class="nf">principle_axis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that calculates the principle axes of the system.</span>
+<span class="sd">        </span>
+<span class="sd">        :Returns:</span>
+<span class="sd">            * **x_pa** (:obj:`numpy.ndarray`): Principle axes of the system.</span>
+<span class="sd">            * **w_pa** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.</span>
+<span class="sd">            * **b_pa** (:obj:`numpy.ndarray`): Normal mode eigenvectors of the system in the principle axis coordinate system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">normal_modes</span><span class="p">()</span>
 
@@ -249,6 +277,15 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_pa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_pa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_pa</span></div>
 
 <div class="viewcode-block" id="TrappedIons.update_params"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.trappedions.TrappedIons.update_params">[docs]</a>    <span class="k">def</span> <span class="nf">update_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates parameters, i.e. params attribute, of a TrappedIons object.</span>
+<span class="sd">        </span>
+<span class="sd">        :Keyword Arguments:</span>
+<span class="sd">            * **dim** (:obj:`float`): Dimension of the system.</span>
+<span class="sd">            * **l** (:obj:`float`): Length scale of the system.</span>
+<span class="sd">            * **m** (:obj:`float`): Mass of an ion.</span>
+<span class="sd">            * **q** (:obj:`dict`): Charge of an ion.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
         <span class="k">pass</span></div>
