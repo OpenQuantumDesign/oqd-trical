@@ -1,7 +1,4 @@
-"""
-Defines the TrappedIons class representing a trapped ions system
-"""
-from .. import constants as cst
+from ..misc import constants as cst
 from ..misc.linalg import norm, orthonormal_subset
 from ..misc.optimize import dflt_opt
 from .potential import CoulombPotential
@@ -10,38 +7,13 @@ import numpy as np
 
 
 class TrappedIons(object):
-
     """
-    Object representing a system of trapped ions
+    Object representing a system of trapped ions.
     
-    Attributes:
-        b (2-D array of float): Normal mode eigenvectors of the system
-        cp (CoulombPotential): Coulomb potential associated with the system
-        dim (int): Dimension of the system
-        fp (Potential): Total potential of the system
-        l (float): Length scale of the system
-        m (float): Mass of an ion
-        N (int): Number of ions
-        ps (array of Potential): Non-Coulomb potentials associated with the system
-        q (float): Charge of an ion
-        x_ep (1D or 2-D array of float): Equilibrium position of the ions
-        w (1-D array of float): Normal mode frequencies of the system
+    :param N: Number of ions.
+    :type N: :obj:`int`
     """
-
-    def __init__(self, N, *ps, **kwargs):
-        """
-        Initialization function for a TrappedIons object
-        
-        Args:
-            N (int): Number of Ions
-            ps (array of Potential): Non-Coulomb potentials associated with the system
-        
-        Kwargs:
-            dim (int, optional): Dimension of the system
-            l (float, optional): Length scale of the system
-            m (float, optional): Mass of an ion
-            q (float, optional): Charge of an ion
-        """
+    def __init__(self, N, *args, **kwargs):
         super(TrappedIons, self).__init__()
 
         params = {
@@ -62,13 +34,12 @@ class TrappedIons(object):
 
     def equilibrium_position(self, opt=dflt_opt):
         """
-        Function that calculates the equilibrium position of the ions
+        Function that calculates the equilibrium position of the ions.
         
-        Args:
-            opt (func(TrappedIons) -> (func(func(1-D array of float) -> 1-D array of float)): Generator of an optimization function that minimizes the potential of the system with respect to the position of the ions
-        
-        Returns:
-            1D or 2-D array of float: Equilibrium position of the ions
+        :param opt: Generator of the appropriate optimization function for finding the equilibrium position, defaults to :obj:`trical.misc.optimize.dflt_opt`
+        :type opt: :obj:`types.FunctionType`, optional
+        :returns: Equilibrium position of the ions.
+        :rtype: :obj:`numpy.ndarray`
         """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
@@ -81,12 +52,11 @@ class TrappedIons(object):
 
     def normal_modes(self):
         """
-        Function that calculates the normal modes of the system
+        Function that calculates the normal modes of the system.
         
-        Returns:
-            1-D array of float: Normal mode frequencies of the system
-            2-D array of float: Normal mode eigenvectors of the system
-
+        :Returns:
+            * **w** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.
+            * **b** (:obj:`numpy.ndarray`): Normal mode eigenvectors of the system.
         """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
@@ -113,13 +83,12 @@ class TrappedIons(object):
 
     def principle_axis(self, tol=1e-3):
         """
-        Function that calculates the principle axis of the system
+        Function that calculates the principle axes of the system.
         
-        Returns:
-            2-D array of float: Principle axis
-            1-D array of float: Normal mode frequencies of the system in the principle axis coordinate system
-            2-D array of float: Normal mode eigenvectors of the system in the principle axis coordinate system
-
+        :Returns:
+            * **x_pa** (:obj:`numpy.ndarray`): Principle axes of the system.
+            * **w_pa** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.
+            * **b_pa** (:obj:`numpy.ndarray`): Normal mode eigenvectors of the system in the principle axis coordinate system.
         """
         if np.isin(np.array(["w", "b"]), np.array(self.__dict__.keys())).sum() != 2:
             self.normal_modes()
@@ -163,41 +132,25 @@ class TrappedIons(object):
 
     def update_params(self, **kwargs):
         """
-        Updates parameters of TrappedIons object
-         
-        Kwargs:
-            dim (int, optional): Dimension of the system
-            l (float, optional): Length scale of the system
-            m (float, optional): Mass of an ion
-            q (float, optional): Charge of an ion
+        Updates parameters, i.e. params attribute, of a TrappedIons object.
         
+        :Keyword Arguments:
+            * **dim** (:obj:`float`): Dimension of the system.
+            * **l** (:obj:`float`): Length scale of the system.
+            * **m** (:obj:`float`): Mass of an ion.
+            * **q** (:obj:`dict`): Charge of an ion.
         """
         self.params.update(kwargs)
         self.__dict__.update(self.params)
         pass
 
     def plot_equilibrium_position(self, **kwargs):
-        """SUMMARY
-        
-        Args:
-            **kwargs: DESCRIPTION
-        """
         pass
 
     def plot_normal_modes(self, **kwargs):
-        """SUMMARY
-        
-        Args:
-            **kwargs: DESCRIPTION
-        """
         pass
 
     def plot_principle_axis(self, **kwargs):
-        """SUMMARY
-        
-        Args:
-            **kwargs: DESCRIPTION
-        """
         pass
 
     pass

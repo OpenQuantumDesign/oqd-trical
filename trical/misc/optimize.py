@@ -1,19 +1,19 @@
 """
-Relevant optimization functions for TrICal
+Module containing default optimization function generators for TrICal.
 """
+
 import numpy as np
 from scipy import optimize as opt
 
 
 def dflt_opt(ti):
     """
-    Generator of default optimizer for equilibrium_position method of TrappedIons
+    Default optimization function generator for equilibrium_position method of TrappedIons class.
     
-    Args:
-        ti (TrappedIons): TrappedIons object of interest
-    
-    Returns:
-        func(func(1-D array of float) -> 1-D array float): Minimizer
+    :param ti: Trapped ion system of interest.
+    :type ti: :obj:`trical.classes.trappedions.TrappedIons`
+    :returns: Default optimization function that finds the equilibrium position of the trapped ions system of interest via the minimization of the potential.
+    :rtype: :obj:`types.FunctionType`
     """
     if ti.dim == 1:
         x_guess = np.linspace(-(ti.N - 1) / 2, (ti.N - 1) / 2, ti.N)
@@ -33,13 +33,12 @@ def dflt_opt(ti):
 
 def dflt_ls_opt(deg):
     """
-    Generator of default least square optimizer for multivariate_polyfit
-    
-    Args:
-        deg (1-D array of int): Degree of polynomial to fit
-    
-    Returns:
-        func(2-D array of float, 1-D array of float) -> 1-D array float): Least square optimizer
+    Default optimization function generator for multivariate_polyfit function.
+
+    :param deg: Degree of polynomial used in the fit.
+    :type deg: :obj:`numpy.ndarray`
+    :returns: Default optimization function that finds the best polynomial, of the specified degree, fit for the data .
+    :rtype: :obj:`types.FunctionType`
     """
     def _dflt_ls_opt(a, b):
         res = opt.lsq_linear(a, b)

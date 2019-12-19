@@ -1,1 +1,1 @@
-from . import linalg, optimize, polynomial, setalg
+from . import constants, linalg, optimize, polynomial, setalg
