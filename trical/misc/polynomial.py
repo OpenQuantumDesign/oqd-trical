@@ -3,12 +3,16 @@ import numpy as np
 from numpy.polynomial import polynomial as poly
 
 
-def multivariate_polyfit(x, vals, deg, opt=dflt_ls_opt):
+def multivariate_polyfit(x, vals, deg, l=1, opt=dflt_ls_opt):
     dim = len(deg)
     shape = np.array(deg) + 1
 
     a = {1: poly.polyvander, 2: poly.polyvander2d, 3: poly.polyvander3d}[dim](
-        *x.transpose(), deg
+        *(x / l).transpose(), deg
     )
     b = vals
-    return opt(deg)(a, b).reshape(shape)
+    return opt(deg)(a, b).reshape(shape) / l ** np.indices(shape).sum(0)
+
+
+def polygrad(N, alpha):
+    pass
