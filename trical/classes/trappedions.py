@@ -13,7 +13,8 @@ class TrappedIons(object):
     :param N: Number of ions.
     :type N: :obj:`int`
     """
-    def __init__(self, N, *args, **kwargs):
+
+    def __init__(self, N, *ps, **kwargs):
         super(TrappedIons, self).__init__()
 
         params = {
@@ -69,8 +70,13 @@ class TrappedIons(object):
 
         hess_phi_x_ep = hess_phi(self.x_ep / self.l)
 
-        w, b = np.linalg.eigh(hess_phi_x_ep)
-        w = np.sqrt(w * cst.k * cst.e ** 2 / (self.m * self.l ** 3))
+        try:
+            w, b = np.linalg.eig(
+                np.einsum("ij,i->ij", hess_phi_x_ep, 1 / np.tile(self.m, 3))
+            )
+        except:
+            w, b = np.linalg.eigh(hess_phi_x_ep / self.m)
+        w = np.sqrt(w * cst.k * cst.e ** 2 / self.l ** 3)
 
         _b = np.round(np.copy(b), 3).transpose()
         s = (np.sign(_b).sum(1) >= 0) * 2 - 1
@@ -124,8 +130,8 @@ class TrappedIons(object):
                     for i in range(self.dim)
                 ]
             )
-        )
-        idcs = np.lexsort(np.concatenate((np.flip(w_pa, axis=0).reshape(1, -1), n)))
+        ).astype(int)
+        idcs = np.lexsort(np.concatenate(((-w_pa).reshape(1, -1), n)))
 
         self.x_pa, self.w_pa, self.b_pa = x_pa, w_pa[idcs], b_pa[:, idcs]
         return self.x_pa, self.w_pa, self.b_pa
