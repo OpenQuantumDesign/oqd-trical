@@ -18,6 +18,7 @@ class Potential(object):
     :param phi: Function representing the potential.
     :type phi: :obj:`types.FunctionType`
     """
+
     def __init__(self, phi, dphi, d2phi, **kwargs):
         super(Potential, self).__init__()
 
@@ -171,6 +172,7 @@ class CoulombPotential(Potential):
 
     :param N: Number of ions.
     """
+
     def __init__(self, N, **kwargs):
         params = {"dim": 3, "N": N, "q": cst.e}
         params.update(kwargs)
@@ -269,6 +271,7 @@ class PolynomialPotential(Potential):
 
     :param alpha: Coefficients of the polynomial potential.
     """
+
     def __init__(self, alpha):
         self.alpha = np.array(alpha)
         self.deg = np.array(alpha.shape) - 1
@@ -342,6 +345,7 @@ class SymbolicPotential(Potential):
 
     :param expr: Symbolic expression of the potential.
     """
+
     def __init__(self, expr, **kwargs):
         self.expr = expr
 
@@ -399,5 +403,72 @@ class SymbolicPotential(Potential):
             l / (cst.k * cst.e ** 2)
         )
         return SymbolicPotential(expr, **self.params)
+
+    pass
+
+
+class AdvancedSymbolicPotential(Potential):
+    def __init__(self, N, expr, **kwargs):
+        self.expr = expr
+
+        params = {"dim": 3, "N": N}
+        params.update(kwargs)
+        self.__dict__.update(params)
+        self.params = params
+
+        self.symbol = np.array(
+            [
+                [
+                    sympy.Symbol(["x{}", "y{}", "z{}"][i].format(j))
+                    for i in range(self.dim)
+                ]
+                for j in range(N)
+            ]
+        ).flatten()
+        self.lambdified_expr = sympy.utilities.lambdify(self.symbol, expr)
+
+        super(AdvancedSymbolicPotential, self).__init__(
+            self.__call__, self.first_derivative, self.second_derivative, **params
+        )
+        pass
+
+    def __call__(self, x):
+        x = np.array(x)
+        return self.lambdified_expr(*x.flatten())
+
+    def first_derivative(self, var):
+        a = var[0]
+        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
+
+        def dphi_dai(x):
+            x = np.array(x)
+            return sympy.utilities.lambdify(
+                self.symbol, sympy.diff(self.expr, a + str(i))
+            )(*x.flatten())
+
+        return dphi_dai
+
+    def second_derivative(self, var1, var2):
+        a = var1[0]
+        b = var2[0]
+        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
+        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
+
+        def d2phi_daidbj(x):
+            x = np.array(x)
+            return sympy.utilities.lambdify(
+                self.symbol, sympy.diff(self.expr, a + str(i), b + str(j))
+            )(*x.flatten())
+
+        return d2phi_daidbj
+
+    def nondimensionalize(self, l):
+        expr = self.expr.subs({k: k * l for k in self.symbol}) * (
+            l / (cst.k * cst.e ** 2)
+        )
+        params = self.params
+        if "N" in params.keys():
+            params.pop("N")
+        return AdvancedSymbolicPotential(self.N, expr, **params)
 
     pass
