@@ -180,6 +180,72 @@
 <div class="section" id="module-trical.classes.potential">
 <span id="trical-classes-potential-module"></span><h2>trical.classes.potential module<a class="headerlink" href="#module-trical.classes.potential" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
+<dt id="trical.classes.potential.AdvancedSymbolicPotential">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">AdvancedSymbolicPotential</code><span class="sig-paren">(</span><em class="sig-param">N</em>, <em class="sig-param">expr</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#AdvancedSymbolicPotential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.AdvancedSymbolicPotential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.Potential" title="trical.classes.potential.Potential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.Potential</span></code></a></p>
+<p>Object representing a symbolically defined potential that need not be the same for all ions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>expr</strong> – Symbolic expression of the potential.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="trical.classes.potential.AdvancedSymbolicPotential.first_derivative">
+<code class="sig-name descname">first_derivative</code><span class="sig-paren">(</span><em class="sig-param">var</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#AdvancedSymbolicPotential.first_derivative"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.AdvancedSymbolicPotential.first_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the first derivative of the potential with respect to a variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>var</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Derivative variable.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Function corresponding to the first derivative of the potential with respect to the derivative variable.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/types.html#types.FunctionType" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types.FunctionType</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.AdvancedSymbolicPotential.nondimensionalize">
+<code class="sig-name descname">nondimensionalize</code><span class="sig-paren">(</span><em class="sig-param">l</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#AdvancedSymbolicPotential.nondimensionalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.AdvancedSymbolicPotential.nondimensionalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nondimensionalizes a AdvancedSymbolicPotential with a length scale.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>l</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Length scale.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nondimensionalized AdvancedSymbolicPotential.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#trical.classes.potential.AdvancedSymbolicPotential" title="trical.classes.potential.AdvancedSymbolicPotential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trical.classes.potential.AdvancedSymbolicPotential</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="trical.classes.potential.AdvancedSymbolicPotential.second_derivative">
+<code class="sig-name descname">second_derivative</code><span class="sig-paren">(</span><em class="sig-param">var1</em>, <em class="sig-param">var2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#AdvancedSymbolicPotential.second_derivative"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.AdvancedSymbolicPotential.second_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the second derivative of the potential with respect to two variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – first derivative variable.</p></li>
+<li><p><strong>var2</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – second derivative variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Function corresponding to the second derivative of the potential with respect to the derivative variables.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/types.html#types.FunctionType" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types.FunctionType</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="trical.classes.potential.CoulombPotential">
 <em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">CoulombPotential</code><span class="sig-paren">(</span><em class="sig-param">N</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#CoulombPotential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.CoulombPotential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.Potential" title="trical.classes.potential.Potential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.Potential</span></code></a></p>
@@ -243,6 +309,30 @@
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="trical.classes.potential.OpticalPotential">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">OpticalPotential</code><span class="sig-paren">(</span><em class="sig-param">focal_point</em>, <em class="sig-param">power</em>, <em class="sig-param">wavelength</em>, <em class="sig-param">beam_waist</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#OpticalPotential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.OpticalPotential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.SymbolicPotential" title="trical.classes.potential.SymbolicPotential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.SymbolicPotential</span></code></a></p>
+<p>Object representing a potential caused by a Gaussian beam.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>focal_point</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Center of the Gaussian beam.</p></li>
+<li><p><strong>power</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Power of Gaussian beam.</p></li>
+<li><p><strong>wavelength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Wavelength of Gaussian beam.</p></li>
+<li><p><strong>beam_waist</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Waist of Gaussian beam.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>rfpri</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Rabi frequency per root intensity.</p></li>
+<li><p><strong>transition_wavelength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Wavelength of the transition that creates the optical trap.</p></li>
+<li><p><strong>refractive_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Refractive index of medium Gaussian beam is propagating through.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
@@ -412,7 +502,7 @@
 <dt id="trical.classes.potential.SymbolicPotential">
 <em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">SymbolicPotential</code><span class="sig-paren">(</span><em class="sig-param">expr</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#SymbolicPotential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.SymbolicPotential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.Potential" title="trical.classes.potential.Potential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.Potential</span></code></a></p>
-<p>Object representing a symbolically defined potential.</p>
+<p>Object representing a symbolically defined potential, same for all ions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>expr</strong> – Symbolic expression of the potential.</p>
@@ -536,7 +626,7 @@
 <span id="trical-classes-trappedions-module"></span><h2>trical.classes.trappedions module<a class="headerlink" href="#module-trical.classes.trappedions" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="trical.classes.trappedions.TrappedIons">
-<em class="property">class </em><code class="sig-prename descclassname">trical.classes.trappedions.</code><code class="sig-name descname">TrappedIons</code><span class="sig-paren">(</span><em class="sig-param">N</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/trappedions.html#TrappedIons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.trappedions.TrappedIons" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.trappedions.</code><code class="sig-name descname">TrappedIons</code><span class="sig-paren">(</span><em class="sig-param">N</em>, <em class="sig-param">*ps</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/trappedions.html#TrappedIons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.trappedions.TrappedIons" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Object representing a system of trapped ions.</p>
 <dl class="field-list simple">

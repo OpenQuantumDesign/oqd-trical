@@ -144,12 +144,12 @@
            <div itemprop="articleBody">
             
   <h1>Source code for trical.classes.potential</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">..misc</span> <span class="k">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">cst</span>
-<span class="kn">from</span> <span class="nn">..misc.linalg</span> <span class="k">import</span> <span class="n">norm</span>
-<span class="kn">from</span> <span class="nn">..misc.setalg</span> <span class="k">import</span> <span class="n">intersection</span>
+<span></span><span class="kn">from</span> <span class="nn">..misc</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">cst</span>
+<span class="kn">from</span> <span class="nn">..misc.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">..misc.setalg</span> <span class="kn">import</span> <span class="n">intersection</span>
 <span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">itr</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numpy.polynomial</span> <span class="k">import</span> <span class="n">polynomial</span> <span class="k">as</span> <span class="n">poly</span>
+<span class="kn">from</span> <span class="nn">numpy.polynomial</span> <span class="kn">import</span> <span class="n">polynomial</span> <span class="k">as</span> <span class="n">poly</span>
 <span class="kn">import</span> <span class="nn">sympy</span>
 
 
@@ -164,7 +164,8 @@
 <span class="sd">    :param phi: Function representing the potential.</span>
 <span class="sd">    :type phi: :obj:`types.FunctionType`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">dphi</span><span class="p">,</span> <span class="n">d2phi</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">dphi</span><span class="p">,</span> <span class="n">d2phi</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Potential</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">phi</span> <span class="o">=</span> <span class="n">phi</span>
@@ -177,7 +178,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">other</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
@@ -191,7 +192,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">Potential</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">dphi</span><span class="p">,</span> <span class="n">d2phi</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">other</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
@@ -205,22 +206,22 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">Potential</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">dphi</span><span class="p">,</span> <span class="n">d2phi</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">):</span>
         <span class="n">phi</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">multiplier</span>
         <span class="n">dphi</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">var</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dphi</span><span class="p">(</span><span class="n">var</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">multiplier</span><span class="p">)</span>
         <span class="n">d2phi</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">d2phi</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">multiplier</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Potential</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">dphi</span><span class="p">,</span> <span class="n">d2phi</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span> <span class="o">*</span> <span class="n">multiplier</span>
 
-    <span class="k">def</span> <span class="nf">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">divisor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">divisor</span><span class="p">):</span>
         <span class="n">phi</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">divisor</span>
         <span class="n">dphi</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">var</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dphi</span><span class="p">(</span><span class="n">var</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">divisor</span><span class="p">)</span>
         <span class="n">d2phi</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">d2phi</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">divisor</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Potential</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">dphi</span><span class="p">,</span> <span class="n">d2phi</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Potential.first_derivative"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.Potential.first_derivative">[docs]</a>    <span class="k">def</span> <span class="nf">first_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
@@ -317,7 +318,8 @@
 
 <span class="sd">    :param N: Number of ions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dim&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="n">N</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">cst</span><span class="o">.</span><span class="n">e</span><span class="p">}</span>
         <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -326,7 +328,7 @@
         <span class="p">)</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">fromiter</span><span class="p">(</span><span class="n">itr</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">itr</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">),</span> <span class="mi">2</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
             <span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -415,7 +417,8 @@
 
 <span class="sd">    :param alpha: Coefficients of the polynomial potential.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">alpha</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 
@@ -426,7 +429,7 @@
         <span class="p">)</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="n">poly</span><span class="o">.</span><span class="n">polyval</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="n">poly</span><span class="o">.</span><span class="n">polyval2d</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="n">poly</span><span class="o">.</span><span class="n">polyval3d</span><span class="p">}[</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">](</span>
             <span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
         <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -484,11 +487,12 @@
 
 <div class="viewcode-block" id="SymbolicPotential"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.SymbolicPotential">[docs]</a><span class="k">class</span> <span class="nc">SymbolicPotential</span><span class="p">(</span><span class="n">Potential</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Object representing a symbolically defined potential.</span>
+<span class="sd">    Object representing a symbolically defined potential, same for all ions.</span>
 
 <span class="sd">    :param expr: Symbolic expression of the potential.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">expr</span> <span class="o">=</span> <span class="n">expr</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dim&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
@@ -504,7 +508,7 @@
         <span class="p">)</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambdified_expr</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SymbolicPotential.first_derivative"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.SymbolicPotential.first_derivative">[docs]</a>    <span class="k">def</span> <span class="nf">first_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
@@ -545,6 +549,149 @@
             <span class="n">l</span> <span class="o">/</span> <span class="p">(</span><span class="n">cst</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">cst</span><span class="o">.</span><span class="n">e</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">SymbolicPotential</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span></div>
+
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AdvancedSymbolicPotential"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.AdvancedSymbolicPotential">[docs]</a><span class="k">class</span> <span class="nc">AdvancedSymbolicPotential</span><span class="p">(</span><span class="n">Potential</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object representing a symbolically defined potential that need not be the same for all ions.</span>
+
+<span class="sd">    :param expr: Symbolic expression of the potential.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expr</span> <span class="o">=</span> <span class="n">expr</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dim&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="n">N</span><span class="p">}</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">[</span>
+                    <span class="n">sympy</span><span class="o">.</span><span class="n">Symbol</span><span class="p">([</span><span class="s2">&quot;x</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;y</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;z</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambdified_expr</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">lambdify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">expr</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">AdvancedSymbolicPotential</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_derivative</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">second_derivative</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span>
+        <span class="p">)</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambdified_expr</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+<div class="viewcode-block" id="AdvancedSymbolicPotential.first_derivative"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.AdvancedSymbolicPotential.first_derivative">[docs]</a>    <span class="k">def</span> <span class="nf">first_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">var</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">var</span><span class="p">[</span><span class="mi">1</span><span class="p">:][</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">def</span> <span class="nf">dphi_dai</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">sympy</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">lambdify</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">sympy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="p">)(</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">dphi_dai</span></div>
+
+<div class="viewcode-block" id="AdvancedSymbolicPotential.second_derivative"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.AdvancedSymbolicPotential.second_derivative">[docs]</a>    <span class="k">def</span> <span class="nf">second_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">var1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">var2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">var1</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">var1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">var1</span><span class="p">[</span><span class="mi">1</span><span class="p">:][</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">var2</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">var2</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">var2</span><span class="p">[</span><span class="mi">1</span><span class="p">:][</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">def</span> <span class="nf">d2phi_daidbj</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">sympy</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">lambdify</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">sympy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">b</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+            <span class="p">)(</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">d2phi_daidbj</span></div>
+
+<div class="viewcode-block" id="AdvancedSymbolicPotential.nondimensionalize"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.AdvancedSymbolicPotential.nondimensionalize">[docs]</a>    <span class="k">def</span> <span class="nf">nondimensionalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Nondimensionalizes a AdvancedSymbolicPotential with a length scale.</span>
+
+<span class="sd">        :param l: Length scale.</span>
+<span class="sd">        :type l: :obj:`float`</span>
+<span class="sd">        :returns: Nondimensionalized AdvancedSymbolicPotential.</span>
+<span class="sd">        :rtype: :obj:`trical.classes.potential.AdvancedSymbolicPotential`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">k</span> <span class="o">*</span> <span class="n">l</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span><span class="p">})</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">l</span> <span class="o">/</span> <span class="p">(</span><span class="n">cst</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">cst</span><span class="o">.</span><span class="n">e</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span>
+        <span class="k">if</span> <span class="s2">&quot;N&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">AdvancedSymbolicPotential</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span></div>
+
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="OpticalPotential"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.potential.OpticalPotential">[docs]</a><span class="k">class</span> <span class="nc">OpticalPotential</span><span class="p">(</span><span class="n">SymbolicPotential</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object representing a potential caused by a Gaussian beam.</span>
+
+<span class="sd">    :param focal_point: Center of the Gaussian beam.</span>
+<span class="sd">    :type focal_point: :obj:`numpy.ndarray`</span>
+<span class="sd">    :param power: Power of Gaussian beam.</span>
+<span class="sd">    :type power: :obj:`float`</span>
+<span class="sd">    :param wavelength: Wavelength of Gaussian beam.</span>
+<span class="sd">    :type wavelength: :obj:`float`</span>
+<span class="sd">    :param beam_waist: Waist of Gaussian beam.</span>
+<span class="sd">    :type beam_waist: :obj:`float`</span>
+<span class="sd">        </span>
+<span class="sd">    :Keyword Arguments:</span>
+<span class="sd">        * **rfpri** (:obj:`float`): Rabi frequency per root intensity.</span>
+<span class="sd">        * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.</span>
+<span class="sd">        * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">focal_point</span><span class="p">,</span> <span class="n">power</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">,</span> <span class="n">beam_waist</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">hbar</span> <span class="o">=</span> <span class="mf">1.05e-34</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mf">3e8</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;rfpri&quot;</span><span class="p">:</span> <span class="mf">3.86e6</span><span class="p">,</span>
+            <span class="s2">&quot;transition_wavelength&quot;</span><span class="p">:</span> <span class="mf">369.52e-9</span><span class="p">,</span>
+            <span class="s2">&quot;refractive_index&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">x_sym</span><span class="p">,</span> <span class="n">y_sym</span><span class="p">,</span> <span class="n">z_sym</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;x y z&quot;</span><span class="p">)</span>
+
+        <span class="n">delta_x</span><span class="p">,</span> <span class="n">delta_y</span><span class="p">,</span> <span class="n">delta_z</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">x_sym</span> <span class="o">-</span> <span class="n">focal_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">y_sym</span> <span class="o">-</span> <span class="n">focal_point</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">z_sym</span> <span class="o">-</span> <span class="n">focal_point</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">Delta</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">wavelength</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;transition_wavelength&quot;</span><span class="p">])</span>
+        <span class="n">x_R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">beam_waist</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;refractive_index&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">wavelength</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">beam_waist</span> <span class="o">*</span> <span class="n">sympy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">delta_x</span> <span class="o">/</span> <span class="n">x_R</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">I</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">power</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">beam_waist</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">expr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">hbar</span>
+            <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;rfpri&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="o">*</span> <span class="n">I</span>
+            <span class="o">*</span> <span class="n">beam_waist</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="o">*</span> <span class="n">sympy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">delta_y</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">delta_z</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">w</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span><span class="n">w</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">Delta</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">strength</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">hbar</span>
+            <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;rfpri&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="o">*</span> <span class="n">I</span>
+            <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">Delta</span> <span class="o">*</span> <span class="n">beam_waist</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">OpticalPotential</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">pass</span>
 
     <span class="k">pass</span></div>
 </pre></div>
