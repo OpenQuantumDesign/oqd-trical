@@ -341,7 +341,7 @@ class PolynomialPotential(Potential):
 
 class SymbolicPotential(Potential):
     """
-    Object representing a symbolically defined potential.
+    Object representing a symbolically defined potential, same for all ions.
 
     :param expr: Symbolic expression of the potential.
     """
@@ -408,6 +408,11 @@ class SymbolicPotential(Potential):
 
 
 class AdvancedSymbolicPotential(Potential):
+    """
+    Object representing a symbolically defined potential that need not be the same for all ions.
+
+    :param expr: Symbolic expression of the potential.
+    """
     def __init__(self, N, expr, **kwargs):
         self.expr = expr
 
@@ -463,6 +468,14 @@ class AdvancedSymbolicPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
+        """
+        Nondimensionalizes a AdvancedSymbolicPotential with a length scale.
+
+        :param l: Length scale.
+        :type l: :obj:`float`
+        :returns: Nondimensionalized AdvancedSymbolicPotential.
+        :rtype: :obj:`trical.classes.potential.AdvancedSymbolicPotential`
+        """
         expr = self.expr.subs({k: k * l for k in self.symbol}) * (
             l / (cst.k * cst.e ** 2)
         )
@@ -470,5 +483,68 @@ class AdvancedSymbolicPotential(Potential):
         if "N" in params.keys():
             params.pop("N")
         return AdvancedSymbolicPotential(self.N, expr, **params)
+
+    pass
+
+
+class OpticalPotential(SymbolicPotential):
+    """
+    Object representing a potential caused by a Gaussian beam.
+
+    :param focal_point: Center of the Gaussian beam.
+    :type focal_point: :obj:`numpy.ndarray`
+    :param power: Power of Gaussian beam.
+    :type power: :obj:`float`
+    :param wavelength: Wavelength of Gaussian beam.
+    :type wavelength: :obj:`float`
+    :param beam_waist: Waist of Gaussian beam.
+    :type beam_waist: :obj:`float`
+        
+    :Keyword Arguments:
+        * **rfpri** (:obj:`float`): Rabi frequency per root intensity.
+        * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
+        * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
+    """
+    def __init__(self, focal_point, power, wavelength, beam_waist, **kwargs):
+        hbar = 1.05e-34
+        c = 3e8
+
+        params = {
+            "rfpri": 3.86e6,
+            "transition_wavelength": 369.52e-9,
+            "refractive_index": 1,
+        }
+        params.update(kwargs)
+
+        x_sym, y_sym, z_sym = sympy.symbols("x y z")
+
+        delta_x, delta_y, delta_z = (
+            x_sym - focal_point[0],
+            y_sym - focal_point[1],
+            z_sym - focal_point[2],
+        )
+        Delta = c * 2 * np.pi * (1 / wavelength - 1 / params["transition_wavelength"])
+        x_R = np.pi * beam_waist ** 2 * params["refractive_index"] / wavelength
+        w = beam_waist * sympy.sqrt(1 + (delta_x / x_R) ** 2)
+        I = 2 * power / (np.pi * beam_waist ** 2)
+
+        expr = (
+            hbar
+            * params["rfpri"] ** 2
+            * I
+            * beam_waist ** 2
+            * sympy.exp(-2 * (delta_y ** 2 + delta_z ** 2) / w ** 2)
+            / (w ** 2 * 4 * Delta)
+        )
+
+        self.strength = (
+            hbar
+            * params["rfpri"] ** 2
+            * I
+            / (4 * Delta * beam_waist ** 2)
+        )
+
+        super(OpticalPotential, self).__init__(expr, dim=3)
+        pass
 
     pass
