@@ -22,4 +22,4 @@ def convert_m_a(A):
     :returns: Atomic mass in kilograms
     :rtype: :obj:`float`
     """
-    return A * 1.6726e-27
+    return A * 1.66053906660e-27
