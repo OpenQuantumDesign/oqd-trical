@@ -9,6 +9,7 @@ class SpinLattice(object):
     :param J: Interaction graph of the spin lattice system.
     :type J: :obj:`numpy.ndarray`
     """
+
     def __init__(self, J):
         super(SpinLattice, self).__init__()
 
@@ -32,6 +33,7 @@ class SimulatedSpinLattice(SpinLattice):
     :param Omega: Rabi frequencies.
     :type Omega: :obj:`numpy.ndarray`
     """
+
     def __init__(self, ti, mu, Omega, **kwargs):
         self.ti = ti
         self.mu = np.array(mu)
@@ -69,9 +71,20 @@ class SimulatedSpinLattice(SpinLattice):
         :param J: Interaction graph of the spin lattice simulated by the trapped ion system.
         :type J: :obj:`numpy.ndarray`
         """
-        eta = np.einsum(
-            "in,n->in", self.b, 2 * self.k * np.sqrt(cst.hbar / (2 * self.m * self.w))
-        )
+        try:
+            len(self.m)
+            eta = np.einsum(
+                "in,in->in",
+                self.b,
+                2 * self.k * np.sqrt(cst.hbar / (2 * np.outer(self.m * self.w))),
+            )
+        except:
+            eta = np.einsum(
+                "in,n->in",
+                self.b,
+                2 * self.k * np.sqrt(cst.hbar / (2 * self.m * self.w)),
+            )
+
         self.eta = eta
         zeta = np.einsum("im,in->imn", self.Omega, eta)
         self.zeta = zeta
