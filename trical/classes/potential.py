@@ -506,6 +506,7 @@ class OpticalPotential(SymbolicPotential):
     :type beam_waist: :obj:`float`
 
     :Keyword Arguments:
+        * **m** (:obj:`float`): Mass of ion.
         * **rfpri** (:obj:`float`): Rabi frequency per root intensity.
         * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
         * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
