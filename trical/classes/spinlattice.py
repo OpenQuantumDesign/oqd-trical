@@ -76,7 +76,7 @@ class SimulatedSpinLattice(SpinLattice):
             eta = np.einsum(
                 "in,in->in",
                 self.b,
-                2 * self.k * np.sqrt(cst.hbar / (2 * np.outer(self.m * self.w))),
+                2 * self.k * np.sqrt(cst.hbar / (2 * np.outer(self.m, self.w))),
             )
         except:
             eta = np.einsum(
