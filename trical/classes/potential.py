@@ -545,6 +545,10 @@ class OpticalPotential(SymbolicPotential):
         w = beam_waist * sympy.sqrt(1 + (delta_x / x_R) ** 2)
         I = 2 * power / (np.pi * beam_waist ** 2)
 
+        self.Delta = Delta
+        self.x_R = x_R
+        self.I = I
+
         expr = (
             cst.hbar
             * opt_params["rfpri"] ** 2
