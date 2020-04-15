@@ -8,6 +8,7 @@ Module containing relevant constants, in SI units, for TrICal.
     * **m_a** (:obj:`dict`): Dictionary of atomic masses.
 """
 
+c = 2.99792458e8
 e = 1.602176621e-19
 hbar = 1.054571818e-34
 k = 8.987551792e09
