@@ -554,33 +554,61 @@ class OpticalPotential(SymbolicPotential):
             / (w ** 2 * 4 * Delta)
         )
 
-        self.trap_strength = np.sqrt(
+        super(OpticalPotential, self).__init__(expr, dim=3)
+
+        omega_x = np.sqrt(
             np.abs(
-                cst.hbar * opt_params["rfpri"] ** 2 * I / (4 * Delta * beam_waist ** 2)
+                cst.hbar
+                * opt_params["rfpri"] ** 2
+                * power
+                * wavelength ** 2
+                / (
+                    2
+                    * opt_params["refractive_index"] ** 2
+                    * np.pi ** 3
+                    * Delta
+                    * beam_waist ** 6
+                )
             )
             * 2
             / self.m
         )
-
-        super(OpticalPotential, self).__init__(expr, dim=3)
+        omega_y = omega_z = np.sqrt(
+            np.abs(
+                cst.hbar
+                * opt_params["rfpri"] ** 2
+                * power
+                / (np.pi * Delta * beam_waist ** 4)
+            )
+            * 2
+            / self.m
+        )
+        self.omega = np.array([omega_x, omega_y, omega_z])
         pass
 
-    def fit_trap_strength(self):
+    def fit_trap_strength(self, ls_to_bw=10):
         """
         """
         x = np.moveaxis(
-            np.meshgrid(*([np.linspace(-self.beam_waist, self.beam_waist, 101)] * 3)),
+            np.meshgrid(
+                *(
+                    [
+                        np.linspace(
+                            -self.beam_waist / ls_to_bw, self.beam_waist / ls_to_bw, 101
+                        )
+                    ]
+                    * 3
+                )
+            ),
             (0, 1, 2, 3),
             (3, 0, 1, 2),
         ).reshape(-1, 3)
 
         V = self.evaluate(x + self.focal_point)
 
-        alpha = multivariate_polyfit(x, V, deg=(2, 2, 2), l=self.beam_waist)
+        alpha = multivariate_polyfit(x, V, deg=(2, 2, 2), l=self.beam_waist / 100)
 
-        self.alpha = alpha
-        self.omega = np.sqrt(alpha[tuple(np.eye(3, dtype=int) * 2)] * 2 / self.m)
-
+        self.omega_fit = np.sqrt(alpha[tuple(np.eye(3, dtype=int) * 2)] * 2 / self.m)
         pass
 
     pass
