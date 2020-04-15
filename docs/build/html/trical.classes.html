@@ -312,9 +312,9 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="trical.classes.potential.OpticalPotential">
-<em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">OpticalPotential</code><span class="sig-paren">(</span><em class="sig-param">focal_point</em>, <em class="sig-param">power</em>, <em class="sig-param">wavelength</em>, <em class="sig-param">beam_waist</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#OpticalPotential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.OpticalPotential" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.SymbolicPotential" title="trical.classes.potential.SymbolicPotential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.SymbolicPotential</span></code></a></p>
+<dt id="trical.classes.potential.GaussianOpticalPotential">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">GaussianOpticalPotential</code><span class="sig-paren">(</span><em class="sig-param">focal_point</em>, <em class="sig-param">power</em>, <em class="sig-param">wavelength</em>, <em class="sig-param">beam_waist</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#GaussianOpticalPotential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.GaussianOpticalPotential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.OpticalPotential" title="trical.classes.potential.OpticalPotential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.OpticalPotential</span></code></a></p>
 <p>Object representing a potential caused by a Gaussian beam.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -335,10 +335,35 @@
 </dd>
 </dl>
 <dl class="method">
-<dt id="trical.classes.potential.OpticalPotential.fit_trap_strength">
-<code class="sig-name descname">fit_trap_strength</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#OpticalPotential.fit_trap_strength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.OpticalPotential.fit_trap_strength" title="Permalink to this definition">¶</a></dt>
+<dt id="trical.classes.potential.GaussianOpticalPotential.fit_trap_strength">
+<code class="sig-name descname">fit_trap_strength</code><span class="sig-paren">(</span><em class="sig-param">ls_to_bw=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#GaussianOpticalPotential.fit_trap_strength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.GaussianOpticalPotential.fit_trap_strength" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="trical.classes.potential.GaussianOpticalPotential.gaussian_beam_intensity">
+<code class="sig-name descname">gaussian_beam_intensity</code><span class="sig-paren">(</span><em class="sig-param">focal_point</em>, <em class="sig-param">power</em>, <em class="sig-param">wavelength</em>, <em class="sig-param">beam_waist</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#GaussianOpticalPotential.gaussian_beam_intensity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.GaussianOpticalPotential.gaussian_beam_intensity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="trical.classes.potential.OpticalPotential">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">OpticalPotential</code><span class="sig-paren">(</span><em class="sig-param">intensity_expr</em>, <em class="sig-param">wavelength</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#OpticalPotential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.OpticalPotential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.SymbolicPotential" title="trical.classes.potential.SymbolicPotential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.SymbolicPotential</span></code></a></p>
+<p>Object representing a general optical potential.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wavelength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Wavelength of the optical potential.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>m</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Mass of ion.</p></li>
+<li><p><strong>rfpri</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Rabi frequency per root intensity.</p></li>
+<li><p><strong>transition_wavelength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Wavelength of the transition that creates the optical trap.</p></li>
+<li><p><strong>refractive_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Refractive index of medium Gaussian beam is propagating through.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
