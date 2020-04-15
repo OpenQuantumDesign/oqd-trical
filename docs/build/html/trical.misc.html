@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -173,6 +173,65 @@
 </ul>
 </dd>
 </dl>
+<dl class="function">
+<dt id="trical.misc.constants.convert_m_a">
+<code class="sig-prename descclassname">trical.misc.constants.</code><code class="sig-name descname">convert_m_a</code><span class="sig-paren">(</span><em class="sig-param">A</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/misc/constants.html#convert_m_a"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.misc.constants.convert_m_a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts atomic mass from atomic mass units to kilograms</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>A</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Atomic mass in atomic mass units</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Atomic mass in kilograms</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="trical.misc.constants.natural_V">
+<code class="sig-prename descclassname">trical.misc.constants.</code><code class="sig-name descname">natural_V</code><span class="sig-paren">(</span><em class="sig-param">m</em>, <em class="sig-param">q</em>, <em class="sig-param">omega</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/misc/constants.html#natural_V"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.misc.constants.natural_V" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates a natural energy scale for a trapped ion system</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Mass of ion</p></li>
+<li><p><strong>q</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Charge of ion</p></li>
+<li><p><strong>omega</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Trapping strength</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Natural energy scale</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="trical.misc.constants.natural_l">
+<code class="sig-prename descclassname">trical.misc.constants.</code><code class="sig-name descname">natural_l</code><span class="sig-paren">(</span><em class="sig-param">m</em>, <em class="sig-param">q</em>, <em class="sig-param">omega</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/misc/constants.html#natural_l"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.misc.constants.natural_l" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates a natural length scale for a trapped ion system</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Mass of ion</p></li>
+<li><p><strong>q</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Charge of ion</p></li>
+<li><p><strong>omega</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Trapping strength</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Natural length scale</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="module-trical.misc.linalg">
 <span id="trical-misc-linalg-module"></span><h2>trical.misc.linalg module<a class="headerlink" href="#module-trical.misc.linalg" title="Permalink to this headline">¶</a></h2>

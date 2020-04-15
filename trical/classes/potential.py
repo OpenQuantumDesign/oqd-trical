@@ -1,5 +1,6 @@
 from ..misc import constants as cst
 from ..misc.linalg import norm
+from ..misc.polynomial import multivariate_polyfit
 from ..misc.setalg import intersection
 import itertools as itr
 import numpy as np
@@ -126,7 +127,7 @@ class Potential(object):
     def hessian(self):
         """
         Calculates the Hessian of the potential
-                
+
         :returns: Function corresponding to the Hessian of the potential
         :rtype: :obj:`types.FunctionType`
         """
@@ -152,7 +153,7 @@ class Potential(object):
     def update_params(self, **kwargs):
         """
         Updates parameters, i.e. params attribute, of a Potential object.
-        
+
         :Keyword Arguments:
             * **dim** (:obj:`float`): Dimension of the system.
             * **m** (:obj:`float`): Mass of an ion.
@@ -365,6 +366,9 @@ class SymbolicPotential(Potential):
     def __call__(self, x):
         return self.lambdified_expr(*x.transpose()).sum()
 
+    def evaluate(self, x):
+        return self.lambdified_expr(*x.transpose())
+
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if type(var) == str else var[1:][0]) - 1
@@ -413,6 +417,7 @@ class AdvancedSymbolicPotential(Potential):
 
     :param expr: Symbolic expression of the potential.
     """
+
     def __init__(self, N, expr, **kwargs):
         self.expr = expr
 
@@ -499,22 +504,32 @@ class OpticalPotential(SymbolicPotential):
     :type wavelength: :obj:`float`
     :param beam_waist: Waist of Gaussian beam.
     :type beam_waist: :obj:`float`
-        
+
     :Keyword Arguments:
+        * **m** (:obj:`float`): Mass of ion.
         * **rfpri** (:obj:`float`): Rabi frequency per root intensity.
         * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
         * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
     """
-    def __init__(self, focal_point, power, wavelength, beam_waist, **kwargs):
-        hbar = 1.05e-34
-        c = 3e8
 
-        params = {
+    def __init__(self, focal_point, power, wavelength, beam_waist, **kwargs):
+        c = 2.99792458e8
+
+        self.params = {"dim": 3}
+
+        self.focal_point = focal_point
+        self.power = power
+        self.wavelength = wavelength
+        self.beam_waist = beam_waist
+
+        opt_params = {
+            "m": cst.m_a["Yb171"],
             "rfpri": 3.86e6,
             "transition_wavelength": 369.52e-9,
             "refractive_index": 1,
         }
-        params.update(kwargs)
+        opt_params.update(kwargs)
+        self.__dict__.update(opt_params)
 
         x_sym, y_sym, z_sym = sympy.symbols("x y z")
 
@@ -523,28 +538,49 @@ class OpticalPotential(SymbolicPotential):
             y_sym - focal_point[1],
             z_sym - focal_point[2],
         )
-        Delta = c * 2 * np.pi * (1 / wavelength - 1 / params["transition_wavelength"])
-        x_R = np.pi * beam_waist ** 2 * params["refractive_index"] / wavelength
+        Delta = (
+            c * 2 * np.pi * (1 / wavelength - 1 / opt_params["transition_wavelength"])
+        )
+        x_R = np.pi * beam_waist ** 2 * opt_params["refractive_index"] / wavelength
         w = beam_waist * sympy.sqrt(1 + (delta_x / x_R) ** 2)
         I = 2 * power / (np.pi * beam_waist ** 2)
 
         expr = (
-            hbar
-            * params["rfpri"] ** 2
+            cst.hbar
+            * opt_params["rfpri"] ** 2
             * I
             * beam_waist ** 2
             * sympy.exp(-2 * (delta_y ** 2 + delta_z ** 2) / w ** 2)
             / (w ** 2 * 4 * Delta)
         )
 
-        self.strength = (
-            hbar
-            * params["rfpri"] ** 2
-            * I
-            / (4 * Delta * beam_waist ** 2)
+        self.trap_strength = np.sqrt(
+            np.abs(
+                cst.hbar * opt_params["rfpri"] ** 2 * I / (4 * Delta * beam_waist ** 2)
+            )
+            * 2
+            / self.m
         )
 
         super(OpticalPotential, self).__init__(expr, dim=3)
+        pass
+
+    def fit_trap_strength(self):
+        """
+        """
+        x = np.moveaxis(
+            np.meshgrid(*([np.linspace(-self.beam_waist, self.beam_waist, 101)] * 3)),
+            (0, 1, 2, 3),
+            (3, 0, 1, 2),
+        ).reshape(-1, 3)
+
+        V = self.evaluate(x + self.focal_point)
+
+        alpha = multivariate_polyfit(x, V, deg=(2, 2, 2), l=self.beam_waist)
+
+        self.alpha = alpha
+        self.omega = np.sqrt(alpha[tuple(np.eye(3, dtype=int) * 2)] * 2 / self.m)
+
         pass
 
     pass

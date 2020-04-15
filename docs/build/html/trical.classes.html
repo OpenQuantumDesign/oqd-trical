@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -327,12 +327,18 @@
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
+<li><p><strong>m</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Mass of ion.</p></li>
 <li><p><strong>rfpri</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Rabi frequency per root intensity.</p></li>
 <li><p><strong>transition_wavelength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Wavelength of the transition that creates the optical trap.</p></li>
 <li><p><strong>refractive_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Refractive index of medium Gaussian beam is propagating through.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="method">
+<dt id="trical.classes.potential.OpticalPotential.fit_trap_strength">
+<code class="sig-name descname">fit_trap_strength</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#OpticalPotential.fit_trap_strength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.OpticalPotential.fit_trap_strength" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -508,6 +514,11 @@
 <dd class="field-odd"><p><strong>expr</strong> – Symbolic expression of the potential.</p>
 </dd>
 </dl>
+<dl class="method">
+<dt id="trical.classes.potential.SymbolicPotential.evaluate">
+<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#SymbolicPotential.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.SymbolicPotential.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="trical.classes.potential.SymbolicPotential.first_derivative">
 <code class="sig-name descname">first_derivative</code><span class="sig-paren">(</span><em class="sig-param">var</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#SymbolicPotential.first_derivative"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.SymbolicPotential.first_derivative" title="Permalink to this definition">¶</a></dt>
