@@ -494,6 +494,52 @@ class AdvancedSymbolicPotential(Potential):
 
 class OpticalPotential(SymbolicPotential):
     """
+    Object representing a general optical potential.
+
+    :param wavelength: Wavelength of the optical potential.
+    :type wavelength: :obj:`float`
+
+    :Keyword Arguments:
+        * **m** (:obj:`float`): Mass of ion.
+        * **rfpri** (:obj:`float`): Rabi frequency per root intensity.
+        * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
+        * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
+    """
+
+    def __init__(self, intensity_expr, wavelength, **kwargs):
+        self.params = {"dim": 3}
+
+        self.intensity_expr = intensity_expr
+        self.wavelength = wavelength
+
+        opt_params = {
+            "m": cst.m_a["Yb171"],
+            "rfpri": 3.86e6,
+            "transition_wavelength": 369.52e-9,
+            "refractive_index": 1,
+        }
+        opt_params.update(kwargs)
+        self.__dict__.update(opt_params)
+        self.opt_params = opt_params
+
+        Delta = (
+            cst.c
+            * 2
+            * np.pi
+            * (1 / wavelength - 1 / opt_params["transition_wavelength"])
+        )
+        self.Delta = Delta
+
+        expr = cst.hbar * opt_params["rfpri"] ** 2 * intensity_expr / (4 * Delta)
+
+        super(OpticalPotential, self).__init__(expr, **self.params)
+        pass
+
+    pass
+
+
+class GaussianOpticalPotential(OpticalPotential):
+    """
     Object representing a potential caused by a Gaussian beam.
 
     :param focal_point: Center of the Gaussian beam.
@@ -513,15 +559,55 @@ class OpticalPotential(SymbolicPotential):
     """
 
     def __init__(self, focal_point, power, wavelength, beam_waist, **kwargs):
-        c = 2.99792458e8
-
-        self.params = {"dim": 3}
-
         self.focal_point = focal_point
         self.power = power
-        self.wavelength = wavelength
         self.beam_waist = beam_waist
 
+        opt_params = {
+            "m": cst.m_a["Yb171"],
+            "rfpri": 3.86e6,
+            "transition_wavelength": 369.52e-9,
+            "refractive_index": 1,
+        }
+        opt_params.update(kwargs)
+        self.__dict__.update(opt_params)
+
+        intensity_expr = self.gaussian_beam_intensity(
+            focal_point, power, wavelength, beam_waist, **opt_params
+        )
+
+        super(GaussianOpticalPotential, self).__init__(intensity_expr, wavelength, **opt_params)
+
+        omega_x = np.sqrt(
+            np.abs(
+                cst.hbar
+                * opt_params["rfpri"] ** 2
+                * power
+                * wavelength ** 2
+                / (
+                    opt_params["refractive_index"] ** 2
+                    * np.pi ** 3
+                    * self.Delta
+                    * beam_waist ** 6
+                    * opt_params["m"]
+                )
+            )
+        )
+        omega_y = omega_z = np.sqrt(
+            np.abs(
+                2
+                * cst.hbar
+                * opt_params["rfpri"] ** 2
+                * power
+                / (np.pi * self.Delta * beam_waist ** 4 * opt_params["m"])
+            )
+        )
+        self.omega = np.array([omega_x, omega_y, omega_z])
+        pass
+
+    def gaussian_beam_intensity(
+        self, focal_point, power, wavelength, beam_waist, **kwargs
+    ):
         opt_params = {
             "m": cst.m_a["Yb171"],
             "rfpri": 3.86e6,
@@ -539,7 +625,10 @@ class OpticalPotential(SymbolicPotential):
             z_sym - focal_point[2],
         )
         Delta = (
-            c * 2 * np.pi * (1 / wavelength - 1 / opt_params["transition_wavelength"])
+            cst.c
+            * 2
+            * np.pi
+            * (1 / wavelength - 1 / opt_params["transition_wavelength"])
         )
         x_R = np.pi * beam_waist ** 2 * opt_params["refractive_index"] / wavelength
         w = beam_waist * sympy.sqrt(1 + (delta_x / x_R) ** 2)
@@ -549,43 +638,13 @@ class OpticalPotential(SymbolicPotential):
         self.x_R = x_R
         self.I = I
 
-        expr = (
-            cst.hbar
-            * opt_params["rfpri"] ** 2
-            * I
+        intensity_expr = (
+            I
             * beam_waist ** 2
             * sympy.exp(-2 * (delta_y ** 2 + delta_z ** 2) / w ** 2)
-            / (w ** 2 * 4 * Delta)
+            / w ** 2
         )
-
-        super(OpticalPotential, self).__init__(expr, dim=3)
-
-        omega_x = np.sqrt(
-            np.abs(
-                cst.hbar
-                * opt_params["rfpri"] ** 2
-                * power
-                * wavelength ** 2
-                / (
-                    opt_params["refractive_index"] ** 2
-                    * np.pi ** 3
-                    * Delta
-                    * beam_waist ** 6
-                    * opt_params["m"]
-                )
-            )
-        )
-        omega_y = omega_z = np.sqrt(
-            np.abs(
-                2
-                * cst.hbar
-                * opt_params["rfpri"] ** 2
-                * power
-                / (np.pi * Delta * beam_waist ** 4 * opt_params["m"])
-            )
-        )
-        self.omega = np.array([omega_x, omega_y, omega_z])
-        pass
+        return intensity_expr
 
     def fit_trap_strength(self, ls_to_bw=10):
         """
