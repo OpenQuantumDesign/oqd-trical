@@ -567,25 +567,22 @@ class OpticalPotential(SymbolicPotential):
                 * power
                 * wavelength ** 2
                 / (
-                    2
-                    * opt_params["refractive_index"] ** 2
+                    opt_params["refractive_index"] ** 2
                     * np.pi ** 3
                     * Delta
                     * beam_waist ** 6
+                    * opt_params["m"]
                 )
             )
-            * 2
-            / self.m
         )
         omega_y = omega_z = np.sqrt(
             np.abs(
-                cst.hbar
+                2
+                * cst.hbar
                 * opt_params["rfpri"] ** 2
                 * power
-                / (np.pi * Delta * beam_waist ** 4)
+                / (np.pi * Delta * beam_waist ** 4 * opt_params["m"])
             )
-            * 2
-            / self.m
         )
         self.omega = np.array([omega_x, omega_y, omega_z])
         pass
