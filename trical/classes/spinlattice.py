@@ -1,8 +1,9 @@
+from .base import Base
 from ..misc import constants as cst
 import numpy as np
 
 
-class SpinLattice(object):
+class SpinLattice(Base):
     """
     Object representing a spin lattice system.
 
@@ -25,7 +26,7 @@ class SpinLattice(object):
 class SimulatedSpinLattice(SpinLattice):
     """
     Object representing a spin lattice system simulated by a trapped ion system
-    
+
     :param ti: A trapped ion system.
     :type ti: :obj:`trical.classes.trappedions.TrappedIons`
     :param mu: Raman beatnote detunings.
@@ -67,7 +68,7 @@ class SimulatedSpinLattice(SpinLattice):
     def interaction_graph(self):
         """
         Calculates the interaction graph of the spin lattice simulated by the trapped ion system.
-        
+
         :param J: Interaction graph of the spin lattice simulated by the trapped ion system.
         :type J: :obj:`numpy.ndarray`
         """

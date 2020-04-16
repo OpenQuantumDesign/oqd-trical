@@ -1,3 +1,4 @@
+from .base import Base
 from ..misc import constants as cst
 from ..misc.linalg import norm, orthonormal_subset
 from ..misc.optimize import dflt_opt
@@ -6,10 +7,10 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 
-class TrappedIons(object):
+class TrappedIons(Base):
     """
     Object representing a system of trapped ions.
-    
+
     :param N: Number of ions.
     :type N: :obj:`int`
     """
@@ -36,7 +37,7 @@ class TrappedIons(object):
     def equilibrium_position(self, opt=dflt_opt):
         """
         Function that calculates the equilibrium position of the ions.
-        
+
         :param opt: Generator of the appropriate optimization function for finding the equilibrium position, defaults to :obj:`trical.misc.optimize.dflt_opt`
         :type opt: :obj:`types.FunctionType`, optional
         :returns: Equilibrium position of the ions.
@@ -54,7 +55,7 @@ class TrappedIons(object):
     def normal_modes(self):
         """
         Function that calculates the normal modes of the system.
-        
+
         :Returns:
             * **w** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.
             * **b** (:obj:`numpy.ndarray`): Normal mode eigenvectors of the system.
@@ -90,7 +91,7 @@ class TrappedIons(object):
     def principle_axis(self, tol=1e-3):
         """
         Function that calculates the principle axes of the system.
-        
+
         :Returns:
             * **x_pa** (:obj:`numpy.ndarray`): Principle axes of the system.
             * **w_pa** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.
@@ -139,7 +140,7 @@ class TrappedIons(object):
     def update_params(self, **kwargs):
         """
         Updates parameters, i.e. params attribute, of a TrappedIons object.
-        
+
         :Keyword Arguments:
             * **dim** (:obj:`float`): Dimension of the system.
             * **l** (:obj:`float`): Length scale of the system.
