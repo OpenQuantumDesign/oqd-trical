@@ -1,3 +1,4 @@
+from .base import Base
 from ..misc import constants as cst
 from ..misc.linalg import norm
 from ..misc.polynomial import multivariate_polyfit
@@ -8,7 +9,7 @@ from numpy.polynomial import polynomial as poly
 import sympy
 
 
-class Potential(object):
+class Potential(Base):
     """
     Object representing a general potential.
 
@@ -501,7 +502,7 @@ class OpticalPotential(SymbolicPotential):
 
     :Keyword Arguments:
         * **m** (:obj:`float`): Mass of ion.
-        * **rfpri** (:obj:`float`): Rabi frequency per root intensity.
+        * **Omega_bar** (:obj:`float`): Rabi frequency per root intensity.
         * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
         * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
     """
@@ -514,7 +515,7 @@ class OpticalPotential(SymbolicPotential):
 
         opt_params = {
             "m": cst.m_a["Yb171"],
-            "rfpri": 3.86e6,
+            "Omega_bar": 3.86e6,
             "transition_wavelength": 369.52e-9,
             "refractive_index": 1,
         }
@@ -522,15 +523,15 @@ class OpticalPotential(SymbolicPotential):
         self.__dict__.update(opt_params)
         self.opt_params = opt_params
 
-        Delta = (
-            cst.c
-            * 2
-            * np.pi
-            * (1 / wavelength - 1 / opt_params["transition_wavelength"])
-        )
+        nu = cst.convert_lamb_to_omega(wavelength)
+        nu_transition = cst.convert_lamb_to_omega(opt_params["transition_wavelength"])
+        Delta = nu - nu_transition
+
+        self.nu = nu
+        self.nu_transition = nu_transition
         self.Delta = Delta
 
-        expr = cst.hbar * opt_params["rfpri"] ** 2 * intensity_expr / (4 * Delta)
+        expr = cst.hbar * opt_params["Omega_bar"] ** 2 * intensity_expr / (4 * Delta)
 
         super(OpticalPotential, self).__init__(expr, **self.params)
         pass
@@ -553,35 +554,24 @@ class GaussianOpticalPotential(OpticalPotential):
 
     :Keyword Arguments:
         * **m** (:obj:`float`): Mass of ion.
-        * **rfpri** (:obj:`float`): Rabi frequency per root intensity.
+        * **Omega_bar** (:obj:`float`): Rabi frequency per root intensity.
         * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
         * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
     """
 
     def __init__(self, focal_point, power, wavelength, beam_waist, **kwargs):
-        self.focal_point = focal_point
-        self.power = power
-        self.beam_waist = beam_waist
-
-        opt_params = {
-            "m": cst.m_a["Yb171"],
-            "rfpri": 3.86e6,
-            "transition_wavelength": 369.52e-9,
-            "refractive_index": 1,
-        }
-        opt_params.update(kwargs)
-        self.__dict__.update(opt_params)
-
         intensity_expr = self.gaussian_beam_intensity(
             focal_point, power, wavelength, beam_waist, **opt_params
         )
 
-        super(GaussianOpticalPotential, self).__init__(intensity_expr, wavelength, **opt_params)
+        super(GaussianOpticalPotential, self).__init__(
+            intensity_expr, wavelength, **opt_params
+        )
 
         omega_x = np.sqrt(
             np.abs(
                 cst.hbar
-                * opt_params["rfpri"] ** 2
+                * opt_params["Omega_bar"] ** 2
                 * power
                 * wavelength ** 2
                 / (
@@ -597,7 +587,7 @@ class GaussianOpticalPotential(OpticalPotential):
             np.abs(
                 2
                 * cst.hbar
-                * opt_params["rfpri"] ** 2
+                * opt_params["Omega_bar"] ** 2
                 * power
                 / (np.pi * self.Delta * beam_waist ** 4 * opt_params["m"])
             )
@@ -608,9 +598,13 @@ class GaussianOpticalPotential(OpticalPotential):
     def gaussian_beam_intensity(
         self, focal_point, power, wavelength, beam_waist, **kwargs
     ):
+        self.focal_point = focal_point
+        self.power = power
+        self.beam_waist = beam_waist
+
         opt_params = {
             "m": cst.m_a["Yb171"],
-            "rfpri": 3.86e6,
+            "Omega_bar": 3.86e6,
             "transition_wavelength": 369.52e-9,
             "refractive_index": 1,
         }
@@ -624,19 +618,17 @@ class GaussianOpticalPotential(OpticalPotential):
             y_sym - focal_point[1],
             z_sym - focal_point[2],
         )
-        Delta = (
-            cst.c
-            * 2
-            * np.pi
-            * (1 / wavelength - 1 / opt_params["transition_wavelength"])
-        )
+
+        nu = cst.convert_lamb_to_omega(wavelength)
+        nu_transition = cst.convert_lamb_to_omega(opt_params["transition_wavelength"])
+        Delta = nu - nu_transition
         x_R = np.pi * beam_waist ** 2 * opt_params["refractive_index"] / wavelength
         w = beam_waist * sympy.sqrt(1 + (delta_x / x_R) ** 2)
         I = 2 * power / (np.pi * beam_waist ** 2)
 
-        self.Delta = Delta
         self.x_R = x_R
         self.I = I
+        self.Omega = opt_params["Omega_bar"] / np.sqrt(I)
 
         intensity_expr = (
             I
@@ -670,5 +662,27 @@ class GaussianOpticalPotential(OpticalPotential):
 
         self.omega_fit = np.sqrt(alpha[tuple(np.eye(3, dtype=int) * 2)] * 2 / self.m)
         pass
+
+    def scattering_rate(self, A=9.53e7, b_ratio=1):
+        A_bar = A / b_ratio
+        if np.abs((self.nu / self.nu_transition) ** 3 - 1) > 0.1:
+            return (
+                3
+                * np.pi
+                * cst.c ** 2
+                * self.nu ** 2
+                * self.I
+                * (
+                    A_bar / (self.nu_transition - self.nu)
+                    + A_bar / (self.nu_transition + self.nu)
+                )
+                ** 2
+            ) / (2 * cst.hbar * self.nu_transition ** 6)
+        else:
+            return (
+                self.Omega ** 2
+                * A_bar
+                / (A_bar ** 2 + 2 * self.Omega ** 2 + 4 * self.Delta ** 2)
+            )
 
     pass
