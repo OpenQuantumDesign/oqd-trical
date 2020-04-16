@@ -571,15 +571,15 @@ class GaussianOpticalPotential(OpticalPotential):
         omega_x = np.sqrt(
             np.abs(
                 cst.hbar
-                * opt_params["Omega_bar"] ** 2
+                * self.Omega_bar ** 2
                 * power
                 * wavelength ** 2
                 / (
-                    opt_params["refractive_index"] ** 2
+                    self.refractive_index ** 2
                     * np.pi ** 3
                     * self.Delta
                     * beam_waist ** 6
-                    * opt_params["m"]
+                    * self.m
                 )
             )
         )
@@ -587,9 +587,9 @@ class GaussianOpticalPotential(OpticalPotential):
             np.abs(
                 2
                 * cst.hbar
-                * opt_params["Omega_bar"] ** 2
+                * self.Omega_bar ** 2
                 * power
-                / (np.pi * self.Delta * beam_waist ** 4 * opt_params["m"])
+                / (np.pi * self.Delta * beam_waist ** 4 * self.m)
             )
         )
         self.omega = np.array([omega_x, omega_y, omega_z])
