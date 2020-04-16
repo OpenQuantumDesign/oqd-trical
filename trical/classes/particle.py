@@ -1,10 +1,11 @@
 from .base import Base
 
 class Particle(Base):
-    def __init__(self, symbol, m, q, **kwargs):
+    def __init__(self, symbol, m, q, Omega_bar, A):
         self.symbol = symbol
         self.m = m
         self.q = q
-        self.__dict__.update(**kwargs)
+        self.Omega_bar = Omega_bar
+        self.A = A
         super(Element, self).__init__()
         pass
