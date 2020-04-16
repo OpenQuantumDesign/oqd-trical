@@ -561,11 +561,11 @@ class GaussianOpticalPotential(OpticalPotential):
 
     def __init__(self, focal_point, power, wavelength, beam_waist, **kwargs):
         intensity_expr = self.gaussian_beam_intensity(
-            focal_point, power, wavelength, beam_waist, **opt_params
+            focal_point, power, wavelength, beam_waist, **kwargs
         )
 
         super(GaussianOpticalPotential, self).__init__(
-            intensity_expr, wavelength, **opt_params
+            intensity_expr, wavelength, **kwargs
         )
 
         omega_x = np.sqrt(
