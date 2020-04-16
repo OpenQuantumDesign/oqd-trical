@@ -1,4 +1,4 @@
-from .empty import Empty
+from .base import Base
 from .potential import (
     Potential,
     CoulombPotential,
