@@ -628,7 +628,7 @@ class GaussianOpticalPotential(OpticalPotential):
 
         self.x_R = x_R
         self.I = I
-        self.Omega = opt_params["Omega_bar"] / np.sqrt(I)
+        self.Omega = opt_params["Omega_bar"] * np.sqrt(I)
 
         intensity_expr = (
             I
@@ -660,17 +660,19 @@ class GaussianOpticalPotential(OpticalPotential):
 
         alpha = multivariate_polyfit(x, V, deg=(2, 2, 2), l=self.beam_waist / 100)
 
-        self.omega_fit = np.sqrt(alpha[tuple(np.eye(3, dtype=int) * 2)] * 2 / self.m)
+        self.omega_fit = np.sqrt(
+            np.abs(alpha[tuple(np.eye(3, dtype=int) * 2)] * 2 / self.m)
+        )
         pass
 
-    def scattering_rate(self, A=9.53e7, b_ratio=1):
+    def scattering_rate(self, A=1.23e8, b_ratio=1):
         A_bar = A / b_ratio
         if np.abs((self.nu / self.nu_transition) ** 3 - 1) > 0.1:
             return (
                 3
                 * np.pi
                 * cst.c ** 2
-                * self.nu ** 2
+                * self.nu ** 3
                 * self.I
                 * (
                     A_bar / (self.nu_transition - self.nu)
