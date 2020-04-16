@@ -1,3 +1,5 @@
+import numpy as np
+
 """
 Module containing relevant constants, in SI units, for TrICal.
 
@@ -25,6 +27,10 @@ def convert_m_a(A):
     :rtype: :obj:`float`
     """
     return A * 1.66053906660e-27
+
+
+def convert_lamb_to_omega(lamb):
+    return 2 * np.pi * c / lamb
 
 
 def natural_l(m, q, omega):
