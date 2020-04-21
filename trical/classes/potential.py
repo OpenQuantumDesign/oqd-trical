@@ -625,7 +625,7 @@ class GaussianOpticalPotential(OpticalPotential):
         x_R = np.pi * beam_waist ** 2 * opt_params["refractive_index"] / wavelength
         w = beam_waist * sympy.sqrt(1 + (delta_x / x_R) ** 2)
         I = 2 * power / (np.pi * beam_waist ** 2)
-        Omega = opt_params["Omega_bar"] * np.sqrt(I)
+        Omega = opt_params["Omega_bar"] * np.sqrt(np.abs(I))
 
         self.x_R = x_R
         self.I = I
@@ -688,5 +688,8 @@ class GaussianOpticalPotential(OpticalPotential):
                 * A_bar
                 / (A_bar ** 2 + 2 * self.Omega ** 2 + 4 * self.Delta ** 2)
             )
+
+    def differential_stark_shift(self, delta):
+        pass
 
     pass
