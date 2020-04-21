@@ -60,3 +60,28 @@ def orthonormal_subset(x, tol=1e-3):
         x = np.delete(x, idcs, axis=0)
         i += 1
     return x
+
+
+def gram_schimdt(b, tol=1e-5):
+    b = np.einsum("ij,j->ij", b, 1 / np.linalg.norm(b, axis=0))
+    for i in range(b.shape[-1]):
+        for j in range(i):
+            b[:, i] = b[:, i] - np.dot(b[:, i], b[:, j]) * b[:, j]
+            if np.linalg.norm(b[:, i]) < tol:
+                b[:, i] = np.zeros(len(b[:, i]))
+            else:
+                b[:, i] = b[:, i] / np.linalg.norm(b[:, i])
+    return b
+
+
+def orthonormal_component(v, b, tol=1e-5):
+    v = v / np.linalg.norm(v)
+    b = gram_schimdt(b)
+
+    v = v - np.einsum("i,ij,jk->k", v, b, b.transpose())
+    if np.linalg.norm(v) < tol:
+        print("Failed")
+        return None
+    else:
+        v = v / np.linalg.norm(v)
+    return v
