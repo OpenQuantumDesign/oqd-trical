@@ -79,9 +79,6 @@ def orthonormal_component(v, b, tol=1e-5):
     b = gram_schimdt(b)
 
     v = v - np.einsum("i,ij,jk->k", v, b, b.transpose())
-    if np.linalg.norm(v) < tol:
-        print("Failed")
-        return None
-    else:
-        v = v / np.linalg.norm(v)
+    assert np.linalg.norm(v) > tol, "Failed"
+    v = v / np.linalg.norm(v)
     return v
