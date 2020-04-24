@@ -71,12 +71,12 @@ class TrappedIons(Base):
 
         hess_phi_x_ep = hess_phi(self.x_ep / self.l)
 
-        try:
-            A = np.einsum("ij,i->ij", hess_phi_x_ep, 1 / np.tile(self.m, 3))
-            w, b = np.linalg.eig(A)
-        except:
+        if type(self.m) == float:
             A = hess_phi_x_ep / self.m
             w, b = np.linalg.eigh(A)
+        else:
+            A = np.einsum("ij,i->ij", hess_phi_x_ep, 1 / np.tile(self.m, 3))
+            w, b = np.linalg.eig(A)
 
         w = np.sqrt(w * cst.k * cst.e ** 2 / self.l ** 3)
 
@@ -86,7 +86,11 @@ class TrappedIons(Base):
 
         idcs = np.argsort(np.flip(w, axis=0))
 
-        self.w, self.b, self.A = w[idcs], b[:, idcs], A
+        self.w, self.b, self.A = (
+            w[idcs],
+            b[:, idcs],
+            A * cst.k * cst.e ** 2 / self.l ** 3,
+        )
         return self.w, self.b
 
     def principle_axis(self, tol=1e-3):
