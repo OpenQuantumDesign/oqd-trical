@@ -75,8 +75,14 @@ class TrappedIons(Base):
             A = hess_phi_x_ep / self.m
             w, b = np.linalg.eigh(A)
         else:
-            A = np.einsum("ij,i->ij", hess_phi_x_ep, 1 / np.tile(self.m, 3))
-            w, b = np.linalg.eig(A)
+            A = np.einsum(
+                "ij,i,j->ij",
+                hess_phi_x_ep,
+                1 / np.tile(np.sqrt(self.m), 3),
+                1 / np.tile(np.sqrt(self.m), 3),
+            )
+            w, b = np.linalg.eigh(A)
+            b = np.einsum("im,i", b, 1 / np.tile(np.sqrt(self.m), 3))
 
         w = np.sqrt(w * cst.k * cst.e ** 2 / self.l ** 3)
 
