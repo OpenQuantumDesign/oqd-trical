@@ -83,6 +83,7 @@ class TrappedIons(Base):
             )
             w, b = np.linalg.eigh(A)
             b = np.einsum("im,i->im", b, 1 / np.tile(np.sqrt(self.m), 3))
+            b = b / np.linalg.norm(b, axis=0)
 
         w = np.sqrt(w * cst.k * cst.e ** 2 / self.l ** 3)
 
