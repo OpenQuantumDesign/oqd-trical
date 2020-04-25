@@ -28,7 +28,9 @@ def control_eigenfreqs(
         if i == 0:
             As = np.copy(_A.reshape(1, *_A.shape))
         else:
-            if np.isclose(_A, _At, rtol=ttol[0], atol=ttol[1]).all():
+            if (_w >= 0).all() and np.isclose(
+                np.sqrt(_w), target_w, rtol=ttol[0], atol=ttol[1]
+            ).all():
                 print(
                     "Terminated at iteration {} and iteration {} from reinitialization".format(
                         i + 1, i - last_initialization + 1
@@ -79,4 +81,3 @@ def control_eigenfreqs(
     omega_opt_sign = np.sign(np.diag(_At - A))
 
     return (omega_opt, omega_opt_sign), np.sqrt(_w) - target_w, As, Ats
-
