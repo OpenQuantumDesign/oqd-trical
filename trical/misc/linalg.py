@@ -82,3 +82,35 @@ def orthonormal_component(v, b, tol=1e-5):
     assert np.linalg.norm(v) > tol, "Failed"
     v = v / np.linalg.norm(v)
     return v
+
+
+def multi_gram_schmidt(b, tol=1e-5):
+    b = np.einsum("...ij,...j->...ij", b, 1 / np.linalg.norm(b, axis=-2))
+    for i in range(b.shape[-1]):
+        for j in range(i):
+            b[:, :, i] = b[:, :, i] - np.einsum(
+                "...i,...i,...j->...j", b[:, :, i], b[:, :, j], b[:, :, j]
+            )
+            idcs = np.linalg.norm(b[:, :, i], axis=-1) < tol
+            b[idcs, :, i] = 0.0
+            b[np.logical_not(idcs), :, i] = np.einsum(
+                "...i,...->...i",
+                b[np.logical_not(idcs), :, i],
+                1 / np.linalg.norm(b[np.logical_not(idcs), :, i], axis=-1),
+            )
+    return b
+
+
+def random_unitary(M, N, gs_tol=1e-5):
+    b = 2 * np.random.rand(M, N, N) - 1
+    b = multi_gram_schmidt(b, gs_tol)
+    idcs = np.isclose(np.einsum("pji,pjk->pik", b, b), np.eye(N)).all(-1).all(-1)
+
+    while idcs.sum() < M:
+        b = b[idcs]
+        _b = 2 * np.random.rand(M - idcs.sum(), N, N) - 1
+        _b = multi_gram_schmidt(_b, gs_tol)
+        b = np.concatenate((b, _b))
+        idcs = np.isclose(np.einsum("pji,pjk->pik", b, b), np.eye(N)).all(-1).all(-1)
+
+    return b
