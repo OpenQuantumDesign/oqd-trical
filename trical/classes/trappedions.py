@@ -34,7 +34,7 @@ class TrappedIons(Base):
         self.fp = self.cp + self.ps.sum()
         pass
 
-    def equilibrium_position(self, opt=dflt_opt):
+    def equilibrium_position(self, opt=dflt_opt, **kwargs):
         """
         Function that calculates the equilibrium position of the ions.
 
@@ -49,7 +49,9 @@ class TrappedIons(Base):
 
         _ndfp = lambda x: ndfp(x.reshape(self.dim, self.N).transpose())
 
-        self.x_ep = opt(self)(_ndfp).reshape(self.dim, self.N).transpose() * self.l
+        self.x_ep = (
+            opt(self, **kwargs)(_ndfp).reshape(self.dim, self.N).transpose() * self.l
+        )
         return self.x_ep
 
     def normal_modes(self):
@@ -112,9 +114,13 @@ class TrappedIons(Base):
         if np.isin(np.array(["w", "b"]), np.array(self.__dict__.keys())).sum() != 2:
             self.normal_modes()
 
-        x_pa = orthonormal_subset(self.b.reshape(self.dim, -1).transpose(), tol=tol)
+        xs = self.b.reshape(self.dim, -1).transpose()
+        idcs = np.argsort(-np.linalg.norm(xs, axis=1))
+        xs = xs[idcs]
 
-        assert len(x_pa) == self.dim
+        x_pa = orthonormal_subset(xs, tol=tol)
+
+        assert len(x_pa) == self.dim, x_pa.__str__()
 
         _x_pa = np.round(np.copy(x_pa), 3)
         s = (np.sign(_x_pa).sum(1) >= 0) * 2 - 1
@@ -162,6 +168,23 @@ class TrappedIons(Base):
         self.params.update(kwargs)
         self.__dict__.update(self.params)
         pass
+
+    def mode_ion_coupling(self):
+        if (
+            np.isin(
+                np.array(["w_pa", "b_pa", "x_pa"]), np.array(self.__dict__.keys())
+            ).sum()
+            != 3
+        ):
+            self.principle_axis()
+
+        mic = np.zeros((3 * self.N, 3 * self.N, 3 * self.N))
+        idcs = np.triu_indices(3 * self.N, k=1)
+        mic[:, idcs[0], idcs[1]] = mic[:, idcs[1], idcs[0]] = (
+            self.b_pa[np.array(idcs), :].prod(axis=0).transpose()
+        )
+        self.mic = mic
+        return self.mic
 
     def plot_equilibrium_position(self, **kwargs):
         pass
