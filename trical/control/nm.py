@@ -269,3 +269,18 @@ def multi_control_eigenfreqs(
     omega_opt_sign = torch.sign((_At - A)[:, range(N), range(N)])
 
     return (omega_opt, omega_opt_sign), torch.sqrt(_w) - target_w, As, Ats
+
+
+def generate_control_eigenfreqs_residue(target_w, ti, dir="x"):
+    N = len(target_w)
+    a = {"x": 0, "y": 1, "z": 2}[dir]
+    A = ti.A[a * N : (a + 1) * N, a * N : (a + 1) * N]
+
+    def residue(A_opt):
+        _A = np.copy(A)
+        _A[range(N), range(N)] = _A[range(N), range(N)] + A_opt
+        _w = np.sqrt(np.linalg.eigh(_A)[0])
+        _w = -np.sort(-_w)
+        return np.linalg.norm(_w - target_w)
+
+    return residue
