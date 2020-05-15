@@ -59,8 +59,6 @@ def control_eigenfreqs(
 
         if np.abs(np.linalg.det(_b ** 2)) < det_tol:
             print("possible cycling at iteration {}".format(i))
-            r = 2 * np.random.rand(N) - 1
-            r = r / np.linalg.norm(r)
             _ndAt[range(N), range(N)] = (
                 np.random.rand(N) * _ndAt[range(N), range(N)].max()
             )
@@ -194,3 +192,82 @@ def generate_control_eigenfreqs_residue(target_w, ti, dir="x"):
         return np.linalg.norm(_w - target_w)
 
     return residue
+
+
+def multi_control_eigenfreqs(
+    ti,
+    target_w,
+    guess_b=None,
+    num_iter=1000,
+    dir="x",
+    term_tol=(1e-5, 0.0),
+    det_tol=1e-2,
+):
+    M = len(target_w)
+
+    if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
+        ti.principle_axis()
+
+    a = {"x": 0, "y": 1, "z": 2}[dir]
+    N = ti.N
+    A = ti.A[a * N : (a + 1) * N, a * N : (a + 1) * N]
+    w = ti.w_pa[a * N : (a + 1) * N]
+
+    w_scale = w.max()
+    ndA = A / w_scale ** 2
+    target_ndw = target_w / w_scale
+
+    if guess_b is None:
+        _b = random_unitary(M, N)
+    else:
+        _b = guess_b
+
+    completed_idcs = np.zeros(M, dtype=bool)
+    for i in range(num_iter):
+        if i == 0:
+            _ndA = np.zeros((M, N, N))
+
+        _ndA[np.logical_not(completed_idcs)] = np.einsum(
+            "...im,...m,...mj->...ij",
+            _b[np.logical_not(completed_idcs)],
+            target_ndw[np.logical_not(completed_idcs)] ** 2,
+            _b[np.logical_not(completed_idcs)].swapaxes(-1, -2),
+        )
+        idcs = np.triu_indices(N, k=1)
+
+        _ndAt = np.copy(_ndA)
+        _ndAt[:, idcs[0], idcs[1]] = _ndAt[:, idcs[1], idcs[0]] = np.copy(ndA[idcs])
+
+        _ndw, _b = np.linalg.eigh(_ndAt)
+        _ndw = np.flip(_ndw, axis=-1)
+        _w = _ndw * w_scale ** 2
+        _b = np.flip(_b, axis=-1)
+
+        completed_idcs = np.logical_or(
+            completed_idcs,
+            np.isclose(np.sqrt(_w), target_w, rtol=term_tol[0], atol=term_tol[1]).all(
+                axis=-1
+            ),
+        )
+
+        reinit_idcs = np.abs(np.linalg.det(_b ** 2)) < det_tol
+        if reinit_idcs.sum() > 0:
+            _ndAt[reinit_idcs] = np.random.uniform(
+                0,
+                np.tile(
+                    _ndAt[reinit_idcs][:, range(N), range(N)].max(axis=-1), (N, N, 1)
+                ).transpose(),
+            )
+            _ndAt[:, idcs[0], idcs[1]] = _ndAt[:, idcs[1], idcs[0]] = np.copy(ndA[idcs])
+
+            _ndw, _b = np.linalg.eigh(_ndAt)
+            _ndw = np.flip(_ndw, axis=-1)
+            _w = _ndw * w_scale ** 2
+            _b = np.flip(_b, axis=-1)
+
+    _A = _ndA * w_scale ** 2
+    _At = _ndAt * w_scale ** 2
+    omega_opt = np.sqrt(np.abs(_At[:, range(N), range(N)] - A[range(N), range(N)]))
+    omega_opt_sign = np.sign(_At[:, range(N), range(N)] - A[range(N), range(N)])
+
+    return (omega_opt, omega_opt_sign), np.sqrt(_w) - target_w, _A, _At, completed_idcs
