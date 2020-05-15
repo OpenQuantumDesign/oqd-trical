@@ -600,6 +600,7 @@ class GaussianOpticalPotential(OpticalPotential):
     ):
         self.focal_point = focal_point
         self.power = power
+        self.wavelength = wavelength
         self.beam_waist = beam_waist
 
         opt_params = {
@@ -693,3 +694,229 @@ class GaussianOpticalPotential(OpticalPotential):
         pass
 
     pass
+
+
+class GaussianOpticalPotential2(Potential):
+    def __init__(self, focal_point, power, wavelength, beam_waist, **kwargs):
+        self.params = {"dim": 3}
+        self.focal_point = focal_point
+        self.power = power
+        self.wavelength = wavelength
+        self.beam_waist = beam_waist
+
+        opt_params = {
+            "m": cst.m_a["Yb171"],
+            "Omega_bar": 3.86e6,
+            "transition_wavelength": 369.52e-9,
+            "refractive_index": 1,
+        }
+        opt_params.update(kwargs)
+        self.__dict__.update(opt_params)
+        self.opt_params = opt_params
+
+        nu = cst.convert_lamb_to_omega(wavelength)
+        nu_transition = cst.convert_lamb_to_omega(opt_params["transition_wavelength"])
+        Delta = nu - nu_transition
+        x_R = np.pi * beam_waist ** 2 * opt_params["refractive_index"] / wavelength
+        I = 2 * power / (np.pi * beam_waist ** 2)
+        Omega = opt_params["Omega_bar"] * np.sqrt(np.abs(I))
+        omega_x = np.sqrt(
+            np.abs(
+                cst.hbar
+                * self.Omega_bar ** 2
+                * power
+                * wavelength ** 2
+                / (
+                    self.refractive_index ** 2
+                    * np.pi ** 3
+                    * Delta
+                    * beam_waist ** 6
+                    * self.m
+                )
+            )
+        )
+        omega_y = omega_z = np.sqrt(
+            np.abs(
+                2
+                * cst.hbar
+                * self.Omega_bar ** 2
+                * power
+                / (np.pi * Delta * beam_waist ** 4 * self.m)
+            )
+        )
+
+        self.nu = nu
+        self.nu_transition = nu_transition
+        self.Delta = Delta
+        self.x_R = x_R
+        self.I = I
+        self.Omega = Omega
+        self.stark_shift = np.abs(Omega ** 2 / (4 * Delta))
+        self.V = cst.hbar * self.Omega_bar ** 2 * self.I / (4 * self.Delta)
+        self.omega = np.array([omega_x, omega_y, omega_z])
+
+        super(GaussianOpticalPotential2, self).__init__(
+            self.__call__, self.first_derivative, self.second_derivative, **self.params
+        )
+        pass
+
+    def __call__(self, x):
+        delta_x = x - self.focal_point
+        w = self.beam_waist * np.sqrt(1 + (delta_x[:, 0] / self.x_R) ** 2)
+        w0 = self.beam_waist
+        V = self.V
+        e = np.exp(-2 * (delta_x[:, 1] ** 2 + delta_x[:, 2] ** 2) / w ** 2)
+        return (V * e * w0 ** 2 / w ** 2).sum()
+
+    def first_derivative(self, var):
+        a = {"x": 0, "y": 1, "z": 2}[var[0]]
+        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
+
+        def dphi_dai(x):
+            V = self.V
+            w0 = self.beam_waist
+            xR = self.x_R
+            delta_x = x[i] - self.focal_point
+            w = w0 * np.sqrt(1 + (delta_x[0] / xR) ** 2)
+            e = np.exp(-2 * (delta_x[1] ** 2 + delta_x[2] ** 2) / w ** 2)
+            if a == 0:
+                return (
+                    -2
+                    * xR ** 2
+                    * V
+                    * delta_x[0]
+                    * (
+                        w0 ** 2 * delta_x[0] ** 2
+                        - 2 * xR ** 2 * (delta_x[1] ** 2 + delta_x[2] ** 2)
+                        + xR ** 2 * w0 ** 2
+                    )
+                    * e
+                    * w0 ** 4
+                    / (w ** 6 * xR ** 6)
+                )
+            else:
+                return -4 * V * delta_x[a] * e * w0 ** 2 / w ** 4
+
+        return dphi_dai
+
+    def second_derivative(self, var1, var2):
+        a = {"x": 0, "y": 1, "z": 2}[var1[0]]
+        b = {"x": 0, "y": 1, "z": 2}[var2[0]]
+        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
+        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
+
+        def d2phi_daidbj(x):
+            V = self.V
+            w0 = self.beam_waist
+            xR = self.x_R
+            delta_x = x[i] - self.focal_point
+            w = w0 * np.sqrt(1 + (delta_x[0] / xR) ** 2)
+            e = np.exp(-2 * (delta_x[1] ** 2 + delta_x[2] ** 2) / w ** 2)
+            if i != j:
+                return 0
+            else:
+                if a == b == 0:
+                    return (
+                        2
+                        * xR ** 2
+                        * V
+                        * (
+                            3 * w0 ** 4 * delta_x[0] ** 6
+                            + delta_x[0] ** 4
+                            * (
+                                -14
+                                * xR ** 2
+                                * w0 ** 2
+                                * (delta_x[1] ** 2 + delta_x[2] ** 2)
+                                + 5 * xR ** 2 * w0 ** 4
+                            )
+                            + delta_x[0] ** 2
+                            * (
+                                8 * xR ** 4 * (delta_x[1] ** 4 + delta_x[2] ** 4)
+                                + delta_x[2] ** 2
+                                * (
+                                    16 * xR ** 4 * delta_x[1] ** 2
+                                    - 12 * xR ** 4 * w0 ** 2
+                                )
+                                - 12 * xR ** 4 * w0 ** 2 * delta_x[1] ** 2
+                                + xR ** 4 * w0 ** 4
+                            )
+                            + 2
+                            * xR ** 6
+                            * w0 ** 2
+                            * (delta_x[1] ** 2 + delta_x[2] ** 2)
+                            - xR ** 6 * w0 ** 4
+                        )
+                        * e
+                        * w0 ** 6
+                        / (w ** 10 * xR ** 10)
+                    )
+                elif a == b:
+                    return (
+                        4
+                        * xR ** 4
+                        * V
+                        * (
+                            4 * xR ** 2 * delta_x[a] ** 2
+                            - w0 ** 2 * (delta_x[0] ** 2 + xR ** 2)
+                        )
+                        * e
+                        * w0 ** 2
+                        / (w ** 6 * xR ** 6)
+                    )
+
+                elif a == 0:
+                    return (
+                        16
+                        * xR ** 4
+                        * V
+                        * delta_x[0]
+                        * delta_x[b]
+                        * (
+                            -(xR ** 2) * (delta_x[1] ** 2 + delta_x[2] ** 2)
+                            + w0 ** 2 * (xR ** 2 + delta_x[0] ** 2)
+                        )
+                        * e
+                        * w0 ** 4
+                        / (w ** 8 * xR ** 8)
+                    )
+                elif b == 0:
+                    return (
+                        16
+                        * xR ** 4
+                        * V
+                        * delta_x[0]
+                        * delta_x[a]
+                        * (
+                            -(xR ** 2) * (delta_x[1] ** 2 + delta_x[2] ** 2)
+                            + w0 ** 2 * (xR ** 2 + delta_x[0] ** 2)
+                        )
+                        * e
+                        * w0 ** 4
+                        / (w ** 8 * xR ** 8)
+                    )
+                else:
+                    return (
+                        16
+                        * xR ** 6
+                        * V
+                        * delta_x[1]
+                        * delta_x[2]
+                        * e
+                        * w0 ** 2
+                        / (w ** 6 * xR ** 6)
+                    )
+
+        return d2phi_daidbj
+
+    def nondimensionalize(self, l):
+        return GaussianOpticalPotential2(
+            self.focal_point / l,
+            self.power,
+            self.wavelength / l,
+            self.beam_waist / l,
+            m=self.m,
+            Omega_bar=self.Omega_bar,
+            transition_wavelength=self.transition_wavelength / l,
+            refractive_index=self.refractive_index,
+        ) / (cst.k * cst.e ** 2)
