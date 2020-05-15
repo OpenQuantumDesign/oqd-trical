@@ -762,10 +762,11 @@ class GaussianOpticalPotential2(Potential):
 
     def __call__(self, x):
         delta_x = x - self.focal_point
-        w = self.beam_waist * np.sqrt(1 + (delta_x[:, 0] / self.x_R) ** 2)
         w0 = self.beam_waist
+        w = w0 * np.sqrt(1 + (delta_x[:, 0] / self.x_R) ** 2)
         V = self.V
-        e = np.exp(-2 * (delta_x[:, 1] ** 2 + delta_x[:, 2] ** 2) / w ** 2)
+        r = np.sqrt(delta_x[:, 1] ** 2 + delta_x[:, 2] ** 2)
+        e = np.exp(-2 * r ** 2 / w ** 2)
         return (V * e * w0 ** 2 / w ** 2).sum()
 
     def first_derivative(self, var):
@@ -778,24 +779,14 @@ class GaussianOpticalPotential2(Potential):
             xR = self.x_R
             delta_x = x[i] - self.focal_point
             w = w0 * np.sqrt(1 + (delta_x[0] / xR) ** 2)
-            e = np.exp(-2 * (delta_x[1] ** 2 + delta_x[2] ** 2) / w ** 2)
+            r = np.sqrt(delta_x[1] ** 2 + delta_x[2] ** 2)
+            e = np.exp(-2 * r ** 2 / w ** 2)
             if a == 0:
-                return (
-                    -2
-                    * xR ** 2
-                    * V
-                    * delta_x[0]
-                    * (
-                        w0 ** 2 * delta_x[0] ** 2
-                        - 2 * xR ** 2 * (delta_x[1] ** 2 + delta_x[2] ** 2)
-                        + xR ** 2 * w0 ** 2
-                    )
-                    * e
-                    * w0 ** 4
-                    / (w ** 6 * xR ** 6)
+                return (2 * V * e * w0 ** 4 * delta_x[0] * (2 * r ** 2 - w ** 2)) / (
+                    w ** 6 * xR ** 2
                 )
             else:
-                return -4 * V * delta_x[a] * e * w0 ** 2 / w ** 4
+                return -4 * V * e * w0 ** 2 * delta_x[a] / w ** 4
 
         return dphi_dai
 
@@ -811,101 +802,60 @@ class GaussianOpticalPotential2(Potential):
             xR = self.x_R
             delta_x = x[i] - self.focal_point
             w = w0 * np.sqrt(1 + (delta_x[0] / xR) ** 2)
-            e = np.exp(-2 * (delta_x[1] ** 2 + delta_x[2] ** 2) / w ** 2)
+            r = np.sqrt(delta_x[1] ** 2 + delta_x[2] ** 2)
+            e = np.exp(-2 * r ** 2 / w ** 2)
             if i != j:
                 return 0
             else:
                 if a == b == 0:
                     return (
-                        2
-                        * xR ** 2
+                        -2
                         * V
+                        * w0 ** 4
                         * (
-                            3 * w0 ** 4 * delta_x[0] ** 6
-                            + delta_x[0] ** 4
+                            w ** 6 * xR ** 2
+                            - 4 * w ** 4 * w0 ** 2 * delta_x[0] ** 2
+                            + 8 * w ** 2 * w0 ** 2 * delta_x[0] ** 2 * r ** 2
+                            - 2
+                            * r ** 2
                             * (
-                                -14
-                                * xR ** 2
-                                * w0 ** 2
-                                * (delta_x[1] ** 2 + delta_x[2] ** 2)
-                                + 5 * xR ** 2 * w0 ** 4
+                                w ** 4 * xR ** 2
+                                - 4 * w ** 2 * w0 ** 2 * delta_x[0] ** 2
+                                + 4 * w0 ** 2 * delta_x[0] ** 2 * r ** 2
                             )
-                            + delta_x[0] ** 2
-                            * (
-                                8 * xR ** 4 * (delta_x[1] ** 4 + delta_x[2] ** 4)
-                                + delta_x[2] ** 2
-                                * (
-                                    16 * xR ** 4 * delta_x[1] ** 2
-                                    - 12 * xR ** 4 * w0 ** 2
-                                )
-                                - 12 * xR ** 4 * w0 ** 2 * delta_x[1] ** 2
-                                + xR ** 4 * w0 ** 4
-                            )
-                            + 2
-                            * xR ** 6
-                            * w0 ** 2
-                            * (delta_x[1] ** 2 + delta_x[2] ** 2)
-                            - xR ** 6 * w0 ** 4
                         )
                         * e
-                        * w0 ** 6
-                        / (w ** 10 * xR ** 10)
+                        / (w ** 10 * xR ** 4)
                     )
                 elif a == b:
                     return (
-                        4
-                        * xR ** 4
-                        * V
-                        * (
-                            4 * xR ** 2 * delta_x[a] ** 2
-                            - w0 ** 2 * (delta_x[0] ** 2 + xR ** 2)
-                        )
-                        * e
-                        * w0 ** 2
-                        / (w ** 6 * xR ** 6)
+                        -4 * V * w0 ** 2 * (w ** 2 - 4 * delta_x[a] ** 2) * e / w ** 6
                     )
 
                 elif a == 0:
                     return (
                         16
-                        * xR ** 4
                         * V
+                        * w0 ** 4
                         * delta_x[0]
                         * delta_x[b]
-                        * (
-                            -(xR ** 2) * (delta_x[1] ** 2 + delta_x[2] ** 2)
-                            + w0 ** 2 * (xR ** 2 + delta_x[0] ** 2)
-                        )
+                        * (w ** 2 - r ** 2)
                         * e
-                        * w0 ** 4
-                        / (w ** 8 * xR ** 8)
+                        / (w ** 8 * xR ** 2)
                     )
                 elif b == 0:
                     return (
                         16
-                        * xR ** 4
                         * V
+                        * w0 ** 4
                         * delta_x[0]
                         * delta_x[a]
-                        * (
-                            -(xR ** 2) * (delta_x[1] ** 2 + delta_x[2] ** 2)
-                            + w0 ** 2 * (xR ** 2 + delta_x[0] ** 2)
-                        )
+                        * (w ** 2 - r ** 2)
                         * e
-                        * w0 ** 4
-                        / (w ** 8 * xR ** 8)
+                        / (w ** 8 * xR ** 2)
                     )
                 else:
-                    return (
-                        16
-                        * xR ** 6
-                        * V
-                        * delta_x[1]
-                        * delta_x[2]
-                        * e
-                        * w0 ** 2
-                        / (w ** 6 * xR ** 6)
-                    )
+                    return 16 * V * w0 ** 2 * delta_x[1] * delta_x[2] * e / w ** 6
 
         return d2phi_daidbj
 
