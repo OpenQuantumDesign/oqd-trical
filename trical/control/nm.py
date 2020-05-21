@@ -452,9 +452,9 @@ def control_eigenfreqs_pop(
         else:
             Ats = np.concatenate((Ats, np.copy(At).reshape(1, *At.shape)), axis=0)
 
-        ndelta_w = np.linalg.norm(delta_w, axis=-1)
-        print(i, ndelta_w.min())
-        minidx = np.linalg.norm(delta_w, axis=-1).argmin()
+        max_delta_w = np.abs(delta_w).max(-1)
+        print(i, max_delta_w.min())
+        minidx = max_delta_w.argmin()
 
         if np.isclose(
             target_w + delta_w[minidx], target_w, rtol=term_tol[0], atol=term_tol[1]
@@ -482,6 +482,92 @@ def control_eigenfreqs_pop(
             _w, _b = np.linalg.eigh(At)
             _w = np.flip(_w, axis=-1)
             _b = np.flip(_b, axis=-1)
+
+    omega_opt = np.sqrt(np.abs(np.diag(At[minidx] - A)))
+    omega_opt_sign = np.sign(np.diag(At[minidx] - A))
+
+    return (omega_opt, omega_opt_sign), delta_w[minidx], Ats
+
+
+def control_eigenfreqs_de(
+    ti,
+    target_w,
+    mutation=0.1,
+    greed=0.1,
+    crossover=0.1,
+    maxiter=1000,
+    popsteps=100,
+    popsize=50,
+    direc="x",
+    term_tol=(1e-5, 0.0),
+    det_tol=1e-2,
+):
+    if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
+        ti.principle_axis()
+
+    a = {"x": 0, "y": 1, "z": 2}[direc]
+    N = ti.N
+    A = ti.A[a * N : (a + 1) * N, a * N : (a + 1) * N]
+
+    _b = random_unitary(popsize, N)
+
+    for i in range(popsteps):
+        if i == 0:
+            At, delta_w = multi_inst_control_eigenfreqs(
+                ti, target_w, _b, maxiter, popsize, direc
+            )
+            Ats = np.copy(At).reshape(1, *At.shape)
+
+            ndelta_w = np.linalg.norm(delta_w, axis=-1)
+            print(ndelta_w.min())
+            minidx = ndelta_w.argmin()
+
+        idcs = np.tile(np.arange(popsize - 1), (popsize, 1))
+        idcs[np.triu_indices(popsize - 1, k=0)] += 1
+        [np.random.shuffle(i) for i in idcs]
+
+        x = At[:, range(N), range(N)]
+
+        v = (
+            x[range(popsize)]
+            + greed * (x[minidx] - x[range(popsize)])
+            + mutation * (x[idcs[:, 0]] - x[idcs[:, 1]])
+        )
+
+        r = np.random.rand(*v.shape)
+        p = r <= crossover
+
+        u = np.logical_not(p) * x + p * v
+
+        At2 = np.copy(At)
+        At2[:, range(N), range(N)] = u
+
+        _w, _b = np.linalg.eigh(At2)
+        _w = np.flip(_w, axis=-1)
+        _b = np.flip(_b, axis=-1)
+
+        At2, delta_w2 = multi_inst_control_eigenfreqs(
+            ti, target_w, _b, maxiter, popsize, direc
+        )
+
+        p2 = (
+            np.linalg.norm(delta_w2, axis=-1) < np.linalg.norm(delta_w, axis=-1)
+        ).reshape(-1, 1, 1)
+        At = np.logical_not(p2) * At + p2 * At2
+
+        p2 = p2.reshape(-1, 1)
+        delta_w = np.logical_not(p2) * delta_w + p2 * delta_w2
+
+        ndelta_w = np.linalg.norm(delta_w, axis=-1)
+        print(ndelta_w.min())
+        minidx = ndelta_w.argmin()
+
+        Ats = np.concatenate((Ats, np.copy(At).reshape(1, *At.shape)), axis=0)
+
+        if np.isclose(
+            target_w + delta_w[minidx], target_w, rtol=term_tol[0], atol=term_tol[1]
+        ).all():
+            break
 
     omega_opt = np.sqrt(np.abs(np.diag(At[minidx] - A)))
     omega_opt_sign = np.sign(np.diag(At[minidx] - A))
