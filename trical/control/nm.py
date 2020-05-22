@@ -514,7 +514,7 @@ def control_eigenfreqs_de(
     for i in range(popsteps):
         if i == 0:
             At, delta_w = multi_inst_control_eigenfreqs(
-                ti, target_w, _b, maxiter, popsize, direc
+                ti, target_w, _b, popsize, maxiter, direc
             )
             Ats = np.copy(At).reshape(1, *At.shape)
 
@@ -547,7 +547,7 @@ def control_eigenfreqs_de(
         _b = np.flip(_b, axis=-1)
 
         At2, delta_w2 = multi_inst_control_eigenfreqs(
-            ti, target_w, _b, maxiter, popsize, direc
+            ti, target_w, _b, popsize, maxiter, direc
         )
 
         p2 = (
