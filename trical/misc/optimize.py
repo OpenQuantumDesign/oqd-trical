@@ -15,7 +15,7 @@ def dflt_opt(ti, **kwargs):
     :returns: Default optimization function that finds the equilibrium position of the trapped ions system of interest via the minimization of the potential.
     :rtype: :obj:`types.FunctionType`
     """
-    opt_params = {"method": "SLSQP", "options": {"maxiter": 1000}}
+    opt_params = {"method": "SLSQP", "options": {"maxiter": 1000}, "tol": 1e-15}
     opt_params.update(kwargs)
 
     if ti.dim == 1:
