@@ -197,7 +197,7 @@ def multi_control_eigenfreqs(
             print("{:<10}{:<10}".format(i, completed_idcs.sum()))
         if i == 0:
             _ndA = np.einsum(
-                "...im,...m,...mj->...ij", _b, target_ndw ** 2, _b.swapaxes(-1, -2),
+                "...im,...m,...mj->...ij", _b, target_ndw ** 2, _b.swapaxes(-1, -2)
             )
 
         else:
@@ -338,7 +338,7 @@ dflt_epsilon = (
 
 
 def control_eigenfreqs_gradual(
-    ti, target_w, epsilon=dflt_epsilon, maxiter=1000, direc="x", term_tol=(0.0, 10.0),
+    ti, target_w, epsilon=dflt_epsilon, maxiter=1000, direc="x", term_tol=(0.0, 10.0)
 ):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
         ti.principle_axis()
@@ -350,7 +350,8 @@ def control_eigenfreqs_gradual(
     b = (
         ti.b_pa[a * N : (a + 1) * N, a * N : (a + 1) * N]
         if type(ti.m) == float
-        else ti.b_pa[a * N : (a + 1) * N, a * N : (a + 1) * N] * ti.m.reshape(-1, 1)
+        else ti.b_pa[a * N : (a + 1) * N, a * N : (a + 1) * N]
+        * np.sqrt(ti.m).reshape(-1, 1)
     )
 
     for i in range(len(epsilon)):
@@ -395,7 +396,7 @@ def control_eigenfreqs_gradual(
 
 
 def multi_inst_control_eigenfreqs(
-    ti, target_w, guess_b=None, num_inst=1000, maxiter=1000, direc="x",
+    ti, target_w, guess_b=None, num_inst=1000, maxiter=1000, direc="x"
 ):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
         ti.principle_axis()
@@ -586,7 +587,7 @@ def sort_b(b):
 
 
 def multi_inst_control_eigenvecs(
-    ti, target_b, guess_w=None, num_inst=1000, maxiter=1000, direc="x",
+    ti, target_b, guess_w=None, num_inst=1000, maxiter=1000, direc="x"
 ):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
         ti.principle_axis()
