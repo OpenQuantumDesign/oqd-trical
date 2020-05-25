@@ -10,7 +10,7 @@ def control_eigenfreqs(
     guess_b=None,
     maxiter=1000,
     direc="x",
-    term_tol=(1e-5, 0.0),
+    term_tol=(0.0, 10.0),
     det_tol=1e-2,
 ):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
@@ -42,7 +42,7 @@ def control_eigenfreqs(
             if (_w >= 0).all() and np.isclose(
                 np.sqrt(_w), target_w, rtol=term_tol[0], atol=term_tol[1]
             ).all():
-                print("Terminated at iteration {}".format(i + 1))
+                print("Terminated at iteration {}".format(i))
                 break
             ndAs = np.concatenate((ndAs, _ndA.reshape(1, *_ndA.shape)), axis=0)
 
@@ -110,11 +110,7 @@ def control_eigenvecs(
                 rtol=ttol[0],
                 atol=ttol[1],
             ).all():
-                print(
-                    "Terminated at iteration {} and iteration {} from reinitialization".format(
-                        i + 1, i - last_initialization + 1
-                    )
-                )
+                print("Terminated at iteration {}".format(i))
                 break
 
             As = np.concatenate((As, _A.reshape(1, *_A.shape)), axis=0)
@@ -170,7 +166,7 @@ def multi_control_eigenfreqs(
     guess_b=None,
     maxiter=1000,
     direc="x",
-    term_tol=(1e-5, 0.0),
+    term_tol=(0.0, 10.0),
     det_tol=1e-2,
     show_progress=True,
 ):
@@ -198,7 +194,7 @@ def multi_control_eigenfreqs(
     completed_iter = np.full(M, np.nan)
     for i in range(maxiter):
         if show_progress:
-            print(i, completed_idcs.sum())
+            print("{:<10}{:<10}".format(i, completed_idcs.sum()))
         if i == 0:
             _ndA = np.einsum(
                 "...im,...m,...mj->...ij", _b, target_ndw ** 2, _b.swapaxes(-1, -2),
@@ -268,7 +264,7 @@ def control_eigenfreqs_step(
     guess_b=None,
     maxiter=1000,
     direc="x",
-    term_tol=(1e-5, 0.0),
+    term_tol=(0.0, 10.0),
 ):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
         ti.principle_axis()
@@ -303,7 +299,7 @@ def control_eigenfreqs_step(
             if (_w >= 0).all() and np.isclose(
                 np.sqrt(_w), target_w, rtol=term_tol[0], atol=term_tol[1]
             ).all():
-                print("Terminated at iteration {}".format(i + 1))
+                print("Terminated at iteration {}".format(i))
                 break
             ndAs = np.concatenate((ndAs, _ndA.reshape(1, *_ndA.shape)), axis=0)
 
@@ -342,7 +338,7 @@ dflt_epsilon = (
 
 
 def control_eigenfreqs_gradual(
-    ti, target_w, epsilon=dflt_epsilon, maxiter=1000, direc="x", term_tol=(1e-5, 0.0),
+    ti, target_w, epsilon=dflt_epsilon, maxiter=1000, direc="x", term_tol=(0.0, 10.0),
 ):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
         ti.principle_axis()
@@ -384,7 +380,13 @@ def control_eigenfreqs_gradual(
         _w = np.flip(_w)
         _b = np.flip(_b, axis=-1)
 
-        print(i, np.linalg.norm(np.sqrt(_w) - target_w), np.linalg.norm(delta_w))
+        print(
+            "{:<10}{:<20}{:<20}".format(
+                i,
+                "{:.5e}".format(np.linalg.norm(np.sqrt(_w) - target_w)),
+                "{:.5e}".format(np.linalg.norm(delta_w)),
+            )
+        )
 
     omega_opt = np.sqrt(np.abs(np.diag(Ats[-1] - A)))
     omega_opt_sign = np.sign(np.diag(Ats[-1] - A))
@@ -430,8 +432,7 @@ def control_eigenfreqs_pop(
     popsteps=100,
     popsize=50,
     direc="x",
-    term_tol=(1e-5, 0.0),
-    det_tol=1e-2,
+    term_tol=(0.0, 10.0),
 ):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
         ti.principle_axis()
@@ -444,7 +445,7 @@ def control_eigenfreqs_pop(
 
     for i in range(popsteps):
         At, delta_w = multi_inst_control_eigenfreqs(
-            ti, target_w, _b, maxiter, popsize, direc
+            ti, target_w, _b, popsize, maxiter, direc
         )
 
         if i == 0:
@@ -452,9 +453,9 @@ def control_eigenfreqs_pop(
         else:
             Ats = np.concatenate((Ats, np.copy(At).reshape(1, *At.shape)), axis=0)
 
-        max_delta_w = np.abs(delta_w).max(-1)
-        print(i, max_delta_w.min())
-        minidx = max_delta_w.argmin()
+        ndelta_w = np.linalg.norm(delta_w, axis=-1)
+        print("{:<10}{:<20}".format(i, "{:.5e}".format(ndelta_w.min())))
+        minidx = ndelta_w.argmin()
 
         if np.isclose(
             target_w + delta_w[minidx], target_w, rtol=term_tol[0], atol=term_tol[1]
@@ -499,8 +500,7 @@ def control_eigenfreqs_de(
     popsteps=100,
     popsize=50,
     direc="x",
-    term_tol=(1e-5, 0.0),
-    det_tol=1e-2,
+    term_tol=(0.0, 10.0),
 ):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
         ti.principle_axis()
@@ -519,7 +519,6 @@ def control_eigenfreqs_de(
             Ats = np.copy(At).reshape(1, *At.shape)
 
             ndelta_w = np.linalg.norm(delta_w, axis=-1)
-            print(ndelta_w.min())
             minidx = ndelta_w.argmin()
 
         idcs = np.tile(np.arange(popsize - 1), (popsize, 1))
@@ -559,7 +558,7 @@ def control_eigenfreqs_de(
         delta_w = np.logical_not(p2) * delta_w + p2 * delta_w2
 
         ndelta_w = np.linalg.norm(delta_w, axis=-1)
-        print(ndelta_w.min())
+        print("{:<10}{:<20}".format(i, "{:.5e}".format(ndelta_w.min())))
         minidx = ndelta_w.argmin()
 
         Ats = np.concatenate((Ats, np.copy(At).reshape(1, *At.shape)), axis=0)
@@ -573,3 +572,170 @@ def control_eigenfreqs_de(
     omega_opt_sign = np.sign(np.diag(At[minidx] - A))
 
     return (omega_opt, omega_opt_sign), delta_w[minidx], Ats
+
+
+def sort_b(b):
+    idcs = []
+    for i in range(len(b)):
+        rng = range(len(b))
+        rng = np.delete(rng, idcs)
+        _b = b[:, rng]
+        idcs.append(rng[_b[i].argmax()])
+    idcs = np.array(idcs)
+    return idcs
+
+
+def multi_inst_control_eigenvecs(
+    ti, target_b, guess_w=None, num_inst=1000, maxiter=1000, direc="x",
+):
+    if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
+        ti.principle_axis()
+
+    a = {"x": 0, "y": 1, "z": 2}[direc]
+    N = ti.N
+    A = ti.A[a * N : (a + 1) * N, a * N : (a + 1) * N]
+    w = ti.w_pa[a * N : (a + 1) * N]
+
+    if guess_w is None:
+        _w = np.random.rand(num_inst, N)
+        _w = _w / np.linalg.norm(_w, axis=-1).reshape(-1, 1)
+
+        _A = np.einsum("im,...m,jm->...ij", target_b, _w, target_b)
+
+        idcs = np.triu_indices(N, k=1)
+
+        alpha = np.linalg.norm(A[idcs])
+        alpha = alpha / np.linalg.norm(_A[:, idcs[0], idcs[1]], axis=-1)
+
+        _w = alpha.reshape(-1, 1) * _w
+    else:
+        _w = np.copy(guess_w)
+
+    for i in range(maxiter):
+        _A = np.einsum("im,...m,jm->...ij", target_b, _w, target_b)
+
+        idcs = np.triu_indices(N, k=1)
+        _At = np.copy(_A)
+        _At[:, idcs[0], idcs[1]] = _At[:, idcs[1], idcs[0]] = np.copy(A[idcs])
+        _w, _b = np.linalg.eigh(_At)
+
+        btb = np.abs(np.einsum("mi,...in->...mn", target_b.transpose(), _b))
+        idcs = np.argmax(btb, axis=-1)
+
+        for i in range(num_inst):
+            if len(np.unique(idcs[i])) != N:
+                idcs[i] = sort_b(btb[i])
+            _w[i] = _w[i, idcs[i]]
+            _b[i] = _b[i, :, idcs[i]].transpose()
+
+    A_diag = _At[:, range(N), range(N)] - A[range(N), range(N)]
+
+    return (
+        _At,
+        np.ones(N)
+        - np.abs(np.einsum("mi,...in->...mn", target_b.transpose(), _b))[
+            :, range(N), range(N)
+        ],
+    )
+
+
+def control_eigenvecs_de(
+    ti,
+    target_b,
+    mutation=0.1,
+    greed=0.1,
+    crossover=0.1,
+    maxiter=1000,
+    popsteps=100,
+    popsize=50,
+    direc="x",
+    term_tol=(0.0, 1e-5),
+):
+    if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
+        ti.principle_axis()
+
+    a = {"x": 0, "y": 1, "z": 2}[direc]
+    N = ti.N
+    A = ti.A[a * N : (a + 1) * N, a * N : (a + 1) * N]
+    w = ti.w[a * N : (a + 1) * N]
+
+    _w = np.random.rand(popsize, N)
+    _w = _w / np.linalg.norm(_w, axis=-1).reshape(-1, 1)
+
+    _A = np.einsum("im,...m,jm->...ij", target_b, _w, target_b)
+
+    idcs = np.triu_indices(N, k=1)
+
+    alpha = np.linalg.norm(A[idcs])
+    alpha = alpha / np.linalg.norm(_A[:, idcs[0], idcs[1]], axis=-1)
+
+    _w = alpha.reshape(-1, 1) * _w
+
+    for i in range(popsteps):
+        if i == 0:
+            At, delta_b = multi_inst_control_eigenvecs(
+                ti, target_b, _w, popsize, maxiter, direc
+            )
+            Ats = np.copy(At).reshape(1, *At.shape)
+
+            ndelta_b = np.linalg.norm(delta_b, axis=-1)
+            minidx = ndelta_b.argmin()
+
+        idcs = np.tile(np.arange(popsize - 1), (popsize, 1))
+        idcs[np.triu_indices(popsize - 1, k=0)] += 1
+        [np.random.shuffle(i) for i in idcs]
+
+        x = At[:, range(N), range(N)]
+
+        v = (
+            x[range(popsize)]
+            + greed * (x[minidx] - x[range(popsize)])
+            + mutation * (x[idcs[:, 0]] - x[idcs[:, 1]])
+        )
+
+        r = np.random.rand(*v.shape)
+        p = r <= crossover
+
+        u = np.logical_not(p) * x + p * v
+
+        At2 = np.copy(At)
+        At2[:, range(N), range(N)] = u
+
+        _w, _b = np.linalg.eigh(At2)
+
+        btb = np.abs(np.einsum("mi,...in->...mn", target_b.transpose(), _b))
+        idcs = np.argmax(btb, axis=-1)
+
+        for j in range(popsize):
+            if len(np.unique(idcs[j])) != N:
+                idcs[j] = sort_b(btb[j])
+            _w[j] = _w[j, idcs[j]]
+            _b[j] = _b[j][:, idcs[j]]
+
+        At2, delta_b2 = multi_inst_control_eigenvecs(
+            ti, target_b, _w, popsize, maxiter, direc
+        )
+
+        p2 = (
+            np.linalg.norm(delta_b2, axis=-1) < np.linalg.norm(delta_b, axis=-1)
+        ).reshape(-1, 1, 1)
+        At = np.logical_not(p2) * At + p2 * At2
+
+        p2 = p2.reshape(-1, 1)
+        delta_b = np.logical_not(p2) * delta_b + p2 * delta_b2
+
+        ndelta_b = np.linalg.norm(delta_b, axis=-1)
+        print("{:<10}{:<20}".format(i, "{:.5e}".format(ndelta_b.min())))
+        minidx = ndelta_b.argmin()
+
+        Ats = np.concatenate((Ats, np.copy(At).reshape(1, *At.shape)), axis=0)
+
+        if np.isclose(
+            delta_b[minidx], np.zeros(N), rtol=term_tol[0], atol=term_tol[1]
+        ).all():
+            break
+
+    omega_opt = np.sqrt(np.abs(np.diag(At[minidx] - A)))
+    omega_opt_sign = np.sign(np.diag(At[minidx] - A))
+
+    return (omega_opt, omega_opt_sign), delta_b[minidx], Ats
