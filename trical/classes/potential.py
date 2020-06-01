@@ -1,8 +1,6 @@
 from .base import Base
 from ..misc import constants as cst
-from ..misc.linalg import norm
 from ..misc.polynomial import multivariate_polyfit
-from ..misc.setalg import intersection
 import itertools as itr
 import numpy as np
 from numpy.polynomial import polynomial as poly
@@ -35,7 +33,7 @@ class Potential(Base):
         pass
 
     def __add__(self, other):
-        for i in intersection(self.params.keys(), other.params.keys()):
+        for i in np.intersect1d(list(self.params.keys()), list(other.params.keys())):
             assert self.params[i] == other.params[i]
 
         params = {}
@@ -49,7 +47,7 @@ class Potential(Base):
         return Potential(phi, dphi, d2phi, **params)
 
     def __sub__(self, other):
-        for i in intersection(self.params.keys(), other.params.keys()):
+        for i in np.intersect1d(list(self.params.keys()), list(other.params.keys())):
             assert self.params[i] == other.params[i]
 
         params = {}
@@ -190,7 +188,7 @@ class CoulombPotential(Potential):
             .reshape(-1, 2)
             .transpose()
         )
-        nxij = norm(x[i] - x[j])
+        nxij = np.linalg.norm(x[i] - x[j], axis=-1)
         return cst.k * self.q ** 2 * (1 / nxij).sum()
 
     def first_derivative(self, var):
@@ -201,7 +199,7 @@ class CoulombPotential(Potential):
         def dphi_dai(x):
             xia = x[i, a]
             xja = x[j, a]
-            nxij = norm(x[i] - x[j])
+            nxij = np.linalg.norm(x[i] - x[j], axis=-1)
             return cst.k * self.q ** 2 * ((xja - xia) / nxij ** 3).sum()
 
         return dphi_dai
@@ -219,7 +217,7 @@ class CoulombPotential(Potential):
                 xka = x[k, a]
                 xib = x[i, b]
                 xkb = x[k, b]
-                nxik = norm(x[i] - x[k])
+                nxik = np.linalg.norm(x[i] - x[k], axis=-1)
                 if a == b:
                     return (
                         cst.k
@@ -237,7 +235,7 @@ class CoulombPotential(Potential):
                 xja = x[j, a]
                 xib = x[i, b]
                 xjb = x[j, b]
-                nxij = norm(x[i] - x[j])
+                nxij = np.linalg.norm(x[i] - x[j])
                 if a == b:
                     return (
                         cst.k
@@ -514,7 +512,7 @@ class OpticalPotential(SymbolicPotential):
         self.wavelength = wavelength
 
         opt_params = {
-            "m": cst.m_a["Yb171"],
+            "m": cst.convert_m_a(171),
             "Omega_bar": 3.86e6,
             "transition_wavelength": 369.52e-9,
             "refractive_index": 1,
@@ -604,7 +602,7 @@ class GaussianOpticalPotential(OpticalPotential):
         self.beam_waist = beam_waist
 
         opt_params = {
-            "m": cst.m_a["Yb171"],
+            "m": cst.convert_m_a(171),
             "Omega_bar": 3.86e6,
             "transition_wavelength": 369.52e-9,
             "refractive_index": 1,
@@ -697,6 +695,25 @@ class GaussianOpticalPotential(OpticalPotential):
 
 
 class GaussianOpticalPotential2(Potential):
+    """
+    Object representing a potential caused by a Gaussian beam.
+
+    :param focal_point: Center of the Gaussian beam.
+    :type focal_point: :obj:`numpy.ndarray`
+    :param power: Power of Gaussian beam.
+    :type power: :obj:`float`
+    :param wavelength: Wavelength of Gaussian beam.
+    :type wavelength: :obj:`float`
+    :param beam_waist: Waist of Gaussian beam.
+    :type beam_waist: :obj:`float`
+
+    :Keyword Arguments:
+        * **m** (:obj:`float`): Mass of ion.
+        * **Omega_bar** (:obj:`float`): Rabi frequency per root intensity.
+        * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
+        * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
+    """
+
     def __init__(self, focal_point, power, wavelength, beam_waist, **kwargs):
         self.params = {"dim": 3}
         self.focal_point = focal_point
@@ -705,7 +722,7 @@ class GaussianOpticalPotential2(Potential):
         self.beam_waist = beam_waist
 
         opt_params = {
-            "m": cst.m_a["Yb171"],
+            "m": cst.convert_m_a(171),
             "Omega_bar": 3.86e6,
             "transition_wavelength": 369.52e-9,
             "refractive_index": 1,

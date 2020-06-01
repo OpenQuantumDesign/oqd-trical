@@ -1,6 +1,6 @@
 from .base import Base
 from ..misc import constants as cst
-from ..misc.linalg import norm, orthonormal_subset
+from ..misc.linalg import orthonormal_subset
 from ..misc.optimize import dflt_opt
 from .potential import CoulombPotential
 from matplotlib import pyplot as plt
@@ -21,7 +21,7 @@ class TrappedIons(Base):
         params = {
             "dim": ps[0].dim if "dim" in ps[0].__dict__.keys() else 3,
             "l": 1e-6,
-            "m": cst.m_a["Yb171"],
+            "m": cst.convert_m_a(171),
             "q": cst.e,
         }
         params.update(kwargs)
@@ -115,9 +115,6 @@ class TrappedIons(Base):
             self.normal_modes()
 
         xs = self.b.reshape(self.dim, -1).transpose()
-        idcs = np.argsort(-np.linalg.norm(xs, axis=1))
-        xs = xs[idcs]
-
         x_pa = orthonormal_subset(xs, tol=tol)
 
         assert len(x_pa) == self.dim, x_pa.__str__()
@@ -145,7 +142,9 @@ class TrappedIons(Base):
         n = np.round(
             np.array(
                 [
-                    norm(b_pa[i * self.N : (i + 1) * self.N].transpose())
+                    np.linalg.norm(
+                        b_pa[i * self.N : (i + 1) * self.N].transpose(), axis=-1
+                    )
                     for i in range(self.dim)
                 ]
             )
