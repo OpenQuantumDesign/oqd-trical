@@ -11,10 +11,9 @@ Module containing relevant constants, in SI units, for TrICal.
 """
 
 c = 2.99792458e8
-e = 1.602176621e-19
-hbar = 1.054571818e-34
-k = 8.987551792e09
-m_a = {"Ba133": 2.206956176e-25, "Yb171": 2.838464469e-25}
+e = 1.602176634e-19
+hbar = 1.054571817e-34
+k = 8.9875517923e9
 
 
 def convert_m_a(A):
