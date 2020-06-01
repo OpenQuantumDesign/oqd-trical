@@ -5,10 +5,6 @@ Module containing relevant linear algebra functions for TrICal.
 import numpy as np
 
 
-def norm(x):
-    return np.sqrt((x ** 2).sum(-1))
-
-
 def cartesian_to_spherical(x):
     _r = np.hypot(np.hypot(x[0], x[1]), x[2])
     _phi = np.arctan2(np.hypot(x[0], x[1]), x[2])
@@ -47,7 +43,12 @@ def orthonormal_subset(x, tol=1e-3):
     :returns: Orthonormal subset of the set of vectors of interest, after normalization.
     :rtype: :obj:`numpy.ndarray`
     """
-    x = np.einsum("ni,n->ni", x, 1 / norm(x))
+    nx = np.linalg.norm(x, axis=-1)
+    idcs = nx.argsort()
+    x = x[idcs]
+    nx = nx[idcs]
+    x = x / nx.reshape(-1, 1)
+
     i = 0
     while i < len(x):
         idcs = (
