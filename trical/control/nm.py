@@ -575,19 +575,19 @@ def control_eigenfreqs_de(
     return (omega_opt, omega_opt_sign), delta_w[minidx], Ats
 
 
-def sort_b(b):
+def sort_btb(btb):
     idcs = []
-    for i in range(len(b)):
-        rng = range(len(b))
+    for i in range(len(btb)):
+        rng = range(len(btb))
         rng = np.delete(rng, idcs)
-        _b = b[:, rng]
-        idcs.append(rng[_b[i].argmax()])
+        _btb = btb[:, rng]
+        idcs.append(rng[_btb[i].argmax()])
     idcs = np.array(idcs)
     return idcs
 
 
 def multi_inst_control_eigenvecs(
-    ti, target_b, guess_w=None, num_inst=1000, maxiter=1000, direc="x"
+    ti, target_b, guess_w=None, scale_w=1.0, num_inst=1000, maxiter=1000, direc="x"
 ):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
         ti.principle_axis()
@@ -600,15 +600,7 @@ def multi_inst_control_eigenvecs(
     if guess_w is None:
         _w = np.random.rand(num_inst, N)
         _w = _w / np.linalg.norm(_w, axis=-1).reshape(-1, 1)
-
-        _A = np.einsum("im,...m,jm->...ij", target_b, _w, target_b)
-
-        idcs = np.triu_indices(N, k=1)
-
-        alpha = np.linalg.norm(A[idcs])
-        alpha = alpha / np.linalg.norm(_A[:, idcs[0], idcs[1]], axis=-1)
-
-        _w = alpha.reshape(-1, 1) * _w
+        _w = (_w * np.linalg.norm(w) * scale_w) ** 2
     else:
         _w = np.copy(guess_w)
 
@@ -625,7 +617,7 @@ def multi_inst_control_eigenvecs(
 
         for i in range(num_inst):
             if len(np.unique(idcs[i])) != N:
-                idcs[i] = sort_b(btb[i])
+                idcs[i] = sort_btb(btb[i])
             _w[i] = _w[i, idcs[i]]
             _b[i] = _b[i, :, idcs[i]].transpose()
 
@@ -643,6 +635,7 @@ def multi_inst_control_eigenvecs(
 def control_eigenvecs_de(
     ti,
     target_b,
+    scale_w=1.0,
     mutation=0.1,
     greed=0.1,
     crossover=0.1,
@@ -662,20 +655,12 @@ def control_eigenvecs_de(
 
     _w = np.random.rand(popsize, N)
     _w = _w / np.linalg.norm(_w, axis=-1).reshape(-1, 1)
-
-    _A = np.einsum("im,...m,jm->...ij", target_b, _w, target_b)
-
-    idcs = np.triu_indices(N, k=1)
-
-    alpha = np.linalg.norm(A[idcs])
-    alpha = alpha / np.linalg.norm(_A[:, idcs[0], idcs[1]], axis=-1)
-
-    _w = alpha.reshape(-1, 1) * _w
+    _w = (_w * np.linalg.norm(w) * scale_w) ** 2
 
     for i in range(popsteps):
         if i == 0:
             At, delta_b = multi_inst_control_eigenvecs(
-                ti, target_b, _w, popsize, maxiter, direc
+                ti, target_b, _w, scale_w, popsize, maxiter, direc
             )
             Ats = np.copy(At).reshape(1, *At.shape)
 
@@ -714,7 +699,7 @@ def control_eigenvecs_de(
             _b[j] = _b[j][:, idcs[j]]
 
         At2, delta_b2 = multi_inst_control_eigenvecs(
-            ti, target_b, _w, popsize, maxiter, direc
+            ti, target_b, _w, scale_w, popsize, maxiter, direc
         )
 
         p2 = (

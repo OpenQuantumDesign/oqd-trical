@@ -1,1 +1,1 @@
-from . import nm
+from . import efreqs, evecs, nm
