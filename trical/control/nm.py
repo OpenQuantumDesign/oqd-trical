@@ -524,7 +524,7 @@ def control_eigenfreqs_de(
 
         idcs = np.tile(np.arange(popsize - 1), (popsize, 1))
         idcs[np.triu_indices(popsize - 1, k=0)] += 1
-        [np.random.shuffle(i) for i in idcs]
+        [np.random.shuffle(j) for j in idcs]
 
         x = At[:, range(N), range(N)]
 
@@ -623,11 +623,11 @@ def multi_inst_control_eigenvecs(
         btb = np.abs(np.einsum("mi,...in->...mn", target_b.transpose(), _b))
         idcs = np.argmax(btb, axis=-1)
 
-        for i in range(num_inst):
-            if len(np.unique(idcs[i])) != N:
-                idcs[i] = sort_b(btb[i])
-            _w[i] = _w[i, idcs[i]]
-            _b[i] = _b[i, :, idcs[i]].transpose()
+        for j in range(num_inst):
+            if len(np.unique(idcs[j])) != N:
+                idcs[j] = sort_b(btb[j])
+            _w[j] = _w[j, idcs[j]]
+            _b[j] = _b[j, :, idcs[j]].transpose()
 
     A_diag = _At[:, range(N), range(N)] - A[range(N), range(N)]
 
@@ -684,7 +684,7 @@ def control_eigenvecs_de(
 
         idcs = np.tile(np.arange(popsize - 1), (popsize, 1))
         idcs[np.triu_indices(popsize - 1, k=0)] += 1
-        [np.random.shuffle(i) for i in idcs]
+        [np.random.shuffle(j) for j in idcs]
 
         x = At[:, range(N), range(N)]
 
