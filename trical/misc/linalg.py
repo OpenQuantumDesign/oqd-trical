@@ -44,7 +44,7 @@ def orthonormal_subset(x, tol=1e-3):
     :rtype: :obj:`numpy.ndarray`
     """
     nx = np.linalg.norm(x, axis=-1)
-    idcs = nx.argsort()
+    idcs = (-nx).argsort()
     x = x[idcs]
     nx = nx[idcs]
     x = x / nx.reshape(-1, 1)
