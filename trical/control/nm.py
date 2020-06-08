@@ -617,7 +617,7 @@ def multi_inst_control_eigenvecs(
 
         for j in range(num_inst):
             if len(np.unique(idcs[j])) != N:
-                idcs[j] = sort_b(btb[j])
+                idcs[j] = sort_btb(btb[j])
             _w[j] = _w[j, idcs[j]]
             _b[j] = _b[j, :, idcs[j]].transpose()
 
@@ -694,7 +694,7 @@ def control_eigenvecs_de(
 
         for j in range(popsize):
             if len(np.unique(idcs[j])) != N:
-                idcs[j] = sort_b(btb[j])
+                idcs[j] = sort_btb(btb[j])
             _w[j] = _w[j, idcs[j]]
             _b[j] = _b[j][:, idcs[j]]
 
