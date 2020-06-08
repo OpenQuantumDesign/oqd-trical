@@ -537,164 +537,7 @@ class OpticalPotential(SymbolicPotential):
     pass
 
 
-class GaussianOpticalPotential(OpticalPotential):
-    """
-    Object representing a potential caused by a Gaussian beam.
-
-    :param focal_point: Center of the Gaussian beam.
-    :type focal_point: :obj:`numpy.ndarray`
-    :param power: Power of Gaussian beam.
-    :type power: :obj:`float`
-    :param wavelength: Wavelength of Gaussian beam.
-    :type wavelength: :obj:`float`
-    :param beam_waist: Waist of Gaussian beam.
-    :type beam_waist: :obj:`float`
-
-    :Keyword Arguments:
-        * **m** (:obj:`float`): Mass of ion.
-        * **Omega_bar** (:obj:`float`): Rabi frequency per root intensity.
-        * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
-        * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
-    """
-
-    def __init__(self, focal_point, power, wavelength, beam_waist, **kwargs):
-        intensity_expr = self.gaussian_beam_intensity(
-            focal_point, power, wavelength, beam_waist, **kwargs
-        )
-
-        super(GaussianOpticalPotential, self).__init__(
-            intensity_expr, wavelength, **kwargs
-        )
-
-        omega_x = np.sqrt(
-            np.abs(
-                cst.hbar
-                * self.Omega_bar ** 2
-                * power
-                * wavelength ** 2
-                / (
-                    self.refractive_index ** 2
-                    * np.pi ** 3
-                    * self.Delta
-                    * beam_waist ** 6
-                    * self.m
-                )
-            )
-        )
-        omega_y = omega_z = np.sqrt(
-            np.abs(
-                2
-                * cst.hbar
-                * self.Omega_bar ** 2
-                * power
-                / (np.pi * self.Delta * beam_waist ** 4 * self.m)
-            )
-        )
-        self.omega = np.array([omega_x, omega_y, omega_z])
-        pass
-
-    def gaussian_beam_intensity(
-        self, focal_point, power, wavelength, beam_waist, **kwargs
-    ):
-        self.focal_point = focal_point
-        self.power = power
-        self.wavelength = wavelength
-        self.beam_waist = beam_waist
-
-        opt_params = {
-            "m": cst.convert_m_a(171),
-            "Omega_bar": 3.86e6,
-            "transition_wavelength": 369.52e-9,
-            "refractive_index": 1,
-        }
-        opt_params.update(kwargs)
-        self.__dict__.update(opt_params)
-
-        x_sym, y_sym, z_sym = sympy.symbols("x y z")
-
-        delta_x, delta_y, delta_z = (
-            x_sym - focal_point[0],
-            y_sym - focal_point[1],
-            z_sym - focal_point[2],
-        )
-
-        nu = cst.convert_lamb_to_omega(wavelength)
-        nu_transition = cst.convert_lamb_to_omega(opt_params["transition_wavelength"])
-        Delta = nu - nu_transition
-        x_R = np.pi * beam_waist ** 2 * opt_params["refractive_index"] / wavelength
-        w = beam_waist * sympy.sqrt(1 + (delta_x / x_R) ** 2)
-        I = 2 * power / (np.pi * beam_waist ** 2)
-        Omega = opt_params["Omega_bar"] * np.sqrt(np.abs(I))
-
-        self.x_R = x_R
-        self.I = I
-        self.Omega = Omega
-        self.stark_shift = np.abs(Omega ** 2 / (4 * Delta))
-
-        intensity_expr = (
-            I
-            * beam_waist ** 2
-            * sympy.exp(-2 * (delta_y ** 2 + delta_z ** 2) / w ** 2)
-            / w ** 2
-        )
-        return intensity_expr
-
-    def fit_trap_strength(self, ls_to_bw=10):
-        """
-        """
-        x = np.moveaxis(
-            np.meshgrid(
-                *(
-                    [
-                        np.linspace(
-                            -self.beam_waist / ls_to_bw, self.beam_waist / ls_to_bw, 101
-                        )
-                    ]
-                    * 3
-                )
-            ),
-            (0, 1, 2, 3),
-            (3, 0, 1, 2),
-        ).reshape(-1, 3)
-
-        V = self.evaluate(x + self.focal_point)
-
-        alpha = multivariate_polyfit(x, V, deg=(2, 2, 2), l=self.beam_waist / 100)
-
-        self.omega_fit = np.sqrt(
-            np.abs(alpha[tuple(np.eye(3, dtype=int) * 2)] * 2 / self.m)
-        )
-        pass
-
-    def scattering_rate(self, A=1.23e8, b_ratio=1):
-        A_bar = A / b_ratio
-        if np.abs((self.nu / self.nu_transition) ** 3 - 1) > 0.1:
-            return (
-                3
-                * np.pi
-                * cst.c ** 2
-                * self.nu ** 3
-                * self.I
-                * (
-                    A_bar / (self.nu_transition - self.nu)
-                    + A_bar / (self.nu_transition + self.nu)
-                )
-                ** 2
-            ) / (2 * cst.hbar * self.nu_transition ** 6)
-        else:
-            return (
-                self.Omega ** 2
-                * A_bar
-                / (A_bar ** 2 + 2 * self.Omega ** 2 + 4 * self.Delta ** 2)
-            )
-
-    def differential_stark_shift(self, delta):
-        pass
-
-    pass
-
-
-class GaussianOpticalPotential2(Potential):
+class GaussianOpticalPotential(Potential):
     """
     Object representing a potential caused by a Gaussian beam.
 
@@ -772,7 +615,7 @@ class GaussianOpticalPotential2(Potential):
         self.V = cst.hbar * self.Omega_bar ** 2 * self.I / (4 * self.Delta)
         self.omega = np.array([omega_x, omega_y, omega_z])
 
-        super(GaussianOpticalPotential2, self).__init__(
+        super(GaussianOpticalPotential, self).__init__(
             self.__call__, self.first_derivative, self.second_derivative, **self.params
         )
         pass
@@ -877,7 +720,7 @@ class GaussianOpticalPotential2(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        return GaussianOpticalPotential2(
+        return GaussianOpticalPotential(
             self.focal_point / l,
             self.power,
             self.wavelength / l,
