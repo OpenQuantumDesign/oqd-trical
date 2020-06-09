@@ -1,6 +1,7 @@
 from .base import Base
 from ..misc import constants as cst
 from ..misc.polynomial import multivariate_polyfit
+import autograd as ag
 import itertools as itr
 import numpy as np
 from numpy.polynomial import polynomial as poly
@@ -729,4 +730,52 @@ class GaussianOpticalPotential(Potential):
             Omega_bar=self.Omega_bar,
             transition_wavelength=self.transition_wavelength / l,
             refractive_index=self.refractive_index,
+            **self.params
         ) / (cst.k * cst.e ** 2)
+
+
+class AutoDiffPotential(Potential):
+    def __init__(self, expr, **kwargs):
+        """
+        Object representing a functionally defined potential for the system of ions that uses automatic differentiation to calculate derivatives of the potential
+
+        :param expr: function of the potential that has to be defined using the numpy submodule of autograd package
+        """
+        self.expr = expr
+
+        params = {"dim": 3}
+        params.update(kwargs)
+        self.__dict__.update(params)
+        self.params = params
+
+        super(AutoDiffPotential, self).__init__(
+            self.__call__, self.first_derivative, self.second_derivative, **params
+        )
+        pass
+
+    def __call__(self, x):
+        return self.expr(x)
+
+    def gradient(self):
+        flatten_expr = lambda x: self.expr(x.reshape(3, -1).transpose())
+        return lambda x: ag.jacobian(flatten_expr, 0)(x.transpose().reshape(-1))
+
+    def hessian(self):
+        flatten_expr = lambda x: self.expr(x.reshape(3, -1).transpose())
+        return lambda x: ag.hessian(flatten_expr, 0)(x.transpose().reshape(-1))
+
+    def first_derivative(self, var):
+        a = {"x": 0, "y": 1, "z": 2}[var[0]]
+        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
+        return lambda x: self.gradient()(x)[a * self.N + i]
+
+    def second_derivative(self, var1, var2):
+        a = {"x": 0, "y": 1, "z": 2}[var1[0]]
+        b = {"x": 0, "y": 1, "z": 2}[var2[0]]
+        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
+        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
+        return lambda x: self.hessian()(x)[a * self.N + i][b * self.N + j]
+
+    def nondimensionalize(self, l):
+        expr = lambda x: self.expr(x * l) * l / (cst.k * cst.e ** 2)
+        return AutoDiffPotential(expr, **self.params)
