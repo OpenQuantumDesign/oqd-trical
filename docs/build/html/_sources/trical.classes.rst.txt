@@ -1,10 +1,10 @@
 trical.classes package
 ======================
 
-trical.classes.empty module
+trical.classes.base module
 ---------------------------
 
-.. automodule:: trical.classes.empty
+.. automodule:: trical.classes.base
    :members:
    :undoc-members:
    :show-inheritance:

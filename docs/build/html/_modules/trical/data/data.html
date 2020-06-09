@@ -147,7 +147,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Module containing functions for saving and loading data for TrICal.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">Empty</span>
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">Base</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -155,7 +155,7 @@
 <div class="viewcode-block" id="save_dict"><a class="viewcode-back" href="../../../trical.data.html#trical.data.data.save_dict">[docs]</a><span class="k">def</span> <span class="nf">save_dict</span><span class="p">(</span><span class="n">data_dict</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Saves a dictionary into a file.</span>
-<span class="sd">    </span>
+
 <span class="sd">    :param data_dict: Dictionary of interest</span>
 <span class="sd">    :type data_dict: :obj:`dict`</span>
 <span class="sd">    :param filename: Path of file to save the dictionary in.</span>
@@ -185,7 +185,7 @@
 <div class="viewcode-block" id="save_object"><a class="viewcode-back" href="../../../trical.data.html#trical.data.data.save_object">[docs]</a><span class="k">def</span> <span class="nf">save_object</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Saves the attributes of an object, as a dictionary, into a file.</span>
-<span class="sd">    </span>
+
 <span class="sd">    :param data_dict: Dictionary of interest</span>
 <span class="sd">    :type data_dict: :obj:`dict`</span>
 <span class="sd">    :param filename: Path of file to save the attriutes of the object in.</span>
@@ -204,7 +204,7 @@
 <span class="sd">    :returns: Loaded instance of the Empty class.</span>
 <span class="sd">    :rtype: :obj:`trical.classes.empty.Empty`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Empty</span><span class="p">(</span><span class="o">**</span><span class="n">load_dict</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">Base</span><span class="p">(</span><span class="o">**</span><span class="n">load_dict</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span></div>
 </pre></div>
 
            </div>

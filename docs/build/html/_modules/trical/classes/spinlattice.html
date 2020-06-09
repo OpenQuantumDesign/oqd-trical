@@ -144,11 +144,12 @@
            <div itemprop="articleBody">
             
   <h1>Source code for trical.classes.spinlattice</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">..misc</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">cst</span>
+<span></span><span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="kn">from</span> <span class="nn">..misc</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">cst</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="SpinLattice"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.spinlattice.SpinLattice">[docs]</a><span class="k">class</span> <span class="nc">SpinLattice</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SpinLattice"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.spinlattice.SpinLattice">[docs]</a><span class="k">class</span> <span class="nc">SpinLattice</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Object representing a spin lattice system.</span>
 
@@ -171,7 +172,7 @@
 <div class="viewcode-block" id="SimulatedSpinLattice"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.spinlattice.SimulatedSpinLattice">[docs]</a><span class="k">class</span> <span class="nc">SimulatedSpinLattice</span><span class="p">(</span><span class="n">SpinLattice</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Object representing a spin lattice system simulated by a trapped ion system</span>
-<span class="sd">    </span>
+
 <span class="sd">    :param ti: A trapped ion system.</span>
 <span class="sd">    :type ti: :obj:`trical.classes.trappedions.TrappedIons`</span>
 <span class="sd">    :param mu: Raman beatnote detunings.</span>
@@ -213,7 +214,7 @@
 <div class="viewcode-block" id="SimulatedSpinLattice.interaction_graph"><a class="viewcode-back" href="../../../trical.classes.html#trical.classes.spinlattice.SimulatedSpinLattice.interaction_graph">[docs]</a>    <span class="k">def</span> <span class="nf">interaction_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the interaction graph of the spin lattice simulated by the trapped ion system.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param J: Interaction graph of the spin lattice simulated by the trapped ion system.</span>
 <span class="sd">        :type J: :obj:`numpy.ndarray`</span>
 <span class="sd">        &quot;&quot;&quot;</span>

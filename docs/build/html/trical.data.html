@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="trical.misc package" href="trical.misc.html" />
-    <link rel="prev" title="trical.classes package" href="trical.classes.html" /> 
+    <link rel="prev" title="trical.control package" href="trical.control.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,6 +84,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="trical.html">trical package</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="trical.classes.html">trical.classes package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="trical.control.html">trical.control package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">trical.data package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#module-trical.data.data">trical.data.data module</a></li>
 </ul>
@@ -160,9 +161,9 @@
 <div class="section" id="module-trical.data.data">
 <span id="trical-data-data-module"></span><h2>trical.data.data module<a class="headerlink" href="#module-trical.data.data" title="Permalink to this headline">¶</a></h2>
 <p>Module containing functions for saving and loading data for TrICal.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="trical.data.data.load_dict">
-<code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">load_dict</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#load_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.load_dict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">load_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#load_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.load_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a dictionary from a file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -177,9 +178,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="trical.data.data.load_object">
-<code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">load_object</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#load_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.load_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">load_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#load_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.load_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads an instance of the Empty class with the attributes from a file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -189,14 +190,14 @@
 <dd class="field-even"><p>Loaded instance of the Empty class.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="trical.classes.html#trical.classes.empty.Empty" title="trical.classes.empty.Empty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trical.classes.empty.Empty</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">trical.classes.empty.Empty</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="trical.data.data.save_dict">
-<code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">save_dict</code><span class="sig-paren">(</span><em class="sig-param">data_dict</em>, <em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#save_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.save_dict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">save_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_dict</span></em>, <em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#save_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.save_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves a dictionary into a file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -208,9 +209,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="trical.data.data.save_object">
-<code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">save_object</code><span class="sig-paren">(</span><em class="sig-param">object</em>, <em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#save_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.save_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">trical.data.data.</code><code class="sig-name descname">save_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">object</span></em>, <em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/data/data.html#save_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.data.data.save_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves the attributes of an object, as a dictionary, into a file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -236,7 +237,7 @@
         <a href="trical.misc.html" class="btn btn-neutral float-right" title="trical.misc package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="trical.classes.html" class="btn btn-neutral float-left" title="trical.classes package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="trical.control.html" class="btn btn-neutral float-left" title="trical.control package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

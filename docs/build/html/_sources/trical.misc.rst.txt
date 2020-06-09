@@ -32,11 +32,3 @@ trical.misc.polynomial module
    :members:
    :undoc-members:
    :show-inheritance:
-
-trical.misc.setalg module
--------------------------
-
-.. automodule:: trical.misc.setalg
-   :members:
-   :undoc-members:
-   :show-inheritance:
