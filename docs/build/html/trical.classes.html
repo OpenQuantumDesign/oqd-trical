@@ -453,10 +453,33 @@
 <dt id="trical.classes.potential.OpticalPotential">
 <em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">OpticalPotential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">intensity_expr</span></em>, <em class="sig-param"><span class="n">wavelength</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#OpticalPotential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.OpticalPotential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.SymbolicPotential" title="trical.classes.potential.SymbolicPotential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.SymbolicPotential</span></code></a></p>
-<p>Object representing a general optical potential.</p>
+<p>Object representing a general optical potential symbolically.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>wavelength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Wavelength of the optical potential.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>m</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Mass of ion.</p></li>
+<li><p><strong>Omega_bar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Rabi frequency per root intensity.</p></li>
+<li><p><strong>transition_wavelength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Wavelength of the transition that creates the optical trap.</p></li>
+<li><p><strong>refractive_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>): Refractive index of medium Gaussian beam is propagating through.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="trical.classes.potential.OpticalPotential2">
+<em class="property">class </em><code class="sig-prename descclassname">trical.classes.potential.</code><code class="sig-name descname">OpticalPotential2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">intensity_expr</span></em>, <em class="sig-param"><span class="n">wavelength</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/classes/potential.html#OpticalPotential2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.classes.potential.OpticalPotential2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#trical.classes.potential.AutoDiffPotential" title="trical.classes.potential.AutoDiffPotential"><code class="xref py py-class docutils literal notranslate"><span class="pre">trical.classes.potential.AutoDiffPotential</span></code></a></p>
+<p>Object representing a general optical potential functionally using automatic differentiation to calculate the derivatives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>intensity_expr</strong> (<a class="reference external" href="https://docs.python.org/3/library/types.html#types.FunctionType" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types.FunctionType</span></code></a>) – function of the expression for intensity of the optical potential that is defined using the numpy submodule of autograd package.</p></li>
+<li><p><strong>wavelength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Wavelength of the optical potential.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">

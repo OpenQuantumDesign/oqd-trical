@@ -8,6 +8,7 @@ from .potential import (
     OpticalPotential,
     GaussianOpticalPotential,
     AutoDiffPotential,
+    OpticalPotential2,
 )
 from .spinlattice import SpinLattice, SimulatedSpinLattice
 from .trappedions import TrappedIons

@@ -494,7 +494,7 @@ class AdvancedSymbolicPotential(Potential):
 
 class OpticalPotential(SymbolicPotential):
     """
-    Object representing a general optical potential.
+    Object representing a general optical potential symbolically.
 
     :param wavelength: Wavelength of the optical potential.
     :type wavelength: :obj:`float`
@@ -570,6 +570,10 @@ class GaussianOpticalPotential(Potential):
             "Omega_bar": 3.86e6,
             "transition_wavelength": 369.52e-9,
             "refractive_index": 1,
+            "focal_point": focal_point,
+            "power": power,
+            "wavelength": wavelength,
+            "beam_waist": beam_waist,
         }
         opt_params.update(kwargs)
         self.__dict__.update(opt_params)
@@ -733,13 +737,16 @@ class GaussianOpticalPotential(Potential):
             **self.params
         ) / (cst.k * cst.e ** 2)
 
+    pass
+
 
 class AutoDiffPotential(Potential):
     def __init__(self, expr, **kwargs):
         """
-        Object representing a functionally defined potential for the system of ions that uses automatic differentiation to calculate derivatives of the potential
+        Object representing a functionally defined potential for the system of ions that uses automatic differentiation to calculate derivatives of the potential.
 
-        :param expr: function of the potential that has to be defined using the numpy submodule of autograd package
+        :param expr: function of the potential that is defined using the numpy submodule of autograd package.
+        :type expr: :obj:`types.FunctionType`
         """
         self.expr = expr
 
@@ -779,3 +786,56 @@ class AutoDiffPotential(Potential):
     def nondimensionalize(self, l):
         expr = lambda x: self.expr(x * l) * l / (cst.k * cst.e ** 2)
         return AutoDiffPotential(expr, **self.params)
+
+    pass
+
+
+class OpticalPotential2(AutoDiffPotential):
+    """
+    Object representing a general optical potential functionally using automatic differentiation to calculate the derivatives.
+
+    :param intensity_expr: function of the expression for intensity of the optical potential that is defined using the numpy submodule of autograd package.
+    :type intensity_expr: :obj:`types.FunctionType`
+    :param wavelength: Wavelength of the optical potential.
+    :type wavelength: :obj:`float`
+
+    :Keyword Arguments:
+        * **m** (:obj:`float`): Mass of ion.
+        * **Omega_bar** (:obj:`float`): Rabi frequency per root intensity.
+        * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
+        * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
+    """
+
+    def __init__(self, intensity_expr, wavelength, **kwargs):
+        self.params = {"dim": 3}
+
+        self.intensity_expr = intensity_expr
+        self.wavelength = wavelength
+
+        opt_params = {
+            "m": cst.convert_m_a(171),
+            "Omega_bar": 3.86e6,
+            "transition_wavelength": 369.52e-9,
+            "refractive_index": 1,
+            "wavelength": wavelength,
+        }
+        opt_params.update(kwargs)
+        self.__dict__.update(opt_params)
+        self.opt_params = opt_params
+
+        nu = cst.convert_lamb_to_omega(wavelength)
+        nu_transition = cst.convert_lamb_to_omega(opt_params["transition_wavelength"])
+        Delta = nu - nu_transition
+
+        self.nu = nu
+        self.nu_transition = nu_transition
+        self.Delta = Delta
+
+        expr = lambda x: (
+            cst.hbar * opt_params["Omega_bar"] ** 2 * intensity_expr(x) / (4 * Delta)
+        )
+
+        super(OpticalPotential2, self).__init__(expr, **self.params)
+        pass
+
+    pass
