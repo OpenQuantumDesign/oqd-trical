@@ -490,7 +490,7 @@ class AdvancedSymbolicPotential(Potential):
     pass
 
 
-class OpticalPotential(SymbolicPotential):
+class SymbolicOpticalPotential(SymbolicPotential):
     """
     Object representing a general optical potential symbolically.
 
@@ -788,7 +788,7 @@ class AutoDiffPotential(Potential):
     pass
 
 
-class OpticalPotential2(AutoDiffPotential):
+class OpticalPotential(AutoDiffPotential):
     """
     Object representing a general optical potential functionally using automatic differentiation to calculate the derivatives.
 
