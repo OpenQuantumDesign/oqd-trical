@@ -156,9 +156,7 @@ class Potential(Base):
 
         :Keyword Arguments:
             * **dim** (:obj:`float`): Dimension of the system.
-            * **m** (:obj:`float`): Mass of an ion.
             * **N** (:obj:`float`): Number of Ions.
-            * **q** (:obj:`dict`): Charge of an ion.
         """
         self.params.update(kwargs)
         self.__dict__.update(self.params)
@@ -764,11 +762,11 @@ class AutoDiffPotential(Potential):
         return self.expr(x)
 
     def gradient(self):
-        flatten_expr = lambda x: self.expr(x.reshape(3, -1).transpose())
+        flatten_expr = lambda x: self.expr(x.reshape(self.dim, -1).transpose())
         return lambda x: ag.jacobian(flatten_expr, 0)(x.transpose().reshape(-1))
 
     def hessian(self):
-        flatten_expr = lambda x: self.expr(x.reshape(3, -1).transpose())
+        flatten_expr = lambda x: self.expr(x.reshape(self.dim, -1).transpose())
         return lambda x: ag.hessian(flatten_expr, 0)(x.transpose().reshape(-1))
 
     def first_derivative(self, var):
