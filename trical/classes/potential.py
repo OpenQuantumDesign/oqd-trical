@@ -833,7 +833,7 @@ class OpticalPotential(AutoDiffPotential):
             cst.hbar * opt_params["Omega_bar"] ** 2 * intensity_expr(x) / (4 * Delta)
         )
 
-        super(OpticalPotential2, self).__init__(expr, **self.params)
+        super(OpticalPotential, self).__init__(expr, **self.params)
         pass
 
     pass
