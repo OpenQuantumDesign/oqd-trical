@@ -271,11 +271,12 @@ class PolynomialPotential(Potential):
     :param alpha: Coefficients of the polynomial potential.
     """
 
-    def __init__(self, alpha):
+    def __init__(self, alpha, **kwargs):
         self.alpha = np.array(alpha)
         self.deg = np.array(alpha.shape) - 1
 
         params = {"dim": len(alpha.shape)}
+        params.update(kwargs)
 
         super(PolynomialPotential, self).__init__(
             self.__call__, self.first_derivative, self.second_derivative, **params
@@ -333,7 +334,7 @@ class PolynomialPotential(Potential):
             * self.alpha
             * (l / (cst.k * cst.e ** 2))
         )
-        return PolynomialPotential(alpha)
+        return PolynomialPotential(alpha, **self.params)
 
     pass
 
@@ -719,7 +720,7 @@ class GaussianOpticalPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        return GaussianOpticalPotential(
+        ndgop = GaussianOpticalPotential(
             self.focal_point / l,
             self.power,
             self.wavelength / l,
@@ -728,8 +729,9 @@ class GaussianOpticalPotential(Potential):
             Omega_bar=self.Omega_bar,
             transition_wavelength=self.transition_wavelength / l,
             refractive_index=self.refractive_index,
-            **self.params
         ) / (cst.k * cst.e ** 2)
+        ndgop.update_params(**self.params)
+        return
 
     pass
 
@@ -779,7 +781,9 @@ class AutoDiffPotential(Potential):
 
     def nondimensionalize(self, l):
         expr = lambda x: self.expr(x * l) * l / (cst.k * cst.e ** 2)
-        return AutoDiffPotential(expr, **self.params)
+        ndadp = AutoDiffPotential(expr, **self.params)
+        ndadp.update_params(**self.params)
+        return ndadp
 
     pass
 
