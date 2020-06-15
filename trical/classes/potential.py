@@ -556,12 +556,8 @@ class GaussianOpticalPotential(Potential):
         * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
     """
 
-    def __init__(self, focal_point, power, wavelength, beam_waist, **kwargs):
+    def __init__(self, focal_point, power, wavelength, beam_waist, **opt_kwargs):
         self.params = {"dim": 3}
-        self.focal_point = focal_point
-        self.power = power
-        self.wavelength = wavelength
-        self.beam_waist = beam_waist
 
         opt_params = {
             "m": cst.convert_m_a(171),
@@ -573,7 +569,7 @@ class GaussianOpticalPotential(Potential):
             "wavelength": wavelength,
             "beam_waist": beam_waist,
         }
-        opt_params.update(kwargs)
+        opt_params.update(opt_kwargs)
         self.__dict__.update(opt_params)
         self.opt_params = opt_params
 
@@ -804,7 +800,7 @@ class OpticalPotential(AutoDiffPotential):
         * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
     """
 
-    def __init__(self, intensity_expr, wavelength, **kwargs):
+    def __init__(self, intensity_expr, wavelength, **opt_kwargs):
         self.params = {"dim": 3}
 
         self.intensity_expr = intensity_expr
@@ -817,7 +813,7 @@ class OpticalPotential(AutoDiffPotential):
             "refractive_index": 1,
             "wavelength": wavelength,
         }
-        opt_params.update(kwargs)
+        opt_params.update(opt_kwargs)
         self.__dict__.update(opt_params)
         self.opt_params = opt_params
 
