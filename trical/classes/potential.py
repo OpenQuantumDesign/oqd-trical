@@ -731,7 +731,7 @@ class GaussianOpticalPotential(Potential):
             refractive_index=self.refractive_index,
         ) / (cst.k * cst.e ** 2)
         ndgop.update_params(**self.params)
-        return
+        return ndgop
 
     pass
 
