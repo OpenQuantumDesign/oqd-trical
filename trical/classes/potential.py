@@ -531,7 +531,7 @@ class SymbolicOpticalPotential(SymbolicPotential):
 
         expr = cst.hbar * opt_params["Omega_bar"] ** 2 * intensity_expr / (4 * Delta)
 
-        super(OpticalPotential, self).__init__(expr, **self.params)
+        super(SymbolicOpticalPotential, self).__init__(expr, **self.params)
         pass
 
     pass
