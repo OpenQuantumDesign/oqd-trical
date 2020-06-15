@@ -28,9 +28,12 @@ class TrappedIons(Base):
         self.__dict__.update(params)
 
         self.N = N
+        self.cp = CoulombPotential(N, dim=self.dim, q=self.q)
+
+        for p in ps:
+            p.update_params(N=N)
         self.ps = np.array(ps)
 
-        self.cp = CoulombPotential(N, dim=self.dim, q=self.q)
         self.fp = self.cp + self.ps.sum()
         pass
 
@@ -64,9 +67,10 @@ class TrappedIons(Base):
         """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
-        ndfp = ndcp + ndps.sum()
 
-        hess_phi = ndfp.hessian()
+        hess_phi = lambda x: np.array(
+            [ndp.hessian()(x) for ndp in np.append(ndps, ndcp)]
+        ).sum(0)
 
         if "x_ep" not in self.__dict__.keys():
             self.equilibrium_position()
