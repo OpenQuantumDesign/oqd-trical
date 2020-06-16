@@ -12,7 +12,7 @@ def sort_btb(btb):
     return idcs
 
 
-def multi_inst_control_eigenvecs(
+def mi(
     ti, target_b, guess_w=None, scale_w=1.0, num_inst=1000, maxiter=1000, direc="x"
 ):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
@@ -58,7 +58,7 @@ def multi_inst_control_eigenvecs(
     )
 
 
-def control_eigenvecs_de(
+def de(
     ti,
     target_b,
     scale_w=1.0,
@@ -85,7 +85,7 @@ def control_eigenvecs_de(
 
     for i in range(popsteps):
         if i == 0:
-            At, delta_b = multi_inst_control_eigenvecs(
+            At, delta_b = mi(
                 ti, target_b, _w, scale_w, popsize, maxiter, direc
             )
             Ats = np.copy(At).reshape(1, *At.shape)
@@ -124,7 +124,7 @@ def control_eigenvecs_de(
             _w[j] = _w[j, idcs[j]]
             _b[j] = _b[j][:, idcs[j]]
 
-        At2, delta_b2 = multi_inst_control_eigenvecs(
+        At2, delta_b2 = mi(
             ti, target_b, _w, scale_w, popsize, maxiter, direc
         )
 

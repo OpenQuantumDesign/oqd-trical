@@ -66,9 +66,7 @@ def de(
 
     for i in range(popsteps):
         if i == 0:
-            At, delta_w = multi_inst_control_eigenfreqs(
-                ti, target_w, _b, popsize, maxiter, direc
-            )
+            At, delta_w = mi(ti, target_w, guess_b=_b, popsize=popsize, maxiter=maxiter, direc=direc)
             Ats = np.copy(At).reshape(1, *At.shape)
 
             ndelta_w = np.linalg.norm(delta_w, axis=-1)
@@ -98,8 +96,8 @@ def de(
         _w = np.flip(_w, axis=-1)
         _b = np.flip(_b, axis=-1)
 
-        At2, delta_w2 = multi_inst_control_eigenfreqs(
-            ti, target_w, _b, popsize, maxiter, direc
+        At2, delta_w2 = mi(
+            ti, target_w, guess_b=_b, popsize=popsize, maxiter=maxiter, direc=direc
         )
 
         p2 = (
