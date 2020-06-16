@@ -150,6 +150,16 @@ class Potential(Base):
 
         return hess_phi
 
+    def nondimensionalize(self, l):
+        nd_phi = lambda x: self.phi(x * l)
+        nd_dphi = lambda var: (lambda x: self.dphi(var)(x * l))
+        nd_d2phi = lambda var1, var2: (lambda x: self.d2phi(var1, var2)(x * l))
+        return (
+            Potential(nd_phi, nd_dphi, nd_d2phi, **self.params)
+            * l
+            / (cst.k * cst.e ** 2)
+        )
+
     def update_params(self, **kwargs):
         """
         Updates parameters, i.e. params attribute, of a Potential object.
