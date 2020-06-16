@@ -43,7 +43,7 @@ class SimulatedSpinLattice(SpinLattice):
         self.m = ti.m
         self.N = ti.N
 
-        params = {"dir": "x", "k": np.pi * 2 / 355e-9}
+        params = {"direc": "x", "k": np.pi * 2 / 355e-9}
         params.update(kwargs)
         self.__dict__.update(params)
         self.params = params
@@ -56,7 +56,7 @@ class SimulatedSpinLattice(SpinLattice):
         ):
             self.ti.principle_axis()
 
-        a = {"x": 0, "y": 1, "z": 2}[self.dir]
+        a = {"x": 0, "y": 1, "z": 2}[self.direc]
         self.w = self.ti.w_pa[a * self.N : (a + 1) * self.N]
         self.b = self.ti.b_pa[
             a * self.N : (a + 1) * self.N, a * self.N : (a + 1) * self.N
