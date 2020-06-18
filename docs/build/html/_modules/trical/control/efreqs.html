@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>trical.control.efreqs &mdash; TrICal  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> TrICal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Packages and Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../trical.html">trical package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">TrICal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>trical.control.efreqs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for trical.control.efreqs</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">..misc.linalg</span> <span class="kn">import</span> <span class="n">random_unitary</span>
+
+
+<div class="viewcode-block" id="mi"><a class="viewcode-back" href="../../../trical.control.html#trical.control.efreqs.mi">[docs]</a><span class="k">def</span> <span class="nf">mi</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">target_w</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;direc&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;guess_b&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="s2">&quot;popsize&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="s2">&quot;torch&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;torch_params&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)},</span>
+    <span class="p">}</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;b_pa&quot;</span><span class="p">,</span> <span class="s2">&quot;w_pa&quot;</span><span class="p">,</span> <span class="s2">&quot;x_pa&quot;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="o">!=</span> <span class="mi">3</span>
+    <span class="p">):</span>
+        <span class="n">ti</span><span class="o">.</span><span class="n">principle_axis</span><span class="p">()</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}[</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;direc&quot;</span><span class="p">]]</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">N</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">a</span> <span class="o">*</span> <span class="n">N</span> <span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">N</span><span class="p">,</span> <span class="n">a</span> <span class="o">*</span> <span class="n">N</span> <span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">N</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;guess_b&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_b</span> <span class="o">=</span> <span class="n">random_unitary</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;popsize&quot;</span><span class="p">],</span> <span class="n">N</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_b</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;guess_b&quot;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxiter</span><span class="p">):</span>
+        <span class="n">_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;...im,m,...jm-&gt;...ij&quot;</span><span class="p">,</span> <span class="n">_b</span><span class="p">,</span> <span class="n">target_w</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">_b</span><span class="p">)</span>
+
+        <span class="n">idcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">_At</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">_A</span><span class="p">)</span>
+        <span class="n">_At</span><span class="p">[:,</span> <span class="n">idcs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">idcs</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_At</span><span class="p">[:,</span> <span class="n">idcs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">idcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">idcs</span><span class="p">])</span>
+        <span class="n">_w</span><span class="p">,</span> <span class="n">_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">_At</span><span class="p">)</span>
+        <span class="n">_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">_w</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">_b</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">A_diag</span> <span class="o">=</span> <span class="n">_At</span><span class="p">[:,</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span> <span class="o">-</span> <span class="n">A</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">_At</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">_w</span><span class="p">)</span> <span class="o">-</span> <span class="n">target_w</span></div>
+
+
+<div class="viewcode-block" id="de"><a class="viewcode-back" href="../../../trical.control.html#trical.control.efreqs.de">[docs]</a><span class="k">def</span> <span class="nf">de</span><span class="p">(</span>
+    <span class="n">ti</span><span class="p">,</span>
+    <span class="n">target_w</span><span class="p">,</span>
+    <span class="n">mutation</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">greed</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">crossover</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">popsteps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">popsize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">direc</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+    <span class="n">term_tol</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;w_pa&quot;</span><span class="p">,</span> <span class="s2">&quot;b_pa&quot;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">ti</span><span class="o">.</span><span class="n">principle_axis</span><span class="p">()</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}[</span><span class="n">direc</span><span class="p">]</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">N</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">a</span> <span class="o">*</span> <span class="n">N</span> <span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">N</span><span class="p">,</span> <span class="n">a</span> <span class="o">*</span> <span class="n">N</span> <span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">N</span><span class="p">]</span>
+
+    <span class="n">_b</span> <span class="o">=</span> <span class="n">random_unitary</span><span class="p">(</span><span class="n">popsize</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">popsteps</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">At</span><span class="p">,</span> <span class="n">delta_w</span> <span class="o">=</span> <span class="n">mi</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">target_w</span><span class="p">,</span> <span class="n">guess_b</span><span class="o">=</span><span class="n">_b</span><span class="p">,</span> <span class="n">popsize</span><span class="o">=</span><span class="n">popsize</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="n">maxiter</span><span class="p">,</span> <span class="n">direc</span><span class="o">=</span><span class="n">direc</span><span class="p">)</span>
+            <span class="n">Ats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">At</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">At</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+            <span class="n">ndelta_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta_w</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">minidx</span> <span class="o">=</span> <span class="n">ndelta_w</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+
+        <span class="n">idcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">popsize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">popsize</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">idcs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="n">popsize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idcs</span><span class="p">]</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">At</span><span class="p">[:,</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+
+        <span class="n">v</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">x</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="n">popsize</span><span class="p">)]</span>
+            <span class="o">+</span> <span class="n">greed</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">minidx</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="n">popsize</span><span class="p">)])</span>
+            <span class="o">+</span> <span class="n">mutation</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">idcs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">idcs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]])</span>
+        <span class="p">)</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="o">*</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">r</span> <span class="o">&lt;=</span> <span class="n">crossover</span>
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">p</span> <span class="o">*</span> <span class="n">v</span>
+
+        <span class="n">At2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">At</span><span class="p">)</span>
+        <span class="n">At2</span><span class="p">[:,</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span> <span class="o">=</span> <span class="n">u</span>
+
+        <span class="n">_w</span><span class="p">,</span> <span class="n">_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">At2</span><span class="p">)</span>
+        <span class="n">_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">_w</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">_b</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">At2</span><span class="p">,</span> <span class="n">delta_w2</span> <span class="o">=</span> <span class="n">mi</span><span class="p">(</span>
+            <span class="n">ti</span><span class="p">,</span> <span class="n">target_w</span><span class="p">,</span> <span class="n">guess_b</span><span class="o">=</span><span class="n">_b</span><span class="p">,</span> <span class="n">popsize</span><span class="o">=</span><span class="n">popsize</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="n">maxiter</span><span class="p">,</span> <span class="n">direc</span><span class="o">=</span><span class="n">direc</span>
+        <span class="p">)</span>
+
+        <span class="n">p2</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta_w2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta_w</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">At</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span> <span class="o">*</span> <span class="n">At</span> <span class="o">+</span> <span class="n">p2</span> <span class="o">*</span> <span class="n">At2</span>
+
+        <span class="n">p2</span> <span class="o">=</span> <span class="n">p2</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">delta_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta_w</span> <span class="o">+</span> <span class="n">p2</span> <span class="o">*</span> <span class="n">delta_w2</span>
+
+        <span class="n">ndelta_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta_w</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:&lt;10}{:&lt;20}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:.5e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ndelta_w</span><span class="o">.</span><span class="n">min</span><span class="p">())))</span>
+        <span class="n">minidx</span> <span class="o">=</span> <span class="n">ndelta_w</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+
+        <span class="n">Ats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">Ats</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">At</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">At</span><span class="o">.</span><span class="n">shape</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span>
+            <span class="n">target_w</span> <span class="o">+</span> <span class="n">delta_w</span><span class="p">[</span><span class="n">minidx</span><span class="p">],</span> <span class="n">target_w</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">term_tol</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="n">term_tol</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">break</span>
+
+    <span class="n">omega_opt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">At</span><span class="p">[</span><span class="n">minidx</span><span class="p">]</span> <span class="o">-</span> <span class="n">A</span><span class="p">)))</span>
+    <span class="n">omega_opt_sign</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">At</span><span class="p">[</span><span class="n">minidx</span><span class="p">]</span> <span class="o">-</span> <span class="n">A</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">omega_opt</span><span class="p">,</span> <span class="n">omega_opt_sign</span><span class="p">),</span> <span class="n">delta_w</span><span class="p">[</span><span class="n">minidx</span><span class="p">],</span> <span class="n">Ats</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, QITI
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
