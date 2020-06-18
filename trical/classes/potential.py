@@ -116,7 +116,7 @@ class Potential(Base):
 
             i = 0
             for var in itr.product(
-                ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
+                ["x", "y", "z"][: self.dim], np.arange(self.N, dtype=int)
             ):
                 grad_phi_x[i] = self.dphi(var)(x)
                 i += 1
@@ -137,11 +137,11 @@ class Potential(Base):
 
             i = 0
             for var1 in itr.product(
-                ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
+                ["x", "y", "z"][: self.dim], np.arange(self.N, dtype=int)
             ):
                 j = 0
                 for var2 in itr.product(
-                    ["x", "y", "z"][: self.dim], np.arange(1, self.N + 1, dtype=int)
+                    ["x", "y", "z"][: self.dim], np.arange(self.N, dtype=int)
                 ):
                     hess_phi_x[i, j] = self.d2phi(var1, var2)(x)
                     j += 1
@@ -202,7 +202,7 @@ class CoulombPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
+        i = int(var[1:] if type(var) == str else var[1:][0])
         j = np.delete(np.arange(self.N, dtype=int), i)
 
         def dphi_dai(x):
@@ -216,8 +216,8 @@ class CoulombPotential(Potential):
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
-        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
+        i = int(var1[1:] if type(var1) == str else var1[1:][0])
+        j = int(var2[1:] if type(var2) == str else var2[1:][0])
 
         def d2phi_daidbj(x):
             if i == j:
@@ -283,7 +283,7 @@ class PolynomialPotential(Potential):
 
     def __init__(self, alpha, **kwargs):
         self.alpha = np.array(alpha)
-        self.deg = np.array(alpha.shape) - 1
+        self.deg = np.array(alpha.shape)
 
         params = {"dim": len(alpha.shape)}
         params.update(kwargs)
@@ -300,7 +300,7 @@ class PolynomialPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
+        i = int(var[1:] if type(var) == str else var[1:][0])
 
         beta = poly.polyder(self.alpha, axis=a)
 
@@ -313,8 +313,8 @@ class PolynomialPotential(Potential):
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
-        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
+        i = int(var1[1:] if type(var1) == str else var1[1:][0])
+        j = int(var2[1:] if type(var2) == str else var2[1:][0])
 
         beta = poly.polyder(self.alpha, axis=a)
         gamma = poly.polyder(beta, axis=b)
@@ -380,7 +380,7 @@ class SymbolicPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
+        i = int(var[1:] if type(var) == str else var[1:][0])
 
         dphi_dai = lambda x: sympy.utilities.lambdify(
             self.symbol, sympy.diff(self.expr, self.symbol[a])
@@ -391,8 +391,8 @@ class SymbolicPotential(Potential):
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
-        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
+        i = int(var1[1:] if type(var1) == str else var1[1:][0])
+        j = int(var2[1:] if type(var2) == str else var2[1:][0])
 
         if i == j:
             d2phi_daidbj = lambda x: sympy.utilities.lambdify(
@@ -457,7 +457,7 @@ class AdvancedSymbolicPotential(Potential):
 
     def first_derivative(self, var):
         a = var[0]
-        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
+        i = int(var[1:] if type(var) == str else var[1:][0])
 
         def dphi_dai(x):
             x = np.array(x)
@@ -470,8 +470,8 @@ class AdvancedSymbolicPotential(Potential):
     def second_derivative(self, var1, var2):
         a = var1[0]
         b = var2[0]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
-        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
+        i = int(var1[1:] if type(var1) == str else var1[1:][0])
+        j = int(var2[1:] if type(var2) == str else var2[1:][0])
 
         def d2phi_daidbj(x):
             x = np.array(x)
@@ -641,7 +641,7 @@ class GaussianOpticalPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
+        i = int(var[1:] if type(var) == str else var[1:][0])
 
         def dphi_dai(x):
             V = self.V
@@ -663,8 +663,8 @@ class GaussianOpticalPotential(Potential):
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
-        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
+        i = int(var1[1:] if type(var1) == str else var1[1:][0])
+        j = int(var2[1:] if type(var2) == str else var2[1:][0])
 
         def d2phi_daidbj(x):
             V = self.V
@@ -779,14 +779,14 @@ class AutoDiffPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:] if type(var) == str else var[1:][0]) - 1
+        i = int(var[1:] if type(var) == str else var[1:][0])
         return lambda x: self.gradient()(x)[a * self.N + i]
 
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0]) - 1
-        j = int(var2[1:] if type(var2) == str else var2[1:][0]) - 1
+        i = int(var1[1:] if type(var1) == str else var1[1:][0])
+        j = int(var2[1:] if type(var2) == str else var2[1:][0])
         return lambda x: self.hessian()(x)[a * self.N + i][b * self.N + j]
 
     def nondimensionalize(self, l):
