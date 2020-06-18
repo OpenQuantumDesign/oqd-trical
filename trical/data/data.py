@@ -1,7 +1,7 @@
 """
 Module containing functions for saving and loading data for TrICal.
 """
-from ..classes import Empty
+from ..classes import Base
 import pickle
 import numpy as np
 
@@ -9,7 +9,7 @@ import numpy as np
 def save_dict(data_dict, filename):
     """
     Saves a dictionary into a file.
-    
+
     :param data_dict: Dictionary of interest
     :type data_dict: :obj:`dict`
     :param filename: Path of file to save the dictionary in.
@@ -39,7 +39,7 @@ def load_dict(filename):
 def save_object(object, filename):
     """
     Saves the attributes of an object, as a dictionary, into a file.
-    
+
     :param data_dict: Dictionary of interest
     :type data_dict: :obj:`dict`
     :param filename: Path of file to save the attriutes of the object in.
@@ -58,4 +58,4 @@ def load_object(filename):
     :returns: Loaded instance of the Empty class.
     :rtype: :obj:`trical.classes.empty.Empty`
     """
-    return Empty(**load_dict(filename))
+    return Base(**load_dict(filename))

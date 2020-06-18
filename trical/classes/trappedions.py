@@ -1,41 +1,46 @@
+from .base import Base
 from ..misc import constants as cst
-from ..misc.linalg import norm, orthonormal_subset
+from ..misc.linalg import orthonormal_subset
 from ..misc.optimize import dflt_opt
 from .potential import CoulombPotential
 from matplotlib import pyplot as plt
 import numpy as np
 
 
-class TrappedIons(object):
+class TrappedIons(Base):
     """
     Object representing a system of trapped ions.
-    
+
     :param N: Number of ions.
     :type N: :obj:`int`
     """
-    def __init__(self, N, *args, **kwargs):
+
+    def __init__(self, N, *ps, **kwargs):
         super(TrappedIons, self).__init__()
 
         params = {
             "dim": ps[0].dim if "dim" in ps[0].__dict__.keys() else 3,
             "l": 1e-6,
-            "m": cst.m_a["Yb171"],
+            "m": cst.convert_m_a(171),
             "q": cst.e,
         }
         params.update(kwargs)
         self.__dict__.update(params)
 
         self.N = N
+        self.cp = CoulombPotential(N, dim=self.dim, q=self.q)
+
+        for p in ps:
+            p.update_params(N=N)
         self.ps = np.array(ps)
 
-        self.cp = CoulombPotential(N, dim=self.dim, q=self.q)
         self.fp = self.cp + self.ps.sum()
         pass
 
-    def equilibrium_position(self, opt=dflt_opt):
+    def equilibrium_position(self, opt=dflt_opt, **kwargs):
         """
         Function that calculates the equilibrium position of the ions.
-        
+
         :param opt: Generator of the appropriate optimization function for finding the equilibrium position, defaults to :obj:`trical.misc.optimize.dflt_opt`
         :type opt: :obj:`types.FunctionType`, optional
         :returns: Equilibrium position of the ions.
@@ -47,30 +52,46 @@ class TrappedIons(object):
 
         _ndfp = lambda x: ndfp(x.reshape(self.dim, self.N).transpose())
 
-        self.x_ep = opt(self)(_ndfp).reshape(self.dim, self.N).transpose() * self.l
+        self.x_ep = (
+            opt(self, **kwargs)(_ndfp).reshape(self.dim, self.N).transpose() * self.l
+        )
         return self.x_ep
 
     def normal_modes(self):
         """
         Function that calculates the normal modes of the system.
-        
+
         :Returns:
             * **w** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.
             * **b** (:obj:`numpy.ndarray`): Normal mode eigenvectors of the system.
         """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
-        ndfp = ndcp + ndps.sum()
 
-        hess_phi = ndfp.hessian()
+        hess_phi = lambda x: np.array(
+            [ndp.hessian()(x) for ndp in np.append(ndps, ndcp)]
+        ).sum(0)
 
         if "x_ep" not in self.__dict__.keys():
             self.equilibrium_position()
 
         hess_phi_x_ep = hess_phi(self.x_ep / self.l)
 
-        w, b = np.linalg.eigh(hess_phi_x_ep)
-        w = np.sqrt(w * cst.k * cst.e ** 2 / (self.m * self.l ** 3))
+        if type(self.m) == float:
+            A = hess_phi_x_ep / self.m
+            w, b = np.linalg.eigh(A)
+        else:
+            A = np.einsum(
+                "ij,i,j->ij",
+                hess_phi_x_ep,
+                1 / np.tile(np.sqrt(self.m), 3),
+                1 / np.tile(np.sqrt(self.m), 3),
+            )
+            w, b = np.linalg.eigh(A)
+            b = np.einsum("im,i->im", b, 1 / np.tile(np.sqrt(self.m), 3))
+            b = b / np.linalg.norm(b, axis=0)
+
+        w = np.sqrt(w * cst.k * cst.e ** 2 / self.l ** 3)
 
         _b = np.round(np.copy(b), 3).transpose()
         s = (np.sign(_b).sum(1) >= 0) * 2 - 1
@@ -78,13 +99,17 @@ class TrappedIons(object):
 
         idcs = np.argsort(np.flip(w, axis=0))
 
-        self.w, self.b = w[idcs], b[:, idcs]
+        self.w, self.b, self.A = (
+            w[idcs],
+            b[:, idcs],
+            A * cst.k * cst.e ** 2 / self.l ** 3,
+        )
         return self.w, self.b
 
     def principle_axis(self, tol=1e-3):
         """
         Function that calculates the principle axes of the system.
-        
+
         :Returns:
             * **x_pa** (:obj:`numpy.ndarray`): Principle axes of the system.
             * **w_pa** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.
@@ -93,9 +118,10 @@ class TrappedIons(object):
         if np.isin(np.array(["w", "b"]), np.array(self.__dict__.keys())).sum() != 2:
             self.normal_modes()
 
-        x_pa = orthonormal_subset(self.b.reshape(self.dim, -1).transpose(), tol=tol)
+        xs = self.b.reshape(self.dim, -1).transpose()
+        x_pa = orthonormal_subset(xs, tol=tol)
 
-        assert len(x_pa) == self.dim
+        assert len(x_pa) == self.dim, x_pa.__str__()
 
         _x_pa = np.round(np.copy(x_pa), 3)
         s = (np.sign(_x_pa).sum(1) >= 0) * 2 - 1
@@ -120,12 +146,14 @@ class TrappedIons(object):
         n = np.round(
             np.array(
                 [
-                    norm(b_pa[i * self.N : (i + 1) * self.N].transpose())
+                    np.linalg.norm(
+                        b_pa[i * self.N : (i + 1) * self.N].transpose(), axis=-1
+                    )
                     for i in range(self.dim)
                 ]
             )
-        )
-        idcs = np.lexsort(np.concatenate((np.flip(w_pa, axis=0).reshape(1, -1), n)))
+        ).astype(int)
+        idcs = np.lexsort(np.concatenate(((-w_pa).reshape(1, -1), n)))
 
         self.x_pa, self.w_pa, self.b_pa = x_pa, w_pa[idcs], b_pa[:, idcs]
         return self.x_pa, self.w_pa, self.b_pa
@@ -133,7 +161,7 @@ class TrappedIons(object):
     def update_params(self, **kwargs):
         """
         Updates parameters, i.e. params attribute, of a TrappedIons object.
-        
+
         :Keyword Arguments:
             * **dim** (:obj:`float`): Dimension of the system.
             * **l** (:obj:`float`): Length scale of the system.
@@ -143,6 +171,23 @@ class TrappedIons(object):
         self.params.update(kwargs)
         self.__dict__.update(self.params)
         pass
+
+    def mode_ion_coupling(self):
+        if (
+            np.isin(
+                np.array(["w_pa", "b_pa", "x_pa"]), np.array(self.__dict__.keys())
+            ).sum()
+            != 3
+        ):
+            self.principle_axis()
+
+        mic = np.zeros((3 * self.N, 3 * self.N, 3 * self.N))
+        idcs = np.triu_indices(3 * self.N, k=1)
+        mic[:, idcs[0], idcs[1]] = mic[:, idcs[1], idcs[0]] = (
+            self.b_pa[np.array(idcs), :].prod(axis=0).transpose()
+        )
+        self.mic = mic
+        return self.mic
 
     def plot_equilibrium_position(self, **kwargs):
         pass
