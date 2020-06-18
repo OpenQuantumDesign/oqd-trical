@@ -1,6 +1,5 @@
 import itertools as itr
 import numpy as np
-import torch
 from ..misc.linalg import gram_schimdt, random_unitary
 
 
