@@ -19,7 +19,7 @@ def ms_trap_strength(m, m0, omega):
     """
     omega_dc = omega[2]
 
-    omega_axial = np.sqrt(m / m0) * omega[2]
+    omega_axial = np.sqrt(m0 / m) * omega[2]
 
     gamma_diff = (omega[1] ** 2 - omega[0] ** 2) / omega_dc ** 2
     gamma_x = (gamma_diff + 1) / 2
@@ -32,5 +32,5 @@ def ms_trap_strength(m, m0, omega):
         (m0 / m) ** 2 * omega_rf ** 2 - np.outer(gamma, (m0 / m)) * omega_dc ** 2
     )
 
-    omegas = np.hstack((omega_trans), omega_axial)
+    omegas = np.vstack((omega_trans, omega_axial))
     return omegas
