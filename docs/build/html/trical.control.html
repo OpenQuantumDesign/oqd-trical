@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>trical.control package &mdash; TrICal  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="trical.data package" href="trical.data.html" />
+    <link rel="prev" title="trical.classes package" href="trical.classes.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> TrICal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Packages and Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="trical.html">trical package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="trical.classes.html">trical.classes package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">trical.control package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-trical.control.nm">trical.control.nm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-trical.control.efreqs">trical.control.efreqs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-trical.control.evecs">trical.control.evecs module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trical.data.html">trical.data package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="trical.misc.html">trical.misc package</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TrICal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="trical.html">trical package</a> &raquo;</li>
+        
+      <li>trical.control package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="trical-control-package">
+<h1>trical.control package<a class="headerlink" href="#trical-control-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-trical.control.nm">
+<span id="trical-control-nm-module"></span><h2>trical.control.nm module<a class="headerlink" href="#module-trical.control.nm" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="trical.control.nm.control_eigenfreqs">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">control_eigenfreqs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_w</span></em>, <em class="sig-param"><span class="n">guess_b</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em>, <em class="sig-param"><span class="n">term_tol</span><span class="o">=</span><span class="default_value">0.0, 10.0</span></em>, <em class="sig-param"><span class="n">det_tol</span><span class="o">=</span><span class="default_value">0.01</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#control_eigenfreqs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.control_eigenfreqs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.control_eigenfreqs_de">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">control_eigenfreqs_de</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_w</span></em>, <em class="sig-param"><span class="n">mutation</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">greed</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">crossover</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">popsteps</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">popsize</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em>, <em class="sig-param"><span class="n">term_tol</span><span class="o">=</span><span class="default_value">0.0, 10.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#control_eigenfreqs_de"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.control_eigenfreqs_de" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.control_eigenfreqs_gradual">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">control_eigenfreqs_gradual</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_w</span></em>, <em class="sig-param"><span class="n">epsilon</span><span class="o">=</span><span class="default_value">array([6.77160128e-05, 0.000136103337, 0.000205168533, 0.000274918227, 0.000345359105, 0.000416497917, 0.000488341478, 0.000560896667, 0.000634170428, 0.000708169769, 0.000782901768, 0.000858373567, 0.000934592375, 0.00101156547, 0.0010893002, 0.00116780398, 0.0012470843, 0.00132714871, 0.00140800483, 0.00148966038, 0.00157212311, 0.00165540088, 0.00173950159, 0.00182443325, 0.00191020391, 0.00199682172, 0.0020842949, 0.00217263174, 0.00226184061, 0.00235192996, 0.00244290833, 0.00253478431, 0.0026275666, 0.00272126397, 0.00281588526, 0.00291143941, 0.00300793543, 0.00310538242, 0.00320378957, 0.00330316614, 0.00340352148, 0.00350486504, 0.00360720634, 0.00371055499, 0.0038149207, 0.00392031326, 0.00402674255, 0.00413421854, 0.0042427513, 0.00435235098, 0.00446302783, 0.0045747922, 0.00468765452, 0.00480162533, 0.00491671524, 0.005032935, 0.00515029541, 0.00526880741, 0.005388482, 0.00550933031, 0.00563136357, 0.00575459308, 0.00587903029, 0.0060046867, 0.00613157396, 0.0062597038, 0.00638908806, 0.00651973869, 0.00665166774, 0.00678488738, 0.00691940988, 0.00705524761, 0.00719241308, 0.00733091888, 0.00747077772, 0.00761200244, 0.00775460598, 0.0078986014, 0.00804400186, 0.00819082065, 0.00833907119, 0.00848876699, 0.0086399217, 0.00879254908, 0.00894666302, 0.00910227751, 0.0092594067, 0.00941806483, 0.00957826627, 0.00974002552, 0.00990335723, 0.0100682761, 0.0102347971, 0.0104029352, 0.0105727055, 0.0107441233, 0.010917204, 0.0110919631, 0.0112684164, 0.0114465795, 0.0116264685, 0.0118080995, 0.0119914885, 0.0121766521, 0.0123636066, 0.0125523687, 0.0127429551, 0.0129353828, 0.0131296689, 0.0133258304, 0.0135238848, 0.0137238495, 0.0139257422, 0.0141295807, 0.0143353828, 0.0145431666, 0.0147529504, 0.0149647525, 0.0151785915, 0.015394486, 0.0156124549, 0.0158325171, 0.0160546919, 0.0162789984, 0.0165054561, 0.0167340847, 0.0169649039, 0.0171979336, 0.017433194, 0.0176707053, 0.0179104878, 0.0181525623, 0.0183969493, 0.0186436698, 0.018892745, 0.0191441959, 0.019398044, 0.019654311, 0.0199130184, 0.0201741883, 0.0204378427, 0.0207040039, 0.0209726943, 0.0212439364, 0.0215177531, 0.0217941673, 0.0220732021, 0.0223548808, 0.0226392269, 0.022926264, 0.0232160159, 0.0235085067, 0.0238037606, 0.0241018019, 0.0244026551, 0.024706345, 0.0250128965, 0.0253223347, 0.0256346848, 0.0259499724, 0.026268223, 0.0265894625, 0.0269137169, 0.0272410124, 0.0275713754, 0.0279048325, 0.0282414105, 0.0285811362, 0.0289240368, 0.0292701397, 0.0296194724, 0.0299720625, 0.0303279381, 0.0306871271, 0.0310496579, 0.0314155589, 0.0317848588, 0.0321575864, 0.0325337709, 0.0329134414, 0.0332966274, 0.0336833584, 0.0340736644, 0.0344675753, 0.0348651214, 0.035266333, 0.0356712407, 0.0360798754, 0.0364922679, 0.0369084495, 0.0373284516, 0.0377523056, 0.0381800433, 0.0386116968, 0.039047298, 0.0394868795, 0.0399304735, 0.040378113, 0.0408298307, 0.0412856598, 0.0417456335, 0.0422097854, 0.0426781491, 0.0431507583, 0.0436276473, 0.0441088502, 0.0445944014, 0.0450843355, 0.0455786873, 0.0460774917, 0.046580784, 0.0470885994, 0.0476009735, 0.048117942, 0.0486395407, 0.0491658057, 0.0496967732, 0.0502324796, 0.0507729616, 0.0513182558, 0.0518683993, 0.052423429, 0.0529833823, 0.0535482966, 0.0541182095, 0.0546931587, 0.0552731822, 0.0558583181, 0.0564486046, 0.0570440802, 0.0576447833, 0.0582507527, 0.0588620272, 0.0594786459, 0.0601006479, 0.0607280725, 0.0613609592, 0.0619993474, 0.062643277, 0.0632927878, 0.0639479197, 0.0646087129, 0.0652752076, 0.0659474442, 0.066625463, 0.0673093048, 0.0679990102, 0.0686946199, 0.0693961751, 0.0701037165, 0.0708172855, 0.0715369231, 0.0722626708, 0.0729945698, 0.0737326617, 0.074476988, 0.0752275904, 0.0759845105, 0.0767477902, 0.0775174713, 0.0782935957, 0.0790762053, 0.0798653422, 0.0806610483, 0.0814633658, 0.0822723369, 0.0830880036, 0.0839104081, 0.0847395927, 0.0855755996, 0.0864184709, 0.087268249, 0.088124976, 0.0889886942, 0.0898594457, 0.0907372729, 0.0916222178, 0.0925143225, 0.0934136292, 0.09432018, 0.0952340168, 0.0961551816, 0.0970837162, 0.0980196625, 0.0989630622, 0.099913957, 0.100872388, 0.101838398, 0.102812027, 0.103793317, 0.104782308, 0.105779043, 0.106783561, 0.107795903, 0.10881611, 0.109844223, 0.110880282, 0.111924326, 0.112976395, 0.11403653, 0.11510477, 0.116181153, 0.11726572, 0.118358508, 0.119459557, 0.120568905, 0.12168659, 0.122812649, 0.12394712, 0.125090041, 0.126241449, 0.127401379, 0.12856987, 0.129746955, 0.130932672, 0.132127055, 0.13333014, 0.134541961, 0.135762552, 0.136991947, 0.138230181, 0.139477285, 0.140733292, 0.141998235, 0.143272145, 0.144555054, 0.145846993, 0.147147992, 0.14845808, 0.149777288, 0.151105644, 0.152443177, 0.153789914, 0.155145883, 0.15651111, 0.157885622, 0.159269444, 0.160662601, 0.162065118, 0.163477019, 0.164898326, 0.166329062, 0.16776925, 0.16921891, 0.170678063, 0.172146729, 0.173624926, 0.175112675, 0.176609991, 0.178116892, 0.179633396, 0.181159516, 0.182695267, 0.184240665, 0.185795721, 0.187360449, 0.188934859, 0.190518963, 0.19211277, 0.193716289, 0.195329529, 0.196952496, 0.198585198, 0.200227639, 0.201879824, 0.203541757, 0.20521344, 0.206894876, 0.208586064, 0.210287005, 0.211997698, 0.21371814, 0.215448328, 0.217188259, 0.218937926, 0.220697323, 0.222466444, 0.22424528, 0.226033821, 0.227832058, 0.229639977, 0.231457567, 0.233284814, 0.235121703, 0.236968218, 0.238824342, 0.240690055, 0.24256534, 0.244450175, 0.246344538, 0.248248407, 0.250161756, 0.252084562, 0.254016797, 0.255958433, 0.257909442, 0.259869793, 0.261839454, 0.263818394, 0.265806578, 0.267803971, 0.269810536, 0.271826236, 0.273851032, 0.275884884, 0.27792775, 0.279979587, 0.282040351, 0.284109998, 0.28618848, 0.28827575, 0.290371758, 0.292476454, 0.294589786, 0.296711701, 0.298842145, 0.300981062, 0.303128395, 0.305284087, 0.307448076, 0.309620304, 0.311800706, 0.313989221, 0.316185784, 0.318390328, 0.320602786, 0.32282309, 0.32505117, 0.327286955, 0.329530372, 0.331781349, 0.334039809, 0.336305677, 0.338578877, 0.340859328, 0.343146951, 0.345441666, 0.34774339, 0.350052039, 0.35236753, 0.354689775, 0.357018688, 0.359354182, 0.361696166, 0.36404455, 0.366399242, 0.368760151, 0.371127181, 0.373500237, 0.375879225, 0.378264046, 0.380654603, 0.383050796, 0.385452526, 0.387859689, 0.390272185, 0.392689911, 0.395112761, 0.397540631, 0.399973414, 0.402411003, 0.404853292, 0.407300169, 0.409751527, 0.412207254, 0.414667238, 0.417131368, 0.419599531, 0.422071613, 0.424547498, 0.427027073, 0.429510221, 0.431996825, 0.434486768, 0.436979931, 0.439476197, 0.441975446, 0.444477558, 0.446982413, 0.449489889, 0.451999866, 0.454512222, 0.457026833, 0.459543578, 0.462062332, 0.464582973, 0.467105376, 0.469629417, 0.47215497, 0.474681912, 0.477210117, 0.479739458, 0.482269811, 0.48480105, 0.487333047, 0.489865678, 0.492398815, 0.494932332, 0.497466103, 0.5, 0.502533897, 0.505067668, 0.507601185, 0.510134322, 0.512666953, 0.51519895, 0.517730189, 0.520260542, 0.522789883, 0.525318088, 0.52784503, 0.530370583, 0.532894624, 0.535417027, 0.537937668, 0.540456422, 0.542973167, 0.545487778, 0.548000134, 0.550510111, 0.553017587, 0.555522442, 0.558024554, 0.560523803, 0.563020069, 0.565513232, 0.568003175, 0.570489779, 0.572972927, 0.575452502, 0.577928387, 0.580400469, 0.582868632, 0.585332762, 0.587792746, 0.590248473, 0.592699831, 0.595146708, 0.597588997, 0.600026586, 0.602459369, 0.604887239, 0.607310089, 0.609727815, 0.612140311, 0.614547474, 0.616949204, 0.619345397, 0.621735954, 0.624120775, 0.626499763, 0.628872819, 0.631239849, 0.633600758, 0.63595545, 0.638303834, 0.640645818, 0.642981312, 0.645310225, 0.64763247, 0.649947961, 0.65225661, 0.654558334, 0.656853049, 0.659140672, 0.661421123, 0.663694323, 0.665960191, 0.668218651, 0.670469628, 0.672713045, 0.67494883, 0.67717691, 0.679397214, 0.681609672, 0.683814216, 0.686010779, 0.688199294, 0.690379696, 0.692551924, 0.694715913, 0.696871605, 0.699018938, 0.701157855, 0.703288299, 0.705410214, 0.707523546, 0.709628242, 0.71172425, 0.71381152, 0.715890002, 0.717959649, 0.720020413, 0.72207225, 0.724115116, 0.726148968, 0.728173764, 0.730189464, 0.732196029, 0.734193422, 0.736181606, 0.738160546, 0.740130207, 0.742090558, 0.744041567, 0.745983203, 0.747915438, 0.749838244, 0.751751593, 0.753655462, 0.755549825, 0.75743466, 0.759309945, 0.761175658, 0.763031782, 0.764878297, 0.766715186, 0.768542433, 0.770360023, 0.772167942, 0.773966179, 0.77575472, 0.777533556, 0.779302677, 0.781062074, 0.782811741, 0.784551672, 0.78628186, 0.788002302, 0.789712995, 0.791413936, 0.793105124, 0.79478656, 0.796458243, 0.798120176, 0.799772361, 0.801414802, 0.803047504, 0.804670471, 0.806283711, 0.80788723, 0.809481037, 0.811065141, 0.812639551, 0.814204279, 0.815759335, 0.817304733, 0.818840484, 0.820366604, 0.821883108, 0.823390009, 0.824887325, 0.826375074, 0.827853271, 0.829321937, 0.83078109, 0.83223075, 0.833670938, 0.835101674, 0.836522981, 0.837934882, 0.839337399, 0.840730556, 0.842114378, 0.84348889, 0.844854117, 0.846210086, 0.847556823, 0.848894356, 0.850222712, 0.85154192, 0.852852008, 0.854153007, 0.855444946, 0.856727855, 0.858001765, 0.859266708, 0.860522715, 0.861769819, 0.863008053, 0.864237448, 0.865458039, 0.86666986, 0.867872945, 0.869067328, 0.870253045, 0.87143013, 0.872598621, 0.873758551, 0.874909959, 0.87605288, 0.877187351, 0.87831341, 0.879431095, 0.880540443, 0.881641492, 0.88273428, 0.883818847, 0.88489523, 0.88596347, 0.887023605, 0.888075674, 0.889119718, 0.890155777, 0.89118389, 0.892204097, 0.893216439, 0.894220957, 0.895217692, 0.896206683, 0.897187973, 0.898161602, 0.899127612, 0.900086043, 0.901036938, 0.901980337, 0.902916284, 0.903844818, 0.904765983, 0.90567982, 0.906586371, 0.907485677, 0.908377782, 0.909262727, 0.910140554, 0.911011306, 0.911875024, 0.912731751, 0.913581529, 0.9144244, 0.915260407, 0.916089592, 0.916911996, 0.917727663, 0.918536634, 0.919338952, 0.920134658, 0.920923795, 0.921706404, 0.922482529, 0.92325221, 0.924015489, 0.92477241, 0.925523012, 0.926267338, 0.92700543, 0.927737329, 0.928463077, 0.929182715, 0.929896283, 0.930603825, 0.93130538, 0.93200099, 0.932690695, 0.933374537, 0.934052556, 0.934724792, 0.935391287, 0.93605208, 0.936707212, 0.937356723, 0.938000653, 0.938639041, 0.939271927, 0.939899352, 0.940521354, 0.941137973, 0.941749247, 0.942355217, 0.94295592, 0.943551395, 0.944141682, 0.944726818, 0.945306841, 0.945881791, 0.946451703, 0.947016618, 0.947576571, 0.948131601, 0.948681744, 0.949227038, 0.94976752, 0.950303227, 0.950834194, 0.951360459, 0.951882058, 0.952399026, 0.952911401, 0.953419216, 0.953922508, 0.954421313, 0.954915665, 0.955405599, 0.95589115, 0.956372353, 0.956849242, 0.957321851, 0.957790215, 0.958254366, 0.95871434, 0.959170169, 0.959621887, 0.960069526, 0.960513121, 0.960952702, 0.961388303, 0.961819957, 0.962247694, 0.962671548, 0.96309155, 0.963507732, 0.963920125, 0.964328759, 0.964733667, 0.965134879, 0.965532425, 0.965926336, 0.966316642, 0.966703373, 0.967086559, 0.967466229, 0.967842414, 0.968215141, 0.968584441, 0.968950342, 0.969312873, 0.969672062, 0.970027937, 0.970380528, 0.97072986, 0.971075963, 0.971418864, 0.97175859, 0.972095167, 0.972428625, 0.972758988, 0.973086283, 0.973410538, 0.973731777, 0.974050028, 0.974365315, 0.974677665, 0.974987104, 0.975293655, 0.975597345, 0.975898198, 0.976196239, 0.976491493, 0.976783984, 0.977073736, 0.977360773, 0.977645119, 0.977926798, 0.978205833, 0.978482247, 0.978756064, 0.979027306, 0.979295996, 0.979562157, 0.979825812, 0.980086982, 0.980345689, 0.980601956, 0.980855804, 0.981107255, 0.98135633, 0.981603051, 0.981847438, 0.982089512, 0.982329295, 0.982566806, 0.982802066, 0.983035096, 0.983265915, 0.983494544, 0.983721002, 0.983945308, 0.984167483, 0.984387545, 0.984605514, 0.984821409, 0.985035247, 0.98524705, 0.985456833, 0.985664617, 0.985870419, 0.986074258, 0.98627615, 0.986476115, 0.98667417, 0.986870331, 0.987064617, 0.987257045, 0.987447631, 0.987636393, 0.987823348, 0.988008511, 0.988191901, 0.988373531, 0.98855342, 0.988731584, 0.988908037, 0.989082796, 0.989255877, 0.989427295, 0.989597065, 0.989765203, 0.989931724, 0.990096643, 0.990259974, 0.990421734, 0.990581935, 0.990740593, 0.990897722, 0.991053337, 0.991207451, 0.991360078, 0.991511233, 0.991660929, 0.991809179, 0.991955998, 0.992101399, 0.992245394, 0.992387998, 0.992529222, 0.992669081, 0.992807587, 0.992944752, 0.99308059, 0.993215113, 0.993348332, 0.993480261, 0.993610912, 0.993740296, 0.993868426, 0.993995313, 0.99412097, 0.994245407, 0.994368636, 0.99449067, 0.994611518, 0.994731193, 0.994849705, 0.994967065, 0.995083285, 0.995198375, 0.995312345, 0.995425208, 0.995536972, 0.995647649, 0.995757249, 0.995865781, 0.995973257, 0.996079687, 0.996185079, 0.996289445, 0.996392794, 0.996495135, 0.996596479, 0.996696834, 0.99679621, 0.996894618, 0.996992065, 0.997088561, 0.997184115, 0.997278736, 0.997372433, 0.997465216, 0.997557092, 0.99764807, 0.997738159, 0.997827368, 0.997915705, 0.998003178, 0.998089796, 0.998175567, 0.998260498, 0.998344599, 0.998427877, 0.99851034, 0.998591995, 0.998672851, 0.998752916, 0.998832196, 0.9989107, 0.998988435, 0.999065408, 0.999141626, 0.999217098, 0.99929183, 0.99936583, 0.999439103, 0.999511659, 0.999583502, 0.999654641, 0.999725082, 0.999794831, 0.999863897, 0.999932284, 1.0])</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em>, <em class="sig-param"><span class="n">term_tol</span><span class="o">=</span><span class="default_value">0.0, 10.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#control_eigenfreqs_gradual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.control_eigenfreqs_gradual" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.control_eigenfreqs_pop">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">control_eigenfreqs_pop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_w</span></em>, <em class="sig-param"><span class="n">mutation</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">popsteps</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">popsize</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em>, <em class="sig-param"><span class="n">term_tol</span><span class="o">=</span><span class="default_value">0.0, 10.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#control_eigenfreqs_pop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.control_eigenfreqs_pop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.control_eigenfreqs_step">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">control_eigenfreqs_step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_w</span></em>, <em class="sig-param"><span class="n">initial_A</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">guess_b</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em>, <em class="sig-param"><span class="n">term_tol</span><span class="o">=</span><span class="default_value">0.0, 10.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#control_eigenfreqs_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.control_eigenfreqs_step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.control_eigenvecs">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">control_eigenvecs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_b</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'y'</span></em>, <em class="sig-param"><span class="n">ttol</span><span class="o">=</span><span class="default_value">0.001, 0.0</span></em>, <em class="sig-param"><span class="n">ctol</span><span class="o">=</span><span class="default_value">1e-10, 0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#control_eigenvecs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.control_eigenvecs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.control_eigenvecs_de">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">control_eigenvecs_de</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_b</span></em>, <em class="sig-param"><span class="n">scale_w</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">mutation</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">greed</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">crossover</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">popsteps</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">popsize</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em>, <em class="sig-param"><span class="n">term_tol</span><span class="o">=</span><span class="default_value">0.0, 1e-05</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#control_eigenvecs_de"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.control_eigenvecs_de" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.generate_control_eigenfreqs_residue">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">generate_control_eigenfreqs_residue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target_w</span></em>, <em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#generate_control_eigenfreqs_residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.generate_control_eigenfreqs_residue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.multi_control_eigenfreqs">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">multi_control_eigenfreqs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_w</span></em>, <em class="sig-param"><span class="n">guess_b</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em>, <em class="sig-param"><span class="n">term_tol</span><span class="o">=</span><span class="default_value">0.0, 10.0</span></em>, <em class="sig-param"><span class="n">det_tol</span><span class="o">=</span><span class="default_value">0.01</span></em>, <em class="sig-param"><span class="n">show_progress</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#multi_control_eigenfreqs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.multi_control_eigenfreqs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.multi_inst_control_eigenfreqs">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">multi_inst_control_eigenfreqs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_w</span></em>, <em class="sig-param"><span class="n">guess_b</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_inst</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#multi_inst_control_eigenfreqs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.multi_inst_control_eigenfreqs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.multi_inst_control_eigenvecs">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">multi_inst_control_eigenvecs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_b</span></em>, <em class="sig-param"><span class="n">guess_w</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_w</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">num_inst</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#multi_inst_control_eigenvecs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.multi_inst_control_eigenvecs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.sigmoid">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">sigmoid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#sigmoid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.sigmoid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.nm.sort_btb">
+<code class="sig-prename descclassname">trical.control.nm.</code><code class="sig-name descname">sort_btb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">btb</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/nm.html#sort_btb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.nm.sort_btb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-trical.control.efreqs">
+<span id="trical-control-efreqs-module"></span><h2>trical.control.efreqs module<a class="headerlink" href="#module-trical.control.efreqs" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="trical.control.efreqs.de">
+<code class="sig-prename descclassname">trical.control.efreqs.</code><code class="sig-name descname">de</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_w</span></em>, <em class="sig-param"><span class="n">mutation</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">greed</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">crossover</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">popsteps</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">popsize</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em>, <em class="sig-param"><span class="n">term_tol</span><span class="o">=</span><span class="default_value">0.0, 10.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/efreqs.html#de"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.efreqs.de" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.efreqs.mi">
+<code class="sig-prename descclassname">trical.control.efreqs.</code><code class="sig-name descname">mi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_w</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/efreqs.html#mi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.efreqs.mi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-trical.control.evecs">
+<span id="trical-control-evecs-module"></span><h2>trical.control.evecs module<a class="headerlink" href="#module-trical.control.evecs" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="trical.control.evecs.de">
+<code class="sig-prename descclassname">trical.control.evecs.</code><code class="sig-name descname">de</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_b</span></em>, <em class="sig-param"><span class="n">scale_w</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">mutation</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">greed</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">crossover</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">popsteps</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">popsize</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em>, <em class="sig-param"><span class="n">term_tol</span><span class="o">=</span><span class="default_value">0.0, 1e-05</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/evecs.html#de"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.evecs.de" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.evecs.mi">
+<code class="sig-prename descclassname">trical.control.evecs.</code><code class="sig-name descname">mi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ti</span></em>, <em class="sig-param"><span class="n">target_b</span></em>, <em class="sig-param"><span class="n">guess_w</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_w</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">num_inst</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">maxiter</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">direc</span><span class="o">=</span><span class="default_value">'x'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/evecs.html#mi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.evecs.mi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="trical.control.evecs.sort_btb">
+<code class="sig-prename descclassname">trical.control.evecs.</code><code class="sig-name descname">sort_btb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">btb</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/trical/control/evecs.html#sort_btb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trical.control.evecs.sort_btb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="trical.data.html" class="btn btn-neutral float-right" title="trical.data package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="trical.classes.html" class="btn btn-neutral float-left" title="trical.classes package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, QITI
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
