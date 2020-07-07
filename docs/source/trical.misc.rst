@@ -17,6 +17,14 @@ trical.misc.linalg module
    :undoc-members:
    :show-inheritance:
 
+trical.misc.multispecies module
+-------------------------------
+
+.. automodule:: trical.misc.multispecies
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 trical.misc.optimize module
 ---------------------------
 
