@@ -165,7 +165,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">omega_dc</span> <span class="o">=</span> <span class="n">omega</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
-    <span class="n">omega_axial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">m</span> <span class="o">/</span> <span class="n">m0</span><span class="p">)</span> <span class="o">*</span> <span class="n">omega</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">omega_axial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">m0</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">omega</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
     <span class="n">gamma_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">omega</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">omega</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">omega_dc</span> <span class="o">**</span> <span class="mi">2</span>
     <span class="n">gamma_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">gamma_diff</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
@@ -178,7 +178,7 @@
         <span class="p">(</span><span class="n">m0</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">omega_rf</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="p">(</span><span class="n">m0</span> <span class="o">/</span> <span class="n">m</span><span class="p">))</span> <span class="o">*</span> <span class="n">omega_dc</span> <span class="o">**</span> <span class="mi">2</span>
     <span class="p">)</span>
 
-    <span class="n">omegas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">omega_trans</span><span class="p">),</span> <span class="n">omega_axial</span><span class="p">)</span>
+    <span class="n">omegas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">omega_trans</span><span class="p">,</span> <span class="n">omega_axial</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">omegas</span></div>
 </pre></div>
 
