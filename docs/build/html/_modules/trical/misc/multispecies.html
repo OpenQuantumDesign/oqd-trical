@@ -150,9 +150,26 @@
 <span class="sd">Module containing useful functions relavent for multi-species systems.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+
+<div class="viewcode-block" id="dc_trap_geometry"><a class="viewcode-back" href="../../../trical.misc.html#trical.misc.multispecies.dc_trap_geometry">[docs]</a><span class="k">def</span> <span class="nf">dc_trap_geometry</span><span class="p">(</span><span class="n">omega</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the trap geometry of a trapped ion system.</span>
+
+<span class="sd">    :param omega: Trap strengths of primary species</span>
+<span class="sd">    :type omega: :obj:`numpy.ndarray`</span>
+<span class="sd">    :returns: Trap geometry factors of the system</span>
+<span class="sd">    :rtype: :obj:`numpy.ndarray`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gamma_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">omega</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">omega</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">omega</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">gamma_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">gamma_diff</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">gamma_y</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">gamma_x</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">gamma_x</span><span class="p">,</span> <span class="n">gamma_y</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">gamma</span></div>
+
+
 <div class="viewcode-block" id="ms_trap_strength"><a class="viewcode-back" href="../../../trical.misc.html#trical.misc.multispecies.ms_trap_strength">[docs]</a><span class="k">def</span> <span class="nf">ms_trap_strength</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m0</span><span class="p">,</span> <span class="n">omega</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the transverse trap frequencies of non-primary species</span>
+<span class="sd">    Calculates the transverse trap frequencies of non-primary species.</span>
 
 <span class="sd">    :param m: Mass of ions</span>
 <span class="sd">    :type m: :obj:`numpy.ndarray`</span>
@@ -165,15 +182,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">omega_dc</span> <span class="o">=</span> <span class="n">omega</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
-    <span class="n">omega_axial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">m0</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">omega</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-
-    <span class="n">gamma_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">omega</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">omega</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">omega_dc</span> <span class="o">**</span> <span class="mi">2</span>
-    <span class="n">gamma_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">gamma_diff</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
-    <span class="n">gamma_y</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">gamma_x</span>
-    <span class="n">gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">gamma_x</span><span class="p">,</span> <span class="n">gamma_y</span><span class="p">])</span>
-
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">dc_trap_geometry</span><span class="p">(</span><span class="n">omega</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
     <span class="n">omega_rf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">omega</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">omega_dc</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">gamma</span><span class="p">)</span>
 
+    <span class="n">omega_axial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">m0</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">omega</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
     <span class="n">omega_trans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
         <span class="p">(</span><span class="n">m0</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">omega_rf</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="p">(</span><span class="n">m0</span> <span class="o">/</span> <span class="n">m</span><span class="p">))</span> <span class="o">*</span> <span class="n">omega_dc</span> <span class="o">**</span> <span class="mi">2</span>
     <span class="p">)</span>
