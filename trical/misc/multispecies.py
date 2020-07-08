@@ -37,7 +37,7 @@ def ms_trap_strength(m, m0, omega):
     omega_dc = omega[2]
 
     gamma = dc_trap_geometry(omega)[:2]
-    omega_rf = np.sqrt(omega[:2] ** 2 + omega_dc ** 2 * gamma)
+    omega_rf = np.sqrt(omega[0] ** 2 + omega_dc ** 2 * gamma[0])
 
     omega_axial = np.sqrt(m0 / m) * omega[2]
     omega_trans = np.sqrt(
