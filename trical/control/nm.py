@@ -421,7 +421,7 @@ def multi_inst_control_eigenfreqs(
 
     A_diag = _At[:, range(N), range(N)] - A[range(N), range(N)]
 
-    return _At, np.sqrt(_w) - target_w
+    return _At, np.sqrt(_w, dtype=np.complex) - target_w
 
 
 def control_eigenfreqs_pop(
@@ -500,7 +500,7 @@ def control_eigenfreqs_de(
     popsteps=100,
     popsize=50,
     direc="x",
-    term_tol=(0.0, 10.0),
+    term_tol=(0.0, 2e1 * np.pi),
 ):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
         ti.principle_axis()
