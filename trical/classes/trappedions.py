@@ -108,7 +108,6 @@ class TrappedIons(Base):
                     ]
                 )
             ).astype(int)
-            print(n)
             idcs = np.lexsort(np.concatenate(((-w).reshape(1, -1), n)))
         else:
             idcs = np.argsort(np.flip(w, axis=0))
