@@ -57,7 +57,7 @@ class TrappedIons(Base):
         )
         return self.x_ep
 
-    def normal_modes(self):
+    def normal_modes(self, block_sort=False):
         """
         Function that calculates the normal modes of the system.
 
@@ -97,7 +97,21 @@ class TrappedIons(Base):
         s = (np.sign(_b).sum(1) >= 0) * 2 - 1
         b = np.einsum("n,in->in", s, b)
 
-        idcs = np.argsort(np.flip(w, axis=0))
+        if block_sort:
+            n = np.round(
+                np.array(
+                    [
+                        np.linalg.norm(
+                            b[i * self.N : (i + 1) * self.N].transpose(), axis=-1
+                        )
+                        for i in range(self.dim)
+                    ]
+                )
+            ).astype(int)
+            print(n)
+            idcs = np.lexsort(np.concatenate(((-w).reshape(1, -1), n)))
+        else:
+            idcs = np.argsort(np.flip(w, axis=0))
 
         self.w, self.b, self.A = (
             w[idcs],
