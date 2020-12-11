@@ -1,5 +1,9 @@
 from .base import Base
 from ..misc import constants as cst
+import matplotlib.colors as colors
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 
@@ -15,6 +19,7 @@ class SpinLattice(Base):
         super(SpinLattice, self).__init__()
 
         self.J = J
+        self.N = J.shape[0]
         pass
 
     def plot_interaction_graph(self, **kwargs):
@@ -37,7 +42,7 @@ class SpinLattice(Base):
         }
         plot3d_params.update(kwargs)
 
-        n = self.n
+        N = self.N
         Z = self.J
 
         if plot3d_params["plot_type"] == "bar3d":
@@ -45,7 +50,7 @@ class SpinLattice(Base):
 
             Z = np.transpose(Z)
 
-            X, Y = np.meshgrid(np.linspace(0, n - 1, n), np.linspace(0, n - 1, n))
+            X, Y = np.meshgrid(np.linspace(0, N - 1, N), np.linspace(0, N - 1, N))
 
             X = X.flatten()
             Y = Y.flatten()
@@ -60,12 +65,12 @@ class SpinLattice(Base):
             ax.set_xlabel(r"$i$")
             ax.set_ylabel(r"$j$")
             ax.set_zlabel(r"$J$")
-            ax.set_xticks(np.linspace(0.5, n - 0.5, n))
-            ax.set_xticklabels(range(n))
-            ax.set_yticks(np.linspace(0.5, n - 0.5, n))
-            ax.set_yticklabels(range(n))
-            ax.set_xlim(0, n)
-            ax.set_ylim(0, n)
+            ax.set_xticks(np.linspace(0.5, N - 0.5, N))
+            ax.set_xticklabels(range(N))
+            ax.set_yticks(np.linspace(0.5, N - 0.5, N))
+            ax.set_yticklabels(range(N))
+            ax.set_xlim(0, N)
+            ax.set_ylim(0, N)
             ax.set_zlim(min(0, 1.1 * Z.min()), 1.1 * Z.max())
         elif plot3d_params["plot_type"] == "imshow":
             ax = plot3d_params["fig"].add_subplot(plot3d_params["idx"])
