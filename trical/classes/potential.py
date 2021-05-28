@@ -730,16 +730,19 @@ class GaussianOpticalPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        ndgop = GaussianOpticalPotential(
-            self.focal_point / l,
-            self.power,
-            self.wavelength / l,
-            self.beam_waist / l,
-            m=self.m,
-            Omega_bar=self.Omega_bar,
-            transition_wavelength=self.transition_wavelength / l,
-            refractive_index=self.refractive_index,
-        ) / (cst.k * cst.e ** 2)
+        ndgop = (
+            GaussianOpticalPotential(
+                self.focal_point / l,
+                self.power,
+                self.wavelength,
+                self.beam_waist / l,
+                m=self.m,
+                Omega_bar=self.Omega_bar / l,
+                transition_wavelength=self.transition_wavelength,
+                refractive_index=self.refractive_index,
+            )
+            * l / (cst.k * cst.e ** 2)
+        )
         ndgop.update_params(**self.params)
         return ndgop
 
