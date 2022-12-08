@@ -1,5 +1,9 @@
 from .base import Base
 from ..misc import constants as cst
+import matplotlib.colors as colors
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 
@@ -15,10 +19,72 @@ class SpinLattice(Base):
         super(SpinLattice, self).__init__()
 
         self.J = J
+        self.N = J.shape[0]
         pass
 
     def plot_interaction_graph(self, **kwargs):
-        pass
+        """Plots the normal mode frequencies of the ions
+
+        Keyword Args:
+            fig (matplotlib.figure.Figure): Figure for plot (default = plt.figure())
+            idx (int): 3 digit integer representing position of the subplot
+                (default = 111)
+            plot_type(str): Type of plot (default = "bar3d")
+
+        Returns:
+            matplotlib.axes._subplots.Axes3DSubplot or
+            matplotlib.axes._subplots.AxesSubplot: Axes of the plot
+        """
+        plot3d_params = {
+            "fig": plt.figure() if "fig" not in kwargs.keys() else None,
+            "idx": 111,
+            "plot_type": "bar3d",
+        }
+        plot3d_params.update(kwargs)
+
+        N = self.N
+        Z = self.J
+
+        if plot3d_params["plot_type"] == "bar3d":
+            ax = plot3d_params["fig"].add_subplot(plot3d_params["idx"], projection="3d")
+
+            Z = np.transpose(Z)
+
+            X, Y = np.meshgrid(np.linspace(0, N - 1, N), np.linspace(0, N - 1, N))
+
+            X = X.flatten()
+            Y = Y.flatten()
+            Z = Z.flatten()
+
+            W = Z - Z.min()
+            frac = W / W.max()
+            norm = colors.Normalize(frac.min(), frac.max())
+            color = cm.gist_rainbow(norm(frac))
+
+            ax.bar3d(X, Y, np.zeros(len(Z)), 1, 1, Z, color=color)
+            ax.set_xlabel(r"$i$")
+            ax.set_ylabel(r"$j$")
+            ax.set_zlabel(r"$J$")
+            ax.set_xticks(np.linspace(0.5, N - 0.5, N))
+            ax.set_xticklabels(range(N))
+            ax.set_yticks(np.linspace(0.5, N - 0.5, N))
+            ax.set_yticklabels(range(N))
+            ax.set_xlim(0, N)
+            ax.set_ylim(0, N)
+            ax.set_zlim(min(0, 1.1 * Z.min()), 1.1 * Z.max())
+        elif plot3d_params["plot_type"] == "imshow":
+            ax = plot3d_params["fig"].add_subplot(plot3d_params["idx"])
+            ax.imshow(Z, cmap=cm.gist_rainbow)
+            ax.set_xlabel(r"$j$")
+            ax.set_ylabel(r"$i$")
+
+        cax = plt.cm.ScalarMappable(cmap=cm.gist_rainbow)
+        cax.set_array(Z)
+        cbar = plot3d_params["fig"].colorbar(cax, ax=ax)
+        cbar.set_label(r"$J$")
+        return ax
+
+    pass
 
     pass
 

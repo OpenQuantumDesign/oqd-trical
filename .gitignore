@@ -1,7 +1,9 @@
 *.ipynb_checkpoints
 *__pycache__
+
 *.sublime-project
 *.sublime-workspace
+
 test.py
 Axial Mode Scaling Factor.ipynb
 DC+optical potential.py
@@ -9,6 +11,8 @@ JE_equality.ipynb
 Omega_z_Yb_Ba_vs_P.svg
 lattice_filling.json
 lattice_filling_2.json
+/scripts
+
 test.ipynb
 Manas Data
 Updated DC+optical potential.py

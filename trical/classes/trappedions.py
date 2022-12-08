@@ -134,7 +134,7 @@ class TrappedIons(Base):
         xs = self.b.reshape(self.dim, -1).transpose()
         x_pa = orthonormal_subset(xs, tol=tol)
 
-        assert len(x_pa) == self.dim, x_pa.__str__()
+        assert len(x_pa) == self.dim, "Principle axes do not exist"
 
         _x_pa = np.round(np.copy(x_pa), 3)
         s = (np.sign(_x_pa).sum(1) >= 0) * 2 - 1
