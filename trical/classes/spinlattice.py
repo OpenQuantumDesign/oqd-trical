@@ -99,12 +99,15 @@ class SimulatedSpinLattice(SpinLattice):
     :type mu: :obj:`numpy.ndarray`
     :param Omega: Rabi frequencies.
     :type Omega: :obj:`numpy.ndarray`
+    :param self_interaction: Set diagonal elements as zero if False. Default False.
+    :type self_interaction: :obj: `bool`
     """
 
-    def __init__(self, ti, mu, Omega, **kwargs):
+    def __init__(self, ti, mu, Omega, self_interaction:bool=False, **kwargs):
         self.ti = ti
         self.mu = np.array(mu)
         self.Omega = np.array(Omega)
+        self.self_interaction = self.self_interaction
 
         self.m = ti.m
         self.N = ti.N
@@ -155,14 +158,23 @@ class SimulatedSpinLattice(SpinLattice):
         self.eta = eta
         zeta = np.einsum("im,in->imn", self.Omega, eta)
         self.zeta = zeta
-        J = np.einsum(
-            "ij,imn,jmn,n,mn->ij",
-            1 - np.identity(self.N),
-            zeta,
-            zeta,
-            self.w,
-            1 / np.subtract.outer(self.mu ** 2, self.w ** 2),
-        )
+        if self.self_interaction:
+            J = np.einsum(
+                "imn,jmn,n,mn->ij",
+                zeta,
+                zeta,
+                self.w,
+                1 / np.subtract.outer(self.mu ** 2, self.w ** 2),
+            )
+        else:
+            J = np.einsum(
+                "ij,imn,jmn,n,mn->ij",
+                1 - np.identity(self.N),
+                zeta,
+                zeta,
+                self.w,
+                1 / np.subtract.outer(self.mu ** 2, self.w ** 2),
+            )
         return J
 
     def plot_raman_beatnote_detunings(self, **kwargs):
