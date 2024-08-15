@@ -91,7 +91,7 @@ class TrappedIons(Base):
             b = np.einsum("im,i->im", b, 1 / np.tile(np.sqrt(self.m), 3))
             b = b / np.linalg.norm(b, axis=0)
 
-        w = np.sqrt(w * cst.k * cst.e ** 2 / self.l ** 3)
+        w = np.sqrt(w * cst.k * cst.e**2 / self.l**3)
 
         _b = np.round(np.copy(b), 3).transpose()
         s = (np.sign(_b).sum(1) >= 0) * 2 - 1
@@ -115,7 +115,7 @@ class TrappedIons(Base):
         self.w, self.b, self.A = (
             w[idcs],
             b[:, idcs],
-            A * cst.k * cst.e ** 2 / self.l ** 3,
+            A * cst.k * cst.e**2 / self.l**3,
         )
         return self.w, self.b
 

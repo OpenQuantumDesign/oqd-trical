@@ -161,7 +161,7 @@ class SimulatedSpinLattice(SpinLattice):
             zeta,
             zeta,
             self.w,
-            1 / np.subtract.outer(self.mu ** 2, self.w ** 2),
+            1 / np.subtract.outer(self.mu**2, self.w**2),
         )
         return J
 

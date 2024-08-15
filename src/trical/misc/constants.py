@@ -45,7 +45,7 @@ def natural_l(m, q, omega):
     :returns: Natural length scale
     :rtype: :obj:`float`
     """
-    return (2 * k * q ** 2 / (m * omega ** 2)) ** (1 / 3)
+    return (2 * k * q**2 / (m * omega**2)) ** (1 / 3)
 
 
 def natural_V(m, q, omega):
@@ -61,4 +61,4 @@ def natural_V(m, q, omega):
     :returns: Natural energy scale
     :rtype: :obj:`float`
     """
-    return k * q ** 2 / natural_l(m, q, omega)
+    return k * q**2 / natural_l(m, q, omega)

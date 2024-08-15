@@ -20,7 +20,7 @@ def control_eigenfreqs(
     A = ti.A[a * N : (a + 1) * N, a * N : (a + 1) * N]
 
     w_scale = np.linalg.norm(target_w)
-    ndA = A / w_scale ** 2
+    ndA = A / w_scale**2
     target_ndw = target_w / w_scale
 
     if guess_b is None:
@@ -33,7 +33,7 @@ def control_eigenfreqs(
         _b = np.copy(guess_b)
 
     for i in range(maxiter):
-        _ndA = np.einsum("im,m,mj->ij", _b, target_ndw ** 2, _b.transpose())
+        _ndA = np.einsum("im,m,mj->ij", _b, target_ndw**2, _b.transpose())
 
         if i == 0:
             ndAs = np.copy(_ndA.reshape(1, *_ndA.shape))
@@ -53,10 +53,10 @@ def control_eigenfreqs(
         _ndw, _b = np.linalg.eigh(_ndAt)
         idcs = np.argsort(-_ndw)
         _ndw = _ndw[idcs]
-        _w = _ndw * w_scale ** 2
+        _w = _ndw * w_scale**2
         _b = _b[:, idcs]
 
-        if np.abs(np.linalg.det(_b ** 2)) < det_tol:
+        if np.abs(np.linalg.det(_b**2)) < det_tol:
             print("possible cycling at iteration {}".format(i))
             r = np.random.rand(N)
             r = r / r.sum()
@@ -65,7 +65,7 @@ def control_eigenfreqs(
             _ndw, _b = np.linalg.eigh(_ndAt)
             idcs = np.argsort(-_ndw)
             _ndw = _ndw[idcs]
-            _w = _ndw * w_scale ** 2
+            _w = _ndw * w_scale**2
             _b = _b[:, idcs]
 
         if i == 0:
@@ -73,10 +73,10 @@ def control_eigenfreqs(
         else:
             ndAts = np.concatenate((ndAts, _ndAt.reshape(1, *_ndAt.shape)), axis=0)
 
-    _A = _ndA * w_scale ** 2
-    _At = _ndAt * w_scale ** 2
-    As = ndAs * w_scale ** 2
-    Ats = ndAts * w_scale ** 2
+    _A = _ndA * w_scale**2
+    _At = _ndAt * w_scale**2
+    As = ndAs * w_scale**2
+    Ats = ndAts * w_scale**2
     omega_opt = np.sqrt(np.abs(np.diag(_At - A)))
     omega_opt_sign = np.sign(np.diag(_At - A))
 
@@ -181,7 +181,7 @@ def multi_control_eigenfreqs(
     w_scale = np.linalg.norm(target_w, axis=-1)
     ndA = np.copy(A)
     ndA = np.tile(A, (M, 1, 1))
-    ndA = A / (w_scale ** 2).reshape(-1, 1, 1)
+    ndA = A / (w_scale**2).reshape(-1, 1, 1)
     target_ndw = target_w / (w_scale).reshape(-1, 1)
 
     if guess_b is None:
@@ -196,7 +196,7 @@ def multi_control_eigenfreqs(
             print("{:<10}{:<10}".format(i, completed_idcs.sum()))
         if i == 0:
             _ndA = np.einsum(
-                "...im,...m,...mj->...ij", _b, target_ndw ** 2, _b.swapaxes(-1, -2)
+                "...im,...m,...mj->...ij", _b, target_ndw**2, _b.swapaxes(-1, -2)
             )
 
         else:
@@ -216,7 +216,7 @@ def multi_control_eigenfreqs(
 
         _ndw, _b = np.linalg.eigh(_ndAt)
         _ndw = np.flip(_ndw, axis=-1)
-        _w = _ndw * (w_scale ** 2).reshape(-1, 1)
+        _w = _ndw * (w_scale**2).reshape(-1, 1)
         _b = np.flip(_b, axis=-1)
 
         completed_idcs = np.logical_or(
@@ -234,7 +234,7 @@ def multi_control_eigenfreqs(
             )
         ] = i
 
-        reinit_idcs = np.abs(np.linalg.det(_b ** 2)) < det_tol
+        reinit_idcs = np.abs(np.linalg.det(_b**2)) < det_tol
         if reinit_idcs.sum() > 0:
             r = np.random.rand(reinit_idcs.sum(), N, N)
             r = r / np.trace(r, axis1=-1, axis2=-2).reshape(-1, 1, 1)
@@ -245,11 +245,11 @@ def multi_control_eigenfreqs(
 
             _ndw, _b = np.linalg.eigh(_ndAt)
             _ndw = np.flip(_ndw, axis=-1)
-            _w = _ndw * (w_scale ** 2).reshape(-1, 1)
+            _w = _ndw * (w_scale**2).reshape(-1, 1)
             _b = np.flip(_b, axis=-1)
 
-    _A = _ndA * (w_scale ** 2).reshape(-1, 1, 1)
-    _At = _ndAt * (w_scale ** 2).reshape(-1, 1, 1)
+    _A = _ndA * (w_scale**2).reshape(-1, 1, 1)
+    _At = _ndAt * (w_scale**2).reshape(-1, 1, 1)
     omega_opt = np.sqrt(np.abs(_At[:, range(N), range(N)] - A[range(N), range(N)]))
     omega_opt_sign = np.sign(_At[:, range(N), range(N)] - A[range(N), range(N)])
 
@@ -277,7 +277,7 @@ def control_eigenfreqs_step(
         A = initial_A
 
     w_scale = np.linalg.norm(target_w)
-    ndA = A / w_scale ** 2
+    ndA = A / w_scale**2
     target_ndw = target_w / w_scale
 
     if guess_b is None:
@@ -290,7 +290,7 @@ def control_eigenfreqs_step(
         _b = np.copy(guess_b)
 
     for i in range(maxiter):
-        _ndA = np.einsum("im,m,mj->ij", _b, target_ndw ** 2, _b.transpose())
+        _ndA = np.einsum("im,m,mj->ij", _b, target_ndw**2, _b.transpose())
 
         if i == 0:
             ndAs = np.copy(_ndA.reshape(1, *_ndA.shape))
@@ -310,7 +310,7 @@ def control_eigenfreqs_step(
         _ndw, _b = np.linalg.eigh(_ndAt)
         idcs = np.argsort(-_ndw)
         _ndw = _ndw[idcs]
-        _w = _ndw * w_scale ** 2
+        _w = _ndw * w_scale**2
         _b = _b[:, idcs]
 
         if i == 0:
@@ -318,10 +318,10 @@ def control_eigenfreqs_step(
         else:
             ndAts = np.concatenate((ndAts, _ndAt.reshape(1, *_ndAt.shape)), axis=0)
 
-    _A = _ndA * w_scale ** 2
-    _At = _ndAt * w_scale ** 2
-    As = ndAs * w_scale ** 2
-    Ats = ndAts * w_scale ** 2
+    _A = _ndA * w_scale**2
+    _At = _ndAt * w_scale**2
+    As = ndAs * w_scale**2
+    Ats = ndAts * w_scale**2
 
     return np.sqrt(_w) - target_w, As, Ats
 
@@ -410,7 +410,7 @@ def multi_inst_control_eigenfreqs(
         _b = guess_b
 
     for i in range(maxiter):
-        _A = np.einsum("...im,m,...jm->...ij", _b, target_w ** 2, _b)
+        _A = np.einsum("...im,m,...jm->...ij", _b, target_w**2, _b)
 
         idcs = np.triu_indices(N, k=1)
         _At = np.copy(_A)

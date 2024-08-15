@@ -1,6 +1,7 @@
 """
 Module containing functions for saving and loading data for TrICal.
 """
+
 from ..classes import Base
 import pickle
 import numpy as np

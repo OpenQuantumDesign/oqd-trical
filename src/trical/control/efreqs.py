@@ -29,7 +29,7 @@ def mi(ti, target_w, **kwargs):
         _b = params["guess_b"]
 
     for i in range(maxiter):
-        _A = np.einsum("...im,m,...jm->...ij", _b, target_w ** 2, _b)
+        _A = np.einsum("...im,m,...jm->...ij", _b, target_w**2, _b)
 
         idcs = np.triu_indices(N, k=1)
         _At = np.copy(_A)
@@ -66,7 +66,9 @@ def de(
 
     for i in range(popsteps):
         if i == 0:
-            At, delta_w = mi(ti, target_w, guess_b=_b, popsize=popsize, maxiter=maxiter, direc=direc)
+            At, delta_w = mi(
+                ti, target_w, guess_b=_b, popsize=popsize, maxiter=maxiter, direc=direc
+            )
             Ats = np.copy(At).reshape(1, *At.shape)
 
             ndelta_w = np.linalg.norm(delta_w, axis=-1)

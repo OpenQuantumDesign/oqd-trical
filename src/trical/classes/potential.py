@@ -35,7 +35,9 @@ class Potential(Base):
 
     def __add__(self, other):
         for i in np.intersect1d(list(self.params.keys()), list(other.params.keys())):
-            assert self.params[i] == other.params[i], "Potentials with incompatible dimensions"
+            assert (
+                self.params[i] == other.params[i]
+            ), "Potentials with incompatible dimensions"
 
         params = {}
         params.update(self.params)
@@ -49,7 +51,9 @@ class Potential(Base):
 
     def __sub__(self, other):
         for i in np.intersect1d(list(self.params.keys()), list(other.params.keys())):
-            assert self.params[i] == other.params[i], "Potentials with incompatible dimensions"
+            assert (
+                self.params[i] == other.params[i]
+            ), "Potentials with incompatible dimensions"
 
         params = {}
         params.update(self.params)
@@ -155,9 +159,7 @@ class Potential(Base):
         nd_dphi = lambda var: (lambda x: self.dphi(var)(x * l))
         nd_d2phi = lambda var1, var2: (lambda x: self.d2phi(var1, var2)(x * l))
         return (
-            Potential(nd_phi, nd_dphi, nd_d2phi, **self.params)
-            * l
-            / (cst.k * cst.e ** 2)
+            Potential(nd_phi, nd_dphi, nd_d2phi, **self.params) * l / (cst.k * cst.e**2)
         )
 
     def update_params(self, **kwargs):
@@ -198,7 +200,7 @@ class CoulombPotential(Potential):
             .transpose()
         )
         nxij = np.linalg.norm(x[i] - x[j], axis=-1)
-        return cst.k * self.q ** 2 * (1 / nxij).sum()
+        return cst.k * self.q**2 * (1 / nxij).sum()
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
@@ -209,7 +211,7 @@ class CoulombPotential(Potential):
             xia = x[i, a]
             xja = x[j, a]
             nxij = np.linalg.norm(x[i] - x[j], axis=-1)
-            return cst.k * self.q ** 2 * ((xja - xia) / nxij ** 3).sum()
+            return cst.k * self.q**2 * ((xja - xia) / nxij**3).sum()
 
         return dphi_dai
 
@@ -230,14 +232,14 @@ class CoulombPotential(Potential):
                 if a == b:
                     return (
                         cst.k
-                        * self.q ** 2
-                        * ((-1 / nxik ** 3 + 3 * (xka - xia) ** 2 / nxik ** 5)).sum()
+                        * self.q**2
+                        * ((-1 / nxik**3 + 3 * (xka - xia) ** 2 / nxik**5)).sum()
                     )
                 else:
                     return (
                         cst.k
-                        * self.q ** 2
-                        * (3 * (xka - xia) * (xkb - xib) / nxik ** 5).sum()
+                        * self.q**2
+                        * (3 * (xka - xia) * (xkb - xib) / nxik**5).sum()
                     )
             else:
                 xia = x[i, a]
@@ -248,14 +250,12 @@ class CoulombPotential(Potential):
                 if a == b:
                     return (
                         cst.k
-                        * self.q ** 2
-                        * (1 / nxij ** 3 - 3 * (xja - xia) ** 2 / nxij ** 5)
+                        * self.q**2
+                        * (1 / nxij**3 - 3 * (xja - xia) ** 2 / nxij**5)
                     )
                 else:
                     return (
-                        cst.k
-                        * self.q ** 2
-                        * (-3 * (xja - xia) * (xjb - xib) / nxij ** 5)
+                        cst.k * self.q**2 * (-3 * (xja - xia) * (xjb - xib) / nxij**5)
                     )
 
         return d2phi_daidbj
@@ -269,7 +269,7 @@ class CoulombPotential(Potential):
         :returns: Potential representing the nondimensionalized coulomb potential.
         :rtype: :obj:`trical.classes.potential.Potential`
         """
-        return self / (cst.k * cst.e ** 2)
+        return self / (cst.k * cst.e**2)
 
     pass
 
@@ -342,7 +342,7 @@ class PolynomialPotential(Potential):
         alpha = (
             l ** np.indices(self.alpha.shape).sum(0)
             * self.alpha
-            * (l / (cst.k * cst.e ** 2))
+            * (l / (cst.k * cst.e**2))
         )
         return PolynomialPotential(alpha, **self.params)
 
@@ -413,7 +413,7 @@ class SymbolicPotential(Potential):
         :rtype: :obj:`trical.classes.potential.SymbolicPotential`
         """
         expr = self.expr.subs({k: k * l for k in self.symbol}) * (
-            l / (cst.k * cst.e ** 2)
+            l / (cst.k * cst.e**2)
         )
         return SymbolicPotential(expr, **self.params)
 
@@ -491,7 +491,7 @@ class AdvancedSymbolicPotential(Potential):
         :rtype: :obj:`trical.classes.potential.AdvancedSymbolicPotential`
         """
         expr = self.expr.subs({k: k * l for k in self.symbol}) * (
-            l / (cst.k * cst.e ** 2)
+            l / (cst.k * cst.e**2)
         )
         params = self.params
         if "N" in params.keys():
@@ -587,31 +587,25 @@ class GaussianOpticalPotential(Potential):
         nu = cst.convert_lamb_to_omega(wavelength)
         nu_transition = cst.convert_lamb_to_omega(opt_params["transition_wavelength"])
         Delta = nu - nu_transition
-        x_R = np.pi * beam_waist ** 2 * opt_params["refractive_index"] / wavelength
-        I = 2 * power / (np.pi * beam_waist ** 2)
+        x_R = np.pi * beam_waist**2 * opt_params["refractive_index"] / wavelength
+        I = 2 * power / (np.pi * beam_waist**2)
         Omega = opt_params["Omega_bar"] * np.sqrt(np.abs(I))
         omega_x = np.sqrt(
             np.abs(
                 cst.hbar
-                * self.Omega_bar ** 2
+                * self.Omega_bar**2
                 * power
-                * wavelength ** 2
-                / (
-                    self.refractive_index ** 2
-                    * np.pi ** 3
-                    * Delta
-                    * beam_waist ** 6
-                    * self.m
-                )
+                * wavelength**2
+                / (self.refractive_index**2 * np.pi**3 * Delta * beam_waist**6 * self.m)
             )
         )
         omega_y = omega_z = np.sqrt(
             np.abs(
                 2
                 * cst.hbar
-                * self.Omega_bar ** 2
+                * self.Omega_bar**2
                 * power
-                / (np.pi * Delta * beam_waist ** 4 * self.m)
+                / (np.pi * Delta * beam_waist**4 * self.m)
             )
         )
 
@@ -621,8 +615,8 @@ class GaussianOpticalPotential(Potential):
         self.x_R = x_R
         self.I = I
         self.Omega = Omega
-        self.stark_shift = np.abs(Omega ** 2 / (4 * Delta))
-        self.V = cst.hbar * self.Omega_bar ** 2 * self.I / (4 * self.Delta)
+        self.stark_shift = np.abs(Omega**2 / (4 * Delta))
+        self.V = cst.hbar * self.Omega_bar**2 * self.I / (4 * self.Delta)
         self.omega = np.array([omega_x, omega_y, omega_z])
 
         super(GaussianOpticalPotential, self).__init__(
@@ -636,8 +630,8 @@ class GaussianOpticalPotential(Potential):
         w = w0 * np.sqrt(1 + (delta_x[:, 0] / self.x_R) ** 2)
         V = self.V
         r = np.sqrt(delta_x[:, 1] ** 2 + delta_x[:, 2] ** 2)
-        e = np.exp(-2 * r ** 2 / w ** 2)
-        return (V * e * w0 ** 2 / w ** 2).sum()
+        e = np.exp(-2 * r**2 / w**2)
+        return (V * e * w0**2 / w**2).sum()
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
@@ -650,13 +644,13 @@ class GaussianOpticalPotential(Potential):
             delta_x = x[i] - self.focal_point
             w = w0 * np.sqrt(1 + (delta_x[0] / xR) ** 2)
             r = np.sqrt(delta_x[1] ** 2 + delta_x[2] ** 2)
-            e = np.exp(-2 * r ** 2 / w ** 2)
+            e = np.exp(-2 * r**2 / w**2)
             if a == 0:
-                return (2 * V * e * w0 ** 4 * delta_x[0] * (2 * r ** 2 - w ** 2)) / (
-                    w ** 6 * xR ** 2
+                return (2 * V * e * w0**4 * delta_x[0] * (2 * r**2 - w**2)) / (
+                    w**6 * xR**2
                 )
             else:
-                return -4 * V * e * w0 ** 2 * delta_x[a] / w ** 4
+                return -4 * V * e * w0**2 * delta_x[a] / w**4
 
         return dphi_dai
 
@@ -673,7 +667,7 @@ class GaussianOpticalPotential(Potential):
             delta_x = x[i] - self.focal_point
             w = w0 * np.sqrt(1 + (delta_x[0] / xR) ** 2)
             r = np.sqrt(delta_x[1] ** 2 + delta_x[2] ** 2)
-            e = np.exp(-2 * r ** 2 / w ** 2)
+            e = np.exp(-2 * r**2 / w**2)
             if i != j:
                 return 0
             else:
@@ -681,51 +675,49 @@ class GaussianOpticalPotential(Potential):
                     return (
                         -2
                         * V
-                        * w0 ** 4
+                        * w0**4
                         * (
-                            w ** 6 * xR ** 2
-                            - 4 * w ** 4 * w0 ** 2 * delta_x[0] ** 2
-                            + 8 * w ** 2 * w0 ** 2 * delta_x[0] ** 2 * r ** 2
+                            w**6 * xR**2
+                            - 4 * w**4 * w0**2 * delta_x[0] ** 2
+                            + 8 * w**2 * w0**2 * delta_x[0] ** 2 * r**2
                             - 2
-                            * r ** 2
+                            * r**2
                             * (
-                                w ** 4 * xR ** 2
-                                - 4 * w ** 2 * w0 ** 2 * delta_x[0] ** 2
-                                + 4 * w0 ** 2 * delta_x[0] ** 2 * r ** 2
+                                w**4 * xR**2
+                                - 4 * w**2 * w0**2 * delta_x[0] ** 2
+                                + 4 * w0**2 * delta_x[0] ** 2 * r**2
                             )
                         )
                         * e
-                        / (w ** 10 * xR ** 4)
+                        / (w**10 * xR**4)
                     )
                 elif a == b:
-                    return (
-                        -4 * V * w0 ** 2 * (w ** 2 - 4 * delta_x[a] ** 2) * e / w ** 6
-                    )
+                    return -4 * V * w0**2 * (w**2 - 4 * delta_x[a] ** 2) * e / w**6
 
                 elif a == 0:
                     return (
                         16
                         * V
-                        * w0 ** 4
+                        * w0**4
                         * delta_x[0]
                         * delta_x[b]
-                        * (w ** 2 - r ** 2)
+                        * (w**2 - r**2)
                         * e
-                        / (w ** 8 * xR ** 2)
+                        / (w**8 * xR**2)
                     )
                 elif b == 0:
                     return (
                         16
                         * V
-                        * w0 ** 4
+                        * w0**4
                         * delta_x[0]
                         * delta_x[a]
-                        * (w ** 2 - r ** 2)
+                        * (w**2 - r**2)
                         * e
-                        / (w ** 8 * xR ** 2)
+                        / (w**8 * xR**2)
                     )
                 else:
-                    return 16 * V * w0 ** 2 * delta_x[1] * delta_x[2] * e / w ** 6
+                    return 16 * V * w0**2 * delta_x[1] * delta_x[2] * e / w**6
 
         return d2phi_daidbj
 
@@ -741,7 +733,8 @@ class GaussianOpticalPotential(Potential):
                 transition_wavelength=self.transition_wavelength,
                 refractive_index=self.refractive_index,
             )
-            * l / (cst.k * cst.e ** 2)
+            * l
+            / (cst.k * cst.e**2)
         )
         ndgop.update_params(**self.params)
         return ndgop
@@ -793,7 +786,7 @@ class AutoDiffPotential(Potential):
         return lambda x: self.hessian()(x)[a * self.N + i][b * self.N + j]
 
     def nondimensionalize(self, l):
-        expr = lambda x: self.expr(x * l) * l / (cst.k * cst.e ** 2)
+        expr = lambda x: self.expr(x * l) * l / (cst.k * cst.e**2)
         ndadp = AutoDiffPotential(expr, **self.params)
         ndadp.update_params(**self.params)
         return ndadp

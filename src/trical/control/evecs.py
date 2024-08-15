@@ -12,9 +12,7 @@ def sort_btb(btb):
     return idcs
 
 
-def mi(
-    ti, target_b, guess_w=None, scale_w=1.0, num_inst=1000, maxiter=1000, direc="x"
-):
+def mi(ti, target_b, guess_w=None, scale_w=1.0, num_inst=1000, maxiter=1000, direc="x"):
     if np.isin(np.array(["w_pa", "b_pa"]), np.array(ti.__dict__.keys())).sum() != 2:
         ti.principle_axis()
 
@@ -85,9 +83,7 @@ def de(
 
     for i in range(popsteps):
         if i == 0:
-            At, delta_b = mi(
-                ti, target_b, _w, scale_w, popsize, maxiter, direc
-            )
+            At, delta_b = mi(ti, target_b, _w, scale_w, popsize, maxiter, direc)
             Ats = np.copy(At).reshape(1, *At.shape)
 
             ndelta_b = np.linalg.norm(delta_b, axis=-1)
@@ -124,9 +120,7 @@ def de(
             _w[j] = _w[j, idcs[j]]
             _b[j] = _b[j][:, idcs[j]]
 
-        At2, delta_b2 = mi(
-            ti, target_b, _w, scale_w, popsize, maxiter, direc
-        )
+        At2, delta_b2 = mi(ti, target_b, _w, scale_w, popsize, maxiter, direc)
 
         p2 = (
             np.linalg.norm(delta_b2, axis=-1) < np.linalg.norm(delta_b, axis=-1)

@@ -68,5 +68,8 @@ def polyval(x, alpha):
         for i in range(dim)
     ]
 
-    v = agnp.prod([x[i] ** idcs[i] for i in range(len(alpha.shape))], axis=0,)
+    v = agnp.prod(
+        [x[i] ** idcs[i] for i in range(len(alpha.shape))],
+        axis=0,
+    )
     return (v * alpha).sum(tuple(range(1, dim + 1)))
