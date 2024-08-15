@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "trical"
+version = "1.0.0"
+requires-python = ">=3.10"
+dependencies = ["autograd", "matplotlib", "numpy", "scipy", "sympy"]
+
+[project.optional-dependencies]
+docs = [
+    "pymdown-extensions",
+    "mkdocstrings",
+    "mkdocs-material",
+    "mkdocstrings-python",
+]
+test = ["unittest_prettify"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["trical"]
