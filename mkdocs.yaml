@@ -7,11 +7,19 @@ repo_url: https://github.com/OpenQuantumDesign/TrICal
 
 copyright: Copyright &copy; 2024 Open Quantum Design
 
+use_directory_urls: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/OpenQuantumDesign
+      name: Open Quantum Design GitHub
+
 nav:
-  - Introduction: index.md
-
-
-use_directory_urls: false
+  - Introduction:
+    - Welcome to TrICal: index.md
+  - API Reference:
+    - Reference: reference/reference.md
 
 theme:
   name: material
@@ -19,15 +27,15 @@ theme:
   palette:
   - media: '(prefers-color-scheme: light)'
     scheme: default
-    primary: light-blue
-    accent: orange
+    primary: teal
+    accent: pink
     toggle:
       icon: material/lightbulb
       name: Switch to dark mode
   - media: '(prefers-color-scheme: dark)'
     scheme: slate
-    primary: light-blue
-    accent: orange
+    primary: teal
+    accent: pink
     toggle:
       icon: material/lightbulb-outline
       name: Switch to light mode
@@ -36,18 +44,39 @@ theme:
   - search.suggest
   - search.highlight
   - content.tabs.link
-  - navigation.indexes
   - content.tooltips
-  - navigation.path
   - content.code.annotate
   - content.code.copy
   - content.code.select
+  - navigation.tabs
+  - navigation.tabs.sticky
+  - navigation.sections
+  - navigation.top
+  - navigation.prune
+  - toc.follow
 
 plugins:
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            show_submodules: true
+            docstring_style: "sphinx"
+            docstring_section_style: "table"
+            show_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            separate_signature: false
+          import:
+            - https://docs.python.org/3/objects.inv
 
 
 markdown_extensions:
+
   - toc:
       permalink: true
       toc_depth: 4
