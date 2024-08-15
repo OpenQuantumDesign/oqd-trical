@@ -10,11 +10,12 @@ requires-python = ">=3.10"
 dependencies = [
     "autograd",
     "matplotlib",
-    "numpy",
+    "numpy~=1.0",
     "scipy",
     "sympy",
     "qutip",
     "torch",
+    "seaborn",
 ]
 
 [project.optional-dependencies]
