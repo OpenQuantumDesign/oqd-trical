@@ -1,0 +1,3 @@
+[submodule ".submodules/midstack"]
+	path = .submodules/midstack
+	url = https://github.com/OpenQuantumDesign/midstack
