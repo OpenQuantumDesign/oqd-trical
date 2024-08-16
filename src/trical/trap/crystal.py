@@ -8,16 +8,16 @@ from torch import optim
 ########################################################################################
 
 
-class Crystal:
-    def __init__(self, potential, *, N=10, dimension=3):
+class IonCrystal:
+    def __init__(self, potential, *, N=10, dim=3):
         self.potential = potential
-        self.dimension = dimension
+        self.dim = dim
         self.N = N
         pass
 
     @cached_property
     def equilibrium_position(self):
-        x = torch.nn.Parameter(torch.empty(self.dimension * self.N))
+        x = torch.nn.Parameter(torch.empty(self.dim, self.N))
         torch.nn.init.normal_(x)
 
         max_epochs = 10000
@@ -57,4 +57,4 @@ class Crystal:
                 end="",
             )
             sys.stdout.flush()
-        return x.reshape(self.dimension, self.N)
+        return x

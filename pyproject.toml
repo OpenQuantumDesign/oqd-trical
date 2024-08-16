@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 name = "trical"
 version = "1.0.0"
 requires-python = ">=3.10"
-dependencies = ["matplotlib", "numpy~=1.0", "qutip", "torch", "seaborn"]
+dependencies = ["numpy~=1.0", "qutip", "torch", "midstack"]
 
 [project.optional-dependencies]
 docs = [

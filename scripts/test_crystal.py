@@ -33,8 +33,6 @@ N = 100
 
 
 def f(x):
-    x = x.reshape(k, N)
-
     trap = (
         0.5 * (2 * torch.pi * torch.tensor([1, 1, 2]).to(x))[:, None] ** 2 * x**2 * 2
     ).sum()
@@ -42,18 +40,7 @@ def f(x):
     return trap
 
 
-def g(x):
-    x = x.reshape(k, N)
-
-    idcs = torch.triu_indices(N, N, 1)
-    x1 = x[:, idcs[0]]
-    x2 = x[:, idcs[1]]
-    coulomb = (2 / torch.norm(x1 - x2, dim=0)).sum(0)
-
-    return coulomb
-
-
-p = trical.Potential(f) + trical.Potential(g)
+p = trical.Potential(f) + trical.CoulombPotential()
 crys = trical.IonCrystal(p, N=N, dim=k)
 
 ########################################################################################
