@@ -1,1 +1,1 @@
-from . import classes, control
+from . import trap

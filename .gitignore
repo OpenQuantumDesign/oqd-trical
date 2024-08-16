@@ -166,3 +166,6 @@ cython_debug/
 .github/workflows/_*.yml
 _scripts
 _docs
+src/trical/_classes
+src/trical/_control
+src/trical/_misc

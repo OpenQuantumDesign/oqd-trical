@@ -29,65 +29,68 @@ k = 3
 x = torch.rand((k * N)).to("cuda")
 x.requires_grad_(True)
 
+y = torch.rand((k * N)).to("cuda")
+y.requires_grad_(True)
+pprint(x + y)
 ########################################################################################
 
 
-def f(x):
-    x = x.reshape(k, N)
+# def f(x):
+#     x = x.reshape(k, N)
 
-    trap = (
-        0.5 * (2 * torch.pi * torch.tensor([1, 1, 2]).to(x))[:, None] ** 2 * x**2 * 2
-    ).sum()
+#     trap = (
+#         0.5 * (2 * torch.pi * torch.tensor([1, 1, 2]).to(x))[:, None] ** 2 * x**2 * 2
+#     ).sum()
 
-    idcs = torch.triu_indices(N, N, 1)
-    x1 = x[:, idcs[0]]
-    x2 = x[:, idcs[1]]
-    coulomb = (2 / torch.norm(x1 - x2, dim=0)).sum(0)
+#     idcs = torch.triu_indices(N, N, 1)
+#     x1 = x[:, idcs[0]]
+#     x2 = x[:, idcs[1]]
+#     coulomb = (2 / torch.norm(x1 - x2, dim=0)).sum(0)
 
-    return trap + coulomb
-
-
-########################################################################################
+#     return trap + coulomb
 
 
-# G = torch.autograd.grad(f(x), x)
-# H = torch.autograd.functional.hessian(f, x)
+# ########################################################################################
 
-# pprint(G)
-# pprint(H)
 
-########################################################################################
+# # G = torch.autograd.grad(f(x), x)
+# # H = torch.autograd.functional.hessian(f, x)
 
-x = torch.nn.Parameter(torch.empty(k * N))
-torch.nn.init.normal_(x)
+# # pprint(G)
+# # pprint(H)
 
-max_epochs = 1000
-lr = 1e-2
-optimizer = Adam(
-    [
-        x,
-    ],
-    lr=lr,
-)
+# ########################################################################################
 
-for i in range(max_epochs):
-    optimizer.zero_grad()
+# x = torch.nn.Parameter(torch.empty(k * N))
+# torch.nn.init.normal_(x)
 
-    loss = f(x)
-    loss.backward()
+# max_epochs = 1000
+# lr = 1e-2
+# optimizer = Adam(
+#     [
+#         x,
+#     ],
+#     lr=lr,
+# )
 
-    optimizer.step()
+# for i in range(max_epochs):
+#     optimizer.zero_grad()
 
-    print(f"\rEpoch {i}", end="")
+#     loss = f(x)
+#     loss.backward()
 
-########################################################################################
+#     optimizer.step()
 
-x = x.reshape(k, N).detach()
+#     print(f"\rEpoch {i}", end="")
 
-fig = plt.figure()
-ax = fig.add_subplot(111, projection="3d")
+# ########################################################################################
 
-ax.plot(*x, "o")
-ax.set_aspect("equal")
+# x = x.reshape(k, N).detach()
 
-plt.show()
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection="3d")
+
+# ax.plot(*x, "o")
+# ax.set_aspect("equal")
+
+# plt.show()
