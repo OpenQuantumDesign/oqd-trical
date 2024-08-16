@@ -16,7 +16,7 @@ import seaborn as sns
 
 ########################################################################################
 
-from trical import trap
+import trical
 
 ########################################################################################
 
@@ -29,7 +29,7 @@ matplotlib.rcParams["font.family"] = "STIXGeneral"
 ########################################################################################
 
 k = 3
-N = 10
+N = 100
 
 
 def f(x):
@@ -53,12 +53,8 @@ def g(x):
     return coulomb
 
 
-p = trap.Potential(f) + trap.Potential(g)
-crys = trap.Crystal(p, N=N, dimension=k)
-
-########################################################################################
-
-pprint(crys.equilibrium_position)
+p = trical.Potential(f) + trical.Potential(g)
+crys = trical.IonCrystal(p, N=N, dim=k)
 
 ########################################################################################
 

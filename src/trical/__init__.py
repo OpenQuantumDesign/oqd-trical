@@ -1,1 +1,2 @@
-from . import trap
+from .trap import *
+from . import interface
