@@ -6,17 +6,19 @@ from torch.autograd.functional import hessian
 
 from functools import cached_property
 
+from abc import ABC, abstractmethod
+
 ########################################################################################
 
 
-class Potential:
-    def __init__(self, phi: Callable):
-        self._phi = phi
+class PotentialBase(ABC):
+    def __init__(self):
         pass
 
     @property
+    @abstractmethod
     def phi(self):
-        return self._phi
+        pass
 
     def __call__(self, x: torch.Tensor):
         return self.phi(x)
@@ -33,11 +35,22 @@ class Potential:
         return Potential(lambda x: self(x) + other(x))
 
 
-class CoulombPotential(Potential):
-    def __init__(self):
-        super().__init__(self.phi_factory())
+class Potential(PotentialBase):
+    def __init__(self, phi: Callable):
+        self._phi = phi
+        pass
 
-    def phi_factory(self):
+    @property
+    def phi(self):
+        return self._phi
+
+
+class CoulombPotential(PotentialBase):
+    def __init__(self):
+        super().__init__()
+
+    @cached_property
+    def phi(self):
         def _phi(x):
             N = x.shape[-1]
 
@@ -51,21 +64,28 @@ class CoulombPotential(Potential):
         return _phi
 
 
-class HarmonicPotential(Potential):
+class HarmonicPotential(PotentialBase):
+    def __init__(self):
+        super().__init__()
+
+    @cached_property
+    def phi(self):
+        def _phi(x):
+            return (
+                0.5 * (2 * torch.pi * torch.tensor([1, 1, 10])[:, None] * x) ** 2
+            ).sum()
+
+        return _phi
+
+
+class PolynomialPotential(PotentialBase):
     def __init__(self):
         raise NotImplementedError
         super().__init__()
         pass
 
 
-class PolynomialPotential(Potential):
-    def __init__(self):
-        raise NotImplementedError
-        super().__init__()
-        pass
-
-
-class OpticalPotential(Potential):
+class OpticalPotential(PotentialBase):
     def __init__(self):
         raise NotImplementedError
         super().__init__()

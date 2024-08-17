@@ -17,6 +17,7 @@ import seaborn as sns
 ########################################################################################
 
 import trical
+from trical import optimizer as optim
 
 ########################################################################################
 
@@ -29,19 +30,12 @@ matplotlib.rcParams["font.family"] = "STIXGeneral"
 ########################################################################################
 
 k = 3
-N = 100
+N = 250
 
-
-def f(x):
-    trap = (
-        0.5 * (2 * torch.pi * torch.tensor([1, 1, 2]).to(x))[:, None] ** 2 * x**2 * 2
-    ).sum()
-
-    return trap
-
-
-p = trical.Potential(f) + trical.CoulombPotential()
+p = trical.HarmonicPotential() + trical.CoulombPotential()
 crys = trical.IonCrystal(p, N=N, dim=k)
+
+pprint(crys.normal_modes[1][:, :, -1])
 
 ########################################################################################
 
