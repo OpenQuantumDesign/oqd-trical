@@ -21,3 +21,7 @@ Run the following commands for the tutorial::
 cd TrICal/tutorial
 jupyter notebook tutorial.ipynb
 ```
+
+## Documentation Supplement
+For more information about the formulas being used and Hamiltonian derivation, and what's left to be done, please visit [this](https://www.overleaf.com/9387977917rzdzjnrkptpq#c41bbb) Overleaf doc.
+

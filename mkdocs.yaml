@@ -65,7 +65,7 @@ plugins:
             show_symbol_type_heading: true
             show_symbol_type_toc: true
             show_submodules: true
-            docstring_style: "sphinx"
+            docstring_style: "google"
             docstring_section_style: "table"
             show_signature: true
             show_signature_annotations: true
