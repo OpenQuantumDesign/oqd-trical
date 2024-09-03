@@ -1,8 +1,3 @@
-"""
-Module defining the Base class.
-"""
-
-
 class Base(object):
     """
     An base class that can be loaded with attributes.

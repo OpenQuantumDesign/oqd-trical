@@ -1,18 +1,27 @@
-from .base import Base
-from ..misc import constants as cst
+from typing import Union
+
+import numpy as np
+
+import matplotlib
 import matplotlib.colors as colors
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import numpy as np
+
+########################################################################################
+
+from .base import Base
+from ..misc import constants as cst
+
+########################################################################################
 
 
 class SpinLattice(Base):
     """
     Object representing a spin lattice system.
 
-    :param J: Interaction graph of the spin lattice system.
-    :type J: :obj:`numpy.ndarray`
+    Args:
+        J (np.ndarray[float]): Interaction graph of the spin lattice system.
     """
 
     def __init__(self, J):
@@ -25,15 +34,13 @@ class SpinLattice(Base):
     def plot_interaction_graph(self, **kwargs):
         """Plots the normal mode frequencies of the ions
 
-        Keyword Args:
-            fig (matplotlib.figure.Figure): Figure for plot (default = plt.figure())
-            idx (int): 3 digit integer representing position of the subplot
-                (default = 111)
-            plot_type(str): Type of plot (default = "bar3d")
+        Args:
+            fig (matplotlib.figure.Figure): Figure for plot.
+            idx (int): 3 digit integer representing position of the subplot.
+            plot_type (str): Type of plot.
 
         Returns:
-            matplotlib.axes._subplots.Axes3DSubplot or
-            matplotlib.axes._subplots.AxesSubplot: Axes of the plot
+            ax (Union[matplotlib.axes._subplots.Axes3DSubplot, matplotlib.axes._subplots.AxesSubplot]): Axes of the plot
         """
         plot3d_params = {
             "fig": plt.figure() if "fig" not in kwargs.keys() else None,
@@ -91,14 +98,16 @@ class SpinLattice(Base):
 
 class SimulatedSpinLattice(SpinLattice):
     """
-    Object representing a spin lattice system simulated by a trapped ion system
+    Object representing a spin lattice system simulated by a trapped ion system.
 
-    :param ti: A trapped ion system.
-    :type ti: :obj:`trical.classes.trappedions.TrappedIons`
-    :param mu: Raman beatnote detunings.
-    :type mu: :obj:`numpy.ndarray`
-    :param Omega: Rabi frequencies.
-    :type Omega: :obj:`numpy.ndarray`
+    Args:
+        ti (TrappedIons): A trapped ion system.
+        mu (np.ndarray[float]): Raman beatnote detunings.
+        Omega (np.ndarray[float]): Rabi frequencies.
+
+    Keyword Args:
+        direc (str): Direction of mode to use.
+        k (float): Wavevector of the laser.
     """
 
     def __init__(self, ti, mu, Omega, **kwargs):
@@ -135,8 +144,8 @@ class SimulatedSpinLattice(SpinLattice):
         """
         Calculates the interaction graph of the spin lattice simulated by the trapped ion system.
 
-        :param J: Interaction graph of the spin lattice simulated by the trapped ion system.
-        :type J: :obj:`numpy.ndarray`
+        Returns:
+            J (np.ndarray[float]): Interaction graph of the spin lattice simulated by the trapped ion system.
         """
         try:
             len(self.m)

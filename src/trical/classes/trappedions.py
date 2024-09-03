@@ -1,18 +1,32 @@
+from typing import Callable
+
+import numpy as np
+
+########################################################################################
+
 from .base import Base
 from ..misc import constants as cst
 from ..misc.linalg import orthonormal_subset
 from ..misc.optimize import dflt_opt
-from .potential import CoulombPotential
-from matplotlib import pyplot as plt
-import numpy as np
+from .potential import Potential, CoulombPotential
+
+########################################################################################
 
 
 class TrappedIons(Base):
     """
     Object representing a system of trapped ions.
 
-    :param N: Number of ions.
-    :type N: :obj:`int`
+    Args:
+        N (int): Number of ions.
+        ps (Potential): Potentials on the system.
+
+    Keyword Args:
+        dim (int): Dimension of system.
+        l (float): Length scale of system.
+        m (float): Mass of ions
+        q (float): Charge of ions
+
     """
 
     def __init__(self, N, *ps, **kwargs):
@@ -41,10 +55,11 @@ class TrappedIons(Base):
         """
         Function that calculates the equilibrium position of the ions.
 
-        :param opt: Generator of the appropriate optimization function for finding the equilibrium position, defaults to :obj:`trical.misc.optimize.dflt_opt`
-        :type opt: :obj:`types.FunctionType`, optional
-        :returns: Equilibrium position of the ions.
-        :rtype: :obj:`numpy.ndarray`
+        Args:
+            opt (Callable): Generator of the appropriate optimization function for finding the equilibrium position.
+
+        Returns:
+            x_ep (np.ndarray[float]): Equilibrium position of the ions.
         """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
@@ -61,9 +76,12 @@ class TrappedIons(Base):
         """
         Function that calculates the normal modes of the system.
 
-        :Returns:
-            * **w** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.
-            * **b** (:obj:`numpy.ndarray`): Normal mode eigenvectors of the system.
+        Args:
+            block_sort (bool): Indicator to apply block sorting.
+
+        Returns:
+            w (np.ndarray[float]): Normal mode frequencies of the system.
+            b (np.ndarray[float]): Normal mode eigenvectors of the system.
         """
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
@@ -123,10 +141,13 @@ class TrappedIons(Base):
         """
         Function that calculates the principle axes of the system.
 
-        :Returns:
-            * **x_pa** (:obj:`numpy.ndarray`): Principle axes of the system.
-            * **w_pa** (:obj:`numpy.ndarray`): Normal mode frequencies of the system.
-            * **b_pa** (:obj:`numpy.ndarray`): Normal mode eigenvectors of the system in the principle axis coordinate system.
+        Args:
+            tol (float): Tolerance for evaluating orthogonality of principle axis.
+
+        Returns:
+            x_pa (np.ndarray[float]): Principle axes of the system.
+            w_pa (np.ndarray[float]): Normal mode frequencies of the system.
+            b_pa (np.ndarray[float]): Normal mode eigenvectors of the system in the principle axis coordinate system.
         """
         if np.isin(np.array(["w", "b"]), np.array(self.__dict__.keys())).sum() != 2:
             self.normal_modes()
@@ -175,11 +196,11 @@ class TrappedIons(Base):
         """
         Updates parameters, i.e. params attribute, of a TrappedIons object.
 
-        :Keyword Arguments:
-            * **dim** (:obj:`float`): Dimension of the system.
-            * **l** (:obj:`float`): Length scale of the system.
-            * **m** (:obj:`float`): Mass of an ion.
-            * **q** (:obj:`dict`): Charge of an ion.
+        Args:
+            dim (float): Dimension of the system.
+            l (float): Length scale of the system.
+            m (float): Mass of an ion.
+            q (float: Charge of an ion.
         """
         self.params.update(kwargs)
         self.__dict__.update(self.params)

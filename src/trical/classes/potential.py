@@ -1,23 +1,34 @@
+from typing import Callable
+
+import itertools as itr
+
+import numpy as np
+from numpy.polynomial import polynomial as poly
+
+import sympy
+
+import autograd as ag
+
+########################################################################################
+
 from .base import Base
 from ..misc import constants as cst
 from ..misc.polynomial import multivariate_polyfit
-import autograd as ag
-import itertools as itr
-import numpy as np
-from numpy.polynomial import polynomial as poly
-import sympy
+
+########################################################################################
 
 
 class Potential(Base):
     """
     Object representing a general potential.
 
-    :param d2phi: Function that takes two strings representing the derivative variables and outputs the function corresponding to the derivative of the potential with respect to the derivative variables.
-    :type d2phi: :obj:`types.FunctionType`
-    :param dphi: Function that takes a string representing the derivative variable and outputs the function corresponding to the derivative of the potential with respect to the derivative variable.
-    :type dphi: :obj:`types.FunctionType`
-    :param phi: Function representing the potential.
-    :type phi: :obj:`types.FunctionType`
+    Args:
+        d2phi (Callable): Function that takes two strings representing the derivative variables and outputs the function corresponding to the derivative of the potential with respect to the derivative variables.
+        dphi (Callable): Function that takes a string representing the derivative variable and outputs the function corresponding to the derivative of the potential with respect to the derivative variable.
+        phi (Callable ): Function representing the potential.
+
+    Keyword Args:
+        dim (int): Dimension of system.
     """
 
     def __init__(self, phi, dphi, d2phi, **kwargs):
@@ -87,10 +98,11 @@ class Potential(Base):
         """
         Calculates the first derivative of the potential with respect to a variable.
 
-        :param var: Derivative variable.
-        :type var: :obj:`str`
-        :returns: Function corresponding to the first derivative of the potential with respect to the derivative variable.
-        :rtype: :obj:`types.FunctionType`
+        Args:
+            var (str): Derivative variable.
+
+        Returns:
+            (Callable): Function corresponding to the first derivative of the potential with respect to the derivative variable.
         """
         return self.dphi(var)
 
@@ -98,21 +110,21 @@ class Potential(Base):
         """
         Calculates the second derivative of the potential with respect to two variables.
 
-        :param var1: first derivative variable.
-        :type var1: :obj:`str`
-        :param var2: second derivative variable.
-        :type var2: :obj:`str`
-        :returns: Function corresponding to the second derivative of the potential with respect to the derivative variables.
-        :rtype: :obj:`types.FunctionType`
+        Args:
+            var1 (str): first derivative variable.
+            var2 (str): second derivative variable.
+
+        Returns:
+            (Callable): Function corresponding to the second derivative of the potential with respect to the derivative variables.
         """
         return self.d2phi(var1, var2)
 
     def gradient(self):
         """
-        Calculates the gradient of the potential
+        Calculates the gradient of the potential.
 
-        :returns: Function corresponding to the gradient of the potential
-        :rtype: :obj:`types.FunctionType`
+        Returns:
+            (Callable): Function corresponding to the gradient of the potential.
         """
 
         def grad_phi(x):
@@ -130,10 +142,10 @@ class Potential(Base):
 
     def hessian(self):
         """
-        Calculates the Hessian of the potential
+        Calculates the Hessian of the potential.
 
-        :returns: Function corresponding to the Hessian of the potential
-        :rtype: :obj:`types.FunctionType`
+        Returns:
+            (Callable): Function corresponding to the Hessian of the potential.
         """
 
         def hess_phi(x):
@@ -155,6 +167,15 @@ class Potential(Base):
         return hess_phi
 
     def nondimensionalize(self, l):
+        """
+        Nondimensionalizes a Potential with a length scale.
+
+        Args:
+            l (float): Length scale.
+
+        Returns:
+            (Potential): Potential representing the nondimensionalized coulomb potential.
+        """
         nd_phi = lambda x: self.phi(x * l)
         nd_dphi = lambda var: (lambda x: self.dphi(var)(x * l))
         nd_d2phi = lambda var1, var2: (lambda x: self.d2phi(var1, var2)(x * l))
@@ -166,9 +187,9 @@ class Potential(Base):
         """
         Updates parameters, i.e. params attribute, of a Potential object.
 
-        :Keyword Arguments:
-            * **dim** (:obj:`float`): Dimension of the system.
-            * **N** (:obj:`float`): Number of Ions.
+        Args:
+            dim (int): Dimension of the system.
+            N (int): Number of Ions.
         """
         self.params.update(kwargs)
         self.__dict__.update(self.params)
@@ -177,11 +198,20 @@ class Potential(Base):
     pass
 
 
+########################################################################################
+
+
 class CoulombPotential(Potential):
     """
     Object representing a coulomb potential.
 
-    :param N: Number of ions.
+    Args:
+        N (int): Number of ions.
+
+    Keyword Args:
+        dim (int): Dimension of system.
+        N (int): Number of ions.
+        q (float): Charge of ions.
     """
 
     def __init__(self, N, **kwargs):
@@ -261,14 +291,6 @@ class CoulombPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        """
-        Nondimensionalizes a CoulombPotential with a length scale.
-
-        :param l: Length scale.
-        :type l: :obj:`float`
-        :returns: Potential representing the nondimensionalized coulomb potential.
-        :rtype: :obj:`trical.classes.potential.Potential`
-        """
         return self / (cst.k * cst.e**2)
 
     pass
@@ -278,7 +300,11 @@ class PolynomialPotential(Potential):
     """
     Object representing a polynomial potential.
 
-    :param alpha: Coefficients of the polynomial potential.
+    Args:
+        alpha (np.ndarray[float]): Coefficients of the polynomial potential.
+
+    Keyword Args:
+        dim (int): Dimension of system.
     """
 
     def __init__(self, alpha, **kwargs):
@@ -331,14 +357,6 @@ class PolynomialPotential(Potential):
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        """
-        Nondimensionalizes a PolynomialPotential with a length scale.
-
-        :param l: Length scale.
-        :type l: :obj:`float`
-        :returns: Nondimensionalized PolynomialPotential.
-        :rtype: :obj:`trical.classes.potential.PolynomialPotential`
-        """
         alpha = (
             l ** np.indices(self.alpha.shape).sum(0)
             * self.alpha
@@ -349,222 +367,22 @@ class PolynomialPotential(Potential):
     pass
 
 
-class SymbolicPotential(Potential):
-    """
-    Object representing a symbolically defined potential, same for all ions.
-
-    :param expr: Symbolic expression of the potential.
-    """
-
-    def __init__(self, expr, **kwargs):
-        self.expr = expr
-
-        params = {"dim": 3}
-        params.update(kwargs)
-        self.__dict__.update(params)
-        self.params = params
-
-        self.symbol = [sympy.Symbol(["x", "y", "z"][i]) for i in range(self.dim)]
-        self.lambdified_expr = sympy.utilities.lambdify(self.symbol, expr)
-
-        super(SymbolicPotential, self).__init__(
-            self.__call__, self.first_derivative, self.second_derivative, **params
-        )
-        pass
-
-    def __call__(self, x):
-        return self.lambdified_expr(*x.transpose()).sum()
-
-    def evaluate(self, x):
-        return self.lambdified_expr(*x.transpose())
-
-    def first_derivative(self, var):
-        a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:] if type(var) == str else var[1:][0])
-
-        dphi_dai = lambda x: sympy.utilities.lambdify(
-            self.symbol, sympy.diff(self.expr, self.symbol[a])
-        )(*x[i])
-
-        return dphi_dai
-
-    def second_derivative(self, var1, var2):
-        a = {"x": 0, "y": 1, "z": 2}[var1[0]]
-        b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0])
-        j = int(var2[1:] if type(var2) == str else var2[1:][0])
-
-        if i == j:
-            d2phi_daidbj = lambda x: sympy.utilities.lambdify(
-                self.symbol, sympy.diff(self.expr, self.symbol[a], self.symbol[b])
-            )(*x[i])
-        else:
-            d2phi_daidbj = lambda x: 0
-
-        return d2phi_daidbj
-
-    def nondimensionalize(self, l):
-        """
-        Nondimensionalizes a SymbolicPotential with a length scale.
-
-        :param l: Length scale.
-        :type l: :obj:`float`
-        :returns: Nondimensionalized SymbolicPotential.
-        :rtype: :obj:`trical.classes.potential.SymbolicPotential`
-        """
-        expr = self.expr.subs({k: k * l for k in self.symbol}) * (
-            l / (cst.k * cst.e**2)
-        )
-        return SymbolicPotential(expr, **self.params)
-
-    pass
-
-
-class AdvancedSymbolicPotential(Potential):
-    """
-    Object representing a symbolically defined potential that need not be the same for all ions.
-
-    :param expr: Symbolic expression of the potential.
-    """
-
-    def __init__(self, N, expr, **kwargs):
-        self.expr = expr
-
-        params = {"dim": 3, "N": N}
-        params.update(kwargs)
-        self.__dict__.update(params)
-        self.params = params
-
-        self.symbol = np.array(
-            [
-                [
-                    sympy.Symbol(["x{}", "y{}", "z{}"][i].format(j))
-                    for i in range(self.dim)
-                ]
-                for j in range(N)
-            ]
-        ).flatten()
-        self.lambdified_expr = sympy.utilities.lambdify(self.symbol, expr)
-
-        super(AdvancedSymbolicPotential, self).__init__(
-            self.__call__, self.first_derivative, self.second_derivative, **params
-        )
-        pass
-
-    def __call__(self, x):
-        x = np.array(x)
-        return self.lambdified_expr(*x.flatten())
-
-    def first_derivative(self, var):
-        a = var[0]
-        i = int(var[1:] if type(var) == str else var[1:][0])
-
-        def dphi_dai(x):
-            x = np.array(x)
-            return sympy.utilities.lambdify(
-                self.symbol, sympy.diff(self.expr, a + str(i))
-            )(*x.flatten())
-
-        return dphi_dai
-
-    def second_derivative(self, var1, var2):
-        a = var1[0]
-        b = var2[0]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0])
-        j = int(var2[1:] if type(var2) == str else var2[1:][0])
-
-        def d2phi_daidbj(x):
-            x = np.array(x)
-            return sympy.utilities.lambdify(
-                self.symbol, sympy.diff(self.expr, a + str(i), b + str(j))
-            )(*x.flatten())
-
-        return d2phi_daidbj
-
-    def nondimensionalize(self, l):
-        """
-        Nondimensionalizes a AdvancedSymbolicPotential with a length scale.
-
-        :param l: Length scale.
-        :type l: :obj:`float`
-        :returns: Nondimensionalized AdvancedSymbolicPotential.
-        :rtype: :obj:`trical.classes.potential.AdvancedSymbolicPotential`
-        """
-        expr = self.expr.subs({k: k * l for k in self.symbol}) * (
-            l / (cst.k * cst.e**2)
-        )
-        params = self.params
-        if "N" in params.keys():
-            params.pop("N")
-        return AdvancedSymbolicPotential(self.N, expr, **params)
-
-    pass
-
-
-class SymbolicOpticalPotential(SymbolicPotential):
-    """
-    Object representing a general optical potential symbolically.
-
-    :param wavelength: Wavelength of the optical potential.
-    :type wavelength: :obj:`float`
-
-    :Keyword Arguments:
-        * **m** (:obj:`float`): Mass of ion.
-        * **Omega_bar** (:obj:`float`): Rabi frequency per root intensity.
-        * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
-        * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
-    """
-
-    def __init__(self, intensity_expr, wavelength, **kwargs):
-        self.params = {"dim": 3}
-
-        self.intensity_expr = intensity_expr
-        self.wavelength = wavelength
-
-        opt_params = {
-            "m": cst.convert_m_a(171),
-            "Omega_bar": 2.23e6,
-            "transition_wavelength": 369.52e-9,
-            "refractive_index": 1,
-        }
-        opt_params.update(kwargs)
-        self.__dict__.update(opt_params)
-        self.opt_params = opt_params
-
-        nu = cst.convert_lamb_to_omega(wavelength)
-        nu_transition = cst.convert_lamb_to_omega(opt_params["transition_wavelength"])
-        Delta = nu - nu_transition
-
-        self.nu = nu
-        self.nu_transition = nu_transition
-        self.Delta = Delta
-
-        expr = cst.hbar * opt_params["Omega_bar"] ** 2 * intensity_expr / (4 * Delta)
-
-        super(SymbolicOpticalPotential, self).__init__(expr, **self.params)
-        pass
-
-    pass
-
-
 class GaussianOpticalPotential(Potential):
     """
     Object representing a potential caused by a Gaussian beam.
 
-    :param focal_point: Center of the Gaussian beam.
-    :type focal_point: :obj:`numpy.ndarray`
-    :param power: Power of Gaussian beam.
-    :type power: :obj:`float`
-    :param wavelength: Wavelength of Gaussian beam.
-    :type wavelength: :obj:`float`
-    :param beam_waist: Waist of Gaussian beam.
-    :type beam_waist: :obj:`float`
+    Args:
+        focal_point (np.ndarray[float]): Center of the Gaussian beam.
+        power (float): Power of Gaussian beam.
+        wavelength (float): Wavelength of Gaussian beam.
+        beam_waist (float): Waist of Gaussian beam.
 
-    :Keyword Arguments:
-        * **m** (:obj:`float`): Mass of ion.
-        * **Omega_bar** (:obj:`float`): Rabi frequency per root intensity.
-        * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
-        * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
+    Keyword Args:
+        dim (int): Dimension of system.
+        m (float): Mass of ions.
+        Omega_bar (float): Rabi frequency per root intensity.
+        transition_wavelength (float): Wavelength of the transition that creates the optical trap.
+        refractive_index (float): Refractive index of medium Gaussian beam is propagating through.
     """
 
     def __init__(self, focal_point, power, wavelength, beam_waist, **opt_kwargs):
@@ -742,14 +560,219 @@ class GaussianOpticalPotential(Potential):
     pass
 
 
-class AutoDiffPotential(Potential):
+########################################################################################
+
+
+class SymbolicPotential(Potential):
+    """
+    Object representing a symbolically defined potential, same for all ions.
+
+    Args:
+        expr (str): Symbolic expression of the potential.
+
+    Keyword Args:
+        dim (int): Dimension of system.
+    """
+
     def __init__(self, expr, **kwargs):
-        """
+        self.expr = expr
+
+        params = {"dim": 3}
+        params.update(kwargs)
+        self.__dict__.update(params)
+        self.params = params
+
+        self.symbol = [sympy.Symbol(["x", "y", "z"][i]) for i in range(self.dim)]
+        self.lambdified_expr = sympy.utilities.lambdify(self.symbol, expr)
+
+        super(SymbolicPotential, self).__init__(
+            self.__call__, self.first_derivative, self.second_derivative, **params
+        )
+        pass
+
+    def __call__(self, x):
+        return self.lambdified_expr(*x.transpose()).sum()
+
+    def evaluate(self, x):
+        return self.lambdified_expr(*x.transpose())
+
+    def first_derivative(self, var):
+        a = {"x": 0, "y": 1, "z": 2}[var[0]]
+        i = int(var[1:] if type(var) == str else var[1:][0])
+
+        dphi_dai = lambda x: sympy.utilities.lambdify(
+            self.symbol, sympy.diff(self.expr, self.symbol[a])
+        )(*x[i])
+
+        return dphi_dai
+
+    def second_derivative(self, var1, var2):
+        a = {"x": 0, "y": 1, "z": 2}[var1[0]]
+        b = {"x": 0, "y": 1, "z": 2}[var2[0]]
+        i = int(var1[1:] if type(var1) == str else var1[1:][0])
+        j = int(var2[1:] if type(var2) == str else var2[1:][0])
+
+        if i == j:
+            d2phi_daidbj = lambda x: sympy.utilities.lambdify(
+                self.symbol, sympy.diff(self.expr, self.symbol[a], self.symbol[b])
+            )(*x[i])
+        else:
+            d2phi_daidbj = lambda x: 0
+
+        return d2phi_daidbj
+
+    def nondimensionalize(self, l):
+        expr = self.expr.subs({k: k * l for k in self.symbol}) * (
+            l / (cst.k * cst.e**2)
+        )
+        return SymbolicPotential(expr, **self.params)
+
+    pass
+
+
+class AdvancedSymbolicPotential(Potential):
+    """
+    Object representing a symbolically defined potential that need not be the same for all ions.
+
+    Args:
+        expr (str): Symbolic expression of the potential.
+
+    Keyword Args:
+        dim (int): Dimension of system.
+        N (int): Number of ions.
+    """
+
+    def __init__(self, N, expr, **kwargs):
+        self.expr = expr
+
+        params = {"dim": 3, "N": N}
+        params.update(kwargs)
+        self.__dict__.update(params)
+        self.params = params
+
+        self.symbol = np.array(
+            [
+                [
+                    sympy.Symbol(["x{}", "y{}", "z{}"][i].format(j))
+                    for i in range(self.dim)
+                ]
+                for j in range(N)
+            ]
+        ).flatten()
+        self.lambdified_expr = sympy.utilities.lambdify(self.symbol, expr)
+
+        super(AdvancedSymbolicPotential, self).__init__(
+            self.__call__, self.first_derivative, self.second_derivative, **params
+        )
+        pass
+
+    def __call__(self, x):
+        x = np.array(x)
+        return self.lambdified_expr(*x.flatten())
+
+    def first_derivative(self, var):
+        a = var[0]
+        i = int(var[1:] if type(var) == str else var[1:][0])
+
+        def dphi_dai(x):
+            x = np.array(x)
+            return sympy.utilities.lambdify(
+                self.symbol, sympy.diff(self.expr, a + str(i))
+            )(*x.flatten())
+
+        return dphi_dai
+
+    def second_derivative(self, var1, var2):
+        a = var1[0]
+        b = var2[0]
+        i = int(var1[1:] if type(var1) == str else var1[1:][0])
+        j = int(var2[1:] if type(var2) == str else var2[1:][0])
+
+        def d2phi_daidbj(x):
+            x = np.array(x)
+            return sympy.utilities.lambdify(
+                self.symbol, sympy.diff(self.expr, a + str(i), b + str(j))
+            )(*x.flatten())
+
+        return d2phi_daidbj
+
+    def nondimensionalize(self, l):
+        expr = self.expr.subs({k: k * l for k in self.symbol}) * (
+            l / (cst.k * cst.e**2)
+        )
+        params = self.params
+        if "N" in params.keys():
+            params.pop("N")
+        return AdvancedSymbolicPotential(self.N, expr, **params)
+
+    pass
+
+
+class SymbolicOpticalPotential(SymbolicPotential):
+    """
+    Object representing a general optical potential symbolically.
+
+    Args:
+        intensity_expr (str): Expression for the intensity of the optical potential.
+        wavelength (float): Wavelength of the optical potential.
+
+    Keyword Args:
+        dim (int): Dimension of system.
+        m (float): Mass of ions.
+        Omega_bar (float): Rabi frequency per root intensity.
+        transition_wavelength (float): Wavelength of the transition that creates the optical trap.
+        refractive_index (float): Refractive index of medium Gaussian beam is propagating through.
+    """
+
+    def __init__(self, intensity_expr, wavelength, **kwargs):
+        self.params = {"dim": 3}
+
+        self.intensity_expr = intensity_expr
+        self.wavelength = wavelength
+
+        opt_params = {
+            "m": cst.convert_m_a(171),
+            "Omega_bar": 2.23e6,
+            "transition_wavelength": 369.52e-9,
+            "refractive_index": 1,
+        }
+        opt_params.update(kwargs)
+        self.__dict__.update(opt_params)
+        self.opt_params = opt_params
+
+        nu = cst.convert_lamb_to_omega(wavelength)
+        nu_transition = cst.convert_lamb_to_omega(opt_params["transition_wavelength"])
+        Delta = nu - nu_transition
+
+        self.nu = nu
+        self.nu_transition = nu_transition
+        self.Delta = Delta
+
+        expr = cst.hbar * opt_params["Omega_bar"] ** 2 * intensity_expr / (4 * Delta)
+
+        super(SymbolicOpticalPotential, self).__init__(expr, **self.params)
+        pass
+
+    pass
+
+
+########################################################################################
+
+########################################################################################
+
+
+class AutoDiffPotential(Potential):
+    """
         Object representing a functionally defined potential for the system of ions that uses automatic differentiation to calculate derivatives of the potential.
 
-        :param expr: function of the potential that is defined using the numpy submodule of autograd package.
-        :type expr: :obj:`types.FunctionType`
-        """
+        Args:
+            expr (Callable): function of the potential that is defined using the numpy submodule of autograd package.
+
+    Keyword Args:
+        dim (int): Dimension of system.
+    """
+
+    def __init__(self, expr, **kwargs):
         self.expr = expr
 
         params = {"dim": 3}
@@ -798,16 +821,16 @@ class OpticalPotential(AutoDiffPotential):
     """
     Object representing a general optical potential functionally using automatic differentiation to calculate the derivatives.
 
-    :param intensity_expr: function of the expression for intensity of the optical potential that is defined using the numpy submodule of autograd package.
-    :type intensity_expr: :obj:`types.FunctionType`
-    :param wavelength: Wavelength of the optical potential.
-    :type wavelength: :obj:`float`
+    Args:
+        intensity_expr (Callable): function of the expression for intensity of the optical potential that is defined using the numpy submodule of autograd package.
+        wavelength (float): Wavelength of the optical potential.
 
-    :Keyword Arguments:
-        * **m** (:obj:`float`): Mass of ion.
-        * **Omega_bar** (:obj:`float`): Rabi frequency per root intensity.
-        * **transition_wavelength** (:obj:`float`): Wavelength of the transition that creates the optical trap.
-        * **refractive_index** (:obj:`float`): Refractive index of medium Gaussian beam is propagating through.
+    Keyword Args:
+        dim (int): Dimension of system.
+        m (float): Mass of ions.
+        Omega_bar (float): Rabi frequency per root intensity.
+        transition_wavelength (float): Wavelength of the transition that creates the optical trap.
+        refractive_index (float): Refractive index of medium Gaussian beam is propagating through.
     """
 
     def __init__(self, intensity_expr, wavelength, **opt_kwargs):

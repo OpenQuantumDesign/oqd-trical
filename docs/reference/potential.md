@@ -1,0 +1,2 @@
+
+::: trical.classes.potential

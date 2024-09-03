@@ -19,7 +19,13 @@ nav:
   - Introduction:
     - Welcome to TrICal: index.md
   - API Reference:
-    - Reference: reference/reference.md
+    - Reference:
+      - Mechanical:
+        - Base: reference/base.md
+        - Potential: reference/potential.md
+        - Trapped Ions: reference/trappedions.md
+        - Spin Lattice: reference/spinlattice.md
+      - Light Matter Interactions: reference/light_matter.md
 
 theme:
   name: material
@@ -71,8 +77,12 @@ plugins:
             show_signature_annotations: true
             signature_crossrefs: true
             separate_signature: false
+            group_by_category: false
+            members_order: "source"
           import:
             - https://docs.python.org/3/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
+            - https://matplotlib.org/stable/objects.inv
 
 
 markdown_extensions:
