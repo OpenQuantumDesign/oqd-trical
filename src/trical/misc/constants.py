@@ -1,14 +1,18 @@
-import numpy as np
-
 """
 Module containing relevant constants, in SI units, for TrICal.
 
-:Variables:
-    * **e** (:obj:`float`): Elementary charge.
-    * **hbar** (:obj:`float`): Reduced Planck constant.
-    * **k** (:obj:`float`): Coulomb constant.
-    * **m_a** (:obj:`dict`): Dictionary of atomic masses.
+Attributes:
+    e (float): Elementary charge.
+    hbar (float): Reduced Planck constant.
+    k (float): Coulomb constant.
+    c (float): Speed of light.
 """
+
+########################################################################################
+
+import numpy as np
+
+########################################################################################
 
 c = 2.99792458e8
 e = 1.602176634e-19
@@ -20,10 +24,11 @@ def convert_m_a(A):
     """
     Converts atomic mass from atomic mass units to kilograms
 
-    :param A: Atomic mass in atomic mass units
-    :type A: :obj:`float`
-    :returns: Atomic mass in kilograms
-    :rtype: :obj:`float`
+    Args:
+        A (float): Atomic mass in atomic mass units
+
+    Returns:
+        (float): Atomic mass in kilograms
     """
     return A * 1.66053906660e-27
 
@@ -36,14 +41,13 @@ def natural_l(m, q, omega):
     """
     Calculates a natural length scale for a trapped ion system
 
-    :param m: Mass of ion
-    :type m: :obj:`float`
-    :param q: Charge of ion
-    :type q: :obj:`float`
-    :param omega: Trapping strength
-    :type omega: :obj:`float`
-    :returns: Natural length scale
-    :rtype: :obj:`float`
+    Args:
+        m (float): Mass of ion
+        q (float): Charge of ion
+        omega (float): Trapping strength
+
+    Returns:
+        (float): Natural length scale
     """
     return (2 * k * q**2 / (m * omega**2)) ** (1 / 3)
 
@@ -52,13 +56,12 @@ def natural_V(m, q, omega):
     """
     Calculates a natural energy scale for a trapped ion system
 
-    :param m: Mass of ion
-    :type m: :obj:`float`
-    :param q: Charge of ion
-    :type q: :obj:`float`
-    :param omega: Trapping strength
-    :type omega: :obj:`float`
-    :returns: Natural energy scale
-    :rtype: :obj:`float`
+    Args:
+        m (float): Mass of ion
+        q (float): Charge of ion
+        omega (float): Trapping strength
+
+    Returns:
+        (float): Natural energy scale
     """
     return k * q**2 / natural_l(m, q, omega)

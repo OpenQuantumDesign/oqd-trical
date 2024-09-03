@@ -2,28 +2,35 @@
 Module containing relevant functions regarding polynomials for TrIcal.
 """
 
-from .optimize import dflt_ls_opt
+########################################################################################
+
+from typing import Callable
+
 from autograd import numpy as agnp
+
 import numpy as np
 from numpy.polynomial import polynomial as poly
+
+########################################################################################
+
+from .optimize import dflt_ls_opt
+
+########################################################################################
 
 
 def multivariate_polyfit(x, vals, deg, l=1, opt=dflt_ls_opt):
     """
     Fits a set of data with a multivariate polynomial.
 
-    :param x: Independent values.
-    :type x: :obj:`numpy.ndarray`
-    :param vals: Dependent value.
-    :type vals: :obj:`numpy.ndarray`
-    :param deg: Degree of polynomial used in the fit.
-    :type deg: :obj:`numpy.ndarray`
-    :param l: Length scale used when fitting, defaults to 1.
-    :type l: :obj:`float`, optional
-    :param opt: Generator of the appropriate optimization function for the fit, defaults to :obj:`trical.misc.optimize.dflt_ls_opt`.
-    :type opt: :obj:`types.FunctionType`, optional
-    :returns: Coefficients of the best fit multivariate polynomial, of the specified degree.
-    :rtype: :obj:`numpy.ndarray`
+    Args:
+        x (np.ndarray[float]): Independent values.
+        vals (np.ndarray[float]): Dependent value.
+        deg (np.ndarray[int]): Degree of polynomial used in the fit.
+        l (float): Length scale used when fitting, defaults to 1.
+        opt (Callable): Generator of the appropriate optimization function for the fit.
+
+    Returns:
+        (np.ndarray[float]): Coefficients of the best fit multivariate polynomial, of the specified degree.
     """
     dim = len(deg)
     shape = np.array(deg) + 1

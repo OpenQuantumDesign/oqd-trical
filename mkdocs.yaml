@@ -26,6 +26,7 @@ nav:
         - Trapped Ions: reference/trappedions.md
         - Spin Lattice: reference/spinlattice.md
       - Light Matter Interactions: reference/light_matter.md
+      - Miscellaneous: reference/misc.md
 
 theme:
   name: material

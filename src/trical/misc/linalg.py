@@ -2,7 +2,11 @@
 Module containing relevant linear algebra functions for TrICal.
 """
 
+########################################################################################
+
 import numpy as np
+
+########################################################################################
 
 
 def cartesian_to_spherical(x):
@@ -36,12 +40,12 @@ def orthonormal_subset(x, tol=1e-3):
     """
     Finds an approximate orthonormal subset of a set of vectors, after normalization.
 
-    :param x: Set of vectors of interest.
-    :type x: :obj:`numpy.ndarray`
-    :param tol: Tolerance when classifying 2 vectors as orthonormal , defaults to 1e-3.
-    :type tol: :obj:`float`, optional
-    :returns: Orthonormal subset of the set of vectors of interest, after normalization.
-    :rtype: :obj:`numpy.ndarray`
+    Args:
+        x (np.ndarray[float]): Set of vectors of interest.
+        tol (float): Tolerance when classifying 2 vectors as orthonormal.
+
+    Returns:
+        (np.ndarray[float]): Orthonormal subset of the set of vectors of interest, after normalization.
     """
     nx = np.linalg.norm(x, axis=-1)
     idcs = (-nx).argsort()
