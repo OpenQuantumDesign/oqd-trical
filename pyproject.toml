@@ -7,7 +7,15 @@ build-backend = "setuptools.build_meta"
 name = "trical"
 version = "1.0.0"
 requires-python = ">=3.10"
-dependencies = ["autograd", "matplotlib", "numpy", "scipy", "sympy", "qutip", "midstack", "cmath"]
+dependencies = [
+    "autograd",
+    "matplotlib",
+    "numpy",
+    "scipy",
+    "sympy",
+    "qutip",
+    "midstack",
+]
 
 [project.optional-dependencies]
 docs = [
@@ -15,7 +23,7 @@ docs = [
     "mkdocstrings",
     "mkdocs-material",
     "mkdocstrings-python",
-] 
+]
 test = ["unittest_prettify"]
 
 [tool.setuptools.packages.find]
