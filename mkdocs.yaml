@@ -25,7 +25,9 @@ nav:
         - Potential: reference/potential.md
         - Trapped Ions: reference/trappedions.md
         - Spin Lattice: reference/spinlattice.md
-      - Light Matter Interactions: reference/light_matter.md
+      - Light Matter Interactions:
+        - Interface: reference/interface.md
+        - Compiler: reference/compiler.md
       - Miscellaneous: reference/misc.md
 
 theme:

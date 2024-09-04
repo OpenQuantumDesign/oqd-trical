@@ -1,5 +1,7 @@
 # Energies E are in Hz
-from trical.light_matter.Ion import *
+from .Ion import *
+
+########################################################################################
 
 levels = {
     "S1/2": Level(
