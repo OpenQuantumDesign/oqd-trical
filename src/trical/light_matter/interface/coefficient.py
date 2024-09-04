@@ -40,17 +40,17 @@ class ConstantCoefficient(Coefficient):
 
 
 class WaveCoefficient(Coefficient):
-    """Class for coefficients of the form $A e^{i (\omega t + \phi)}$
+    """Class for coefficients of the form $A e^{i (\\omega t + \\phi)}$
 
     Attributes:
         amplitude (float): ampitude of the wave $A$
-        frequency (float): frequency of the wave $\omega$
-        phase (float): phase of the wave $\phi$
+        frequency (float): frequency of the wave $\\omega$
+        phase (float): phase of the wave $\\phi$
         ion_indx (int): identification index of the ion as defined when instantiating the ion
         laser_indx (int): identification index of the laser as defined when instantiating the laser
         mode_indx (int): identification index of the mode as defined when instantiating the mode
-        i (int): $i$ in $|i \\rangle \langle j|$ if WaveCoefficient is a prefactor for a KetBra
-        j (int): $j$ in $|i \\rangle \langle j|$ if WaveCoefficient is a prefactor for a KetBra
+        i (int): $i$ in $|i \\rangle \\langle j|$ if WaveCoefficient is a prefactor for a KetBra
+        j (int): $j$ in $|i \\rangle \\langle j|$ if WaveCoefficient is a prefactor for a KetBra
     """
 
     amplitude: float

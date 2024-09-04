@@ -11,13 +11,13 @@ from qutip import mesolve, Qobj, QobjEvo
 
 from ..misc import constants as cst
 from .interface.Ion import Level
-from .qutip.Results import Results
+from ..backend.qutip.Results import Results
 
 ########################################################################################
 
 
 def lambdicke(mode, ion, laser):
-    """Helper function for computing the Lamb-Dicke parameter \eta
+    """Helper function for computing the Lamb-Dicke parameter $\\eta$
 
     Args:
         mode (Mode): Mode object; used to access the mode's eigenfrequency and axis

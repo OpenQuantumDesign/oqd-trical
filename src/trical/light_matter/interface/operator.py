@@ -89,7 +89,7 @@ class hc(Operator):
 
 
 class Displacement(Operator):
-    """Class representing the displacement operator: $D(\\alpha) = \exp(\\alpha a^{\dagger} - \\alpha^* a)$
+    """Class representing the displacement operator: $D(\\alpha) = e^{\\alpha a^{\\dagger} - \\alpha^* a}$
 
     Attributes:
         alpha (Coefficient): most often a WaveCofficient since coherent state parameter is a function of time

@@ -28,6 +28,7 @@ nav:
       - Light Matter Interactions:
         - Interface: reference/interface.md
         - Compiler: reference/compiler.md
+      - Backend: reference/backend.md
       - Miscellaneous: reference/misc.md
 
 theme:
