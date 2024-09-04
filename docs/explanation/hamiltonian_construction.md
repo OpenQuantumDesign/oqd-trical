@@ -90,13 +90,13 @@ This entails taking $e^{i\eta(a^{\dagger} + a)} \rightarrow D(\alpha) = \exp\lef
 
 $$
     \tilde{H}_I = \frac{\hbar\Omega}{2} \biggl[e^{-i(\Delta t - \phi)}\sigma_+ D(\alpha) + e^{i(\Delta t - \phi)}\sigma_- D(-\alpha)\biggr]\\
-    = \frac{\hbar\Omega}{2} \biggl[e^{-i(\Delta t - \phi)}\sigma_+ D(\alpha)\biggr] + h.c.
+    = \frac{\hbar\Omega}{2} \biggl[e^{-i(\Delta t - \phi)}\sigma_+ D(\alpha)\biggr] + H.C..
 $$
 
 Between Equations 8 and 9, we assumed motion in only one dimension, but we can easily generalize to L mode coupling: $\vec{k} \cdot \vec{r} = \sum_l \eta_l(\hat{a}_l^{\dagger} + \hat{a}_l)$. Because $a^{\dagger}_l,a_l $ commute with $a^{\dagger}_k,a_k$ ($l\neq k$), and $D(\alpha)$ commutes with all other terms in the Hamiltonian, we can simply write the motional term in Equation 17 as the product of displacement operators:
 
 $$
-     \colorbox{yellow}{$\tilde{H}_I = \frac{\hbar\Omega}{2}\left[e^{-i(\Delta t - \phi)}\sigma_+ \prod_l^L D(\alpha_l) \right] + h.c.$}
+     \colorbox{yellow}{$\tilde{H}_I = \frac{\hbar\Omega}{2}\left[e^{-i(\Delta t - \phi)}\sigma_+ \prod_l^L D(\alpha_l) \right] + H.C..$}
 $$
 
 where now the coherent state parameter picks up a mode index: $\alpha_l = i\eta_l e^{i \nu_l t}$. We know that for a single ion, the $l$ indices correspond to translational (center-of-mass) motion along $\hat{e}_x, \hat{e}_y, \text{ and }\hat{e}_z$.
@@ -117,7 +117,7 @@ $$
 Lastly, we need to perform our boosts into the interaction picture. Just as before, going into the frame rotating at $\omega_0$ is equivalent to taking $\sigma_+ \rightarrow e^{i\omega_0 t}\sigma_+ $ and $\sigma_- \rightarrow e^{-i\omega_0 t}\sigma_-$. This leaves us with an equation very similar to Equation 8, now with laser subscripts. Thus, we can immediately write down Equation 18 very arbitrarily many lasers by retracing our earlier steps:
 
 $$
-    \colorbox{yellow}{$\tilde{H}_I = \sum_m^M \frac{\hbar\Omega_m}{2}\left[e^{-i(\Delta_m t - \phi_m)}\sigma_+ \prod_l^L D(\alpha_{ml}) \right] + h.c.$}
+    \colorbox{yellow}{$\tilde{H}_I = \sum_m^M \frac{\hbar\Omega_m}{2}\left[e^{-i(\Delta_m t - \phi_m)}\sigma_+ \prod_l^L D(\alpha_{ml}) \right] + H.C..$}
 $$
 
 where $\Delta_m = \omega_m - \omega_0$ and $\alpha_{ml} = i\eta_{ml} e^{i \nu_l t}$. Importantly, the Lamb-Dicke parameter also gains laser dependence since it's a function of the laser's alignment with the motional mode's axis.
@@ -139,7 +139,7 @@ $$
 Boosting into the interaction picture (via a similar argument as in the previous section), we get
 
 $$
-    \colorbox{yellow}{$\tilde{H}_I = \sum_n^N \sum_{m}^N \frac{\hbar\Omega_{nm}}{2}\left[e^{-i(\Delta_{nm} t - \phi_m)}\sigma_+^{(n)} \prod_l^L D(\alpha_{nml}) \right] + h.c.$}
+    \colorbox{yellow}{$\tilde{H}_I = \sum_n^N \sum_{m}^N \frac{\hbar\Omega_{nm}}{2}\left[e^{-i(\Delta_{nm} t - \phi_m)}\sigma_+^{(n)} \prod_l^L D(\alpha_{nml}) \right] + H.C..$}
 $$
 
 where $\Delta_{nm} = \omega_m - \omega_{0,n}$ and $\alpha_{nml} = i\eta_{nml} e^{i \nu_l t}$ (the Lamb-Dicke parameter depends on the ion's mass).
@@ -168,79 +168,66 @@ $$
 for **_unique_** $j_n, j_n$ pairs. The form of Equation 26 is one we're well familiar with by now, so the boost into the interaction picture is just as with Equations 20 and 23. Thus we know that when the dust settles, the final Hamiltonian becomes
 
 $$
-    \colorbox{yellow}{$\tilde{H}_I = \sum_n^N \sum_{m}^N \sum_{j_n \neq k_n}^{J_n} \frac{\hbar\Omega_{nmjk}}{2}\left[e^{-i(\Delta_{nmjk} t - \phi_m)}\sigma_+^{(njk)} \prod_l^L D(\alpha_{nml}) \right] + h.c.$}
+    \colorbox{yellow}{$\tilde{H}_I = \sum_n^N \sum_{m}^N \sum_{j_n \neq k_n}^{J_n} \frac{\hbar\Omega_{nmjk}}{2}\left[e^{-i(\Delta_{nmjk} t - \phi_m)}\sigma_+^{(njk)} \prod_l^L D(\alpha_{nml}) \right] + H.C..$}
 $$
 
 where $\Delta_{nmjk} = \omega_m - \omega_{0,njk}$ and $\omega_{0,njk}$ is the transition frequency for $|j_n\rangle \leftrightarrow |k_n\rangle$ in the nth ion.
 
 ## Computing Matrix Elements
 
-Multipole matrix elements determine the coupling between transitions. In Section 2.1, we defined the Rabi frequencies as $\Omega = \frac{eE_0}{\hbar} \langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle$. In this section we'll describe how these $\langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle$ elements are computed. Currently, TrICal supports matrix element computation for both E1 and E2 transitions. These are computed in the _.compute\textunderscore matrix\textunderscore element_ Chamber method.
+Multipole matrix elements determine the coupling between transitions. In Section 2.1, we defined the Rabi frequencies as $\Omega = \frac{eE_0}{\hbar} \langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle$. In this section we'll describe how these $\langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle$ elements are computed. Currently, TrICal supports matrix element computation for both E1 and E2 transitions.
+
+!!! Note
+    These are computed in the [compute_matrix_element][trical.light_matter.interface.Chamber.compute_matrix_element].
 
 Let's consider a transition from level 1 to 2 in an ion with nuclear spin $I$ and associated quantum numbers: $M_i, J_i, F_i$; these are the magnetization (AKA $m_F$), spin-orbital, and total angular momentum quantum numbers. Also, let $q = M_2 - M_1$, the change in magnetization quantum number in the transiton.
 
-### Dipole Transitions
+=== "Dipole Transitions"
+    For dipole transitions, $q$ can be $0, \pm 1$, each of which corresponds to a required polarization $\hat{q}$:
 
-For dipole transitions, $q$ can be $0, \pm 1$, each of which corresponds to a required polarization $\hat{q}$:
+    - $\hat{q} = \frac{1}{\sqrt{2}} \begin{pmatrix} 1\\ i\\ 0 \end{pmatrix}$ drives $q = -1$ transitions
+    - $\hat{q} = \begin{pmatrix} 0\\ 0\\ 1 \end{pmatrix}$ drives $q = 0$ transitions ($\pi$ polarized)
+    - $\hat{q} = \frac{1}{\sqrt{2}} \begin{pmatrix} 1\\ -i\\ 0 \end{pmatrix}$ drives $q = 1$ transitions
 
-- $\hat{q} = \frac{1}{\sqrt{2}} \begin{pmatrix} 1\\ i\\ 0 \end{pmatrix}$ drives $q = -1$ transitions
-- $\hat{q} = \begin{pmatrix} 0\\ 0\\ 1 \end{pmatrix}$ drives $q = 0$ transitions ($\pi$ polarized)
-- $\hat{q} = \frac{1}{\sqrt{2}} \begin{pmatrix} 1\\ -i\\ 0 \end{pmatrix}$ drives $q = 1$ transitions
+    As a result, the matrix element will depend on the overlap between the laser's polarization $\hat{\epsilon}$ and the required $\hat{q}$.
 
-As a result, the matrix element will depend on the overlap between the laser's polarization $\hat{\epsilon}$ and the required $\hat{q}$.
+    $$
+        \langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{2\pi\epsilon_0\hbar c^3}{\omega_0 A_{21}}} \sqrt{(2F_2 + 1)(2F_1 + 1)}
+        \begin{Bmatrix}
+            J_1 & J_2 & 1\\
+            F_2 & F_1 & I
+        \end{Bmatrix} \nonumber \\
+        \sqrt{2J_2+1} \hat{q}\cdot\hat{\epsilon}\begin{pmatrix}
+            F_2 & 1 & F_1\\
+            M_2 & -q & -M_1
+        \end{pmatrix}
+    $$
 
-$$
-    \langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{2\pi\epsilon_0\hbar c^3}{\omega_0 A_{21}}} \sqrt{(2F_2 + 1)(2F_1 + 1)}
-    \begin{Bmatrix}
-        J_1 & J_2 & 1\\
-        F_2 & F_1 & I
-    \end{Bmatrix} \nonumber \\
-    \sqrt{2J_2+1} \hat{q}\cdot\hat{\epsilon}\begin{pmatrix}
-        F_2 & 1 & F_1\\
-        M_2 & -q & -M_1
-    \end{pmatrix}
-$$
+    where $\{\}$ refers to the Wigner-6j symbol and $()$ refers to the Wigner-3j symbol.
 
-where $\{\}$ refers to the Wigner-6j symbol and $()$ refers to the Wigner-3j symbol.
+=== "Quadrupole Transitions"
+    For quadrupole transitions, the laser's unit wave-vector $\hat{k}$ becomes relevant for coupling (in addition to its polarization). In particular, the coupling strength is now proportional to the overlap between $\hat{k}$ and $\hat{Q}\hat{\epsilon}$; $\hat{Q}$ is a matrix that depends on the value for $q$, which can now be one of $0, \pm 1, \pm 2$:
 
-### Quadrupole Transitions
+    | $q$ | $\hat{Q}$ |
+    |-|-|
+    |-2 | $\frac{1}{\sqrt{6}}\begin{pmatrix} 1 & i & 0\\ i & -1 & 0\\ 0 & 0 & 0\end{pmatrix}$|
+    |-1 | $\frac{1}{\sqrt{6}}\begin{pmatrix} 0 & 0 & 1\\ 0 & 0 & i\\ 1 & i & 0\end{pmatrix}$|
+    |0 | $\frac{1}{3}\begin{pmatrix} -1 & 0 & 0\\ 0 & -1 & 0\\ 0 & 0 & 2\end{pmatrix}$|
+    |1 | $\frac{1}{\sqrt{6}}\begin{pmatrix} 0 & 0 & -1\\ 0 & 0 & i\\ -1 & i & 0\end{pmatrix}$|
+    |2 | $\frac{1}{\sqrt{6}}\begin{pmatrix} 1 & -i & 0\\ -i & -1 & 0\\ 0 & 0 & 0\end{pmatrix}$|
 
-For quadrupole transitions, the laser's unit wave-vector $\hat{k}$ becomes relevant for coupling (in addition to its polarization). In particular, the coupling strength is now proportional to the overlap between $\hat{k}$ and $\hat{Q}\hat{\epsilon}$; $\hat{Q}$ is a matrix that depends on the value for $q$, which can now be one of $0, \pm 1, \pm 2$:
+    This logic is handled in TrICal under the same helper function under the _polarization_map_ dictionary.
 
-\vspace{0.1 in}
-\begin{center}
-
-\begin{tabularx}{0.6\textwidth} {
-| >{\centering\arraybackslash}X
-| >{\centering\arraybackslash}X | }
-\hline
-q & $\hat{Q}$\\
-\hline
--2 & $\frac{1}{\sqrt{6}}\begin{pmatrix} 1 & i & 0\\ i & -1 & 0\\ 0 & 0 & 0\end{pmatrix}$ \\
-\hline
--1 & $\frac{1}{\sqrt{6}}\begin{pmatrix} 0 & 0 & 1\\ 0 & 0 & i\\ 1 & i & 0\end{pmatrix}$ \\
-\hline
-0 & $\frac{1}{3}\begin{pmatrix} -1 & 0 & 0\\ 0 & -1 & 0\\ 0 & 0 & 2\end{pmatrix}$ \\
-\hline
-1 & $\frac{1}{\sqrt{6}}\begin{pmatrix} 0 & 0 & -1\\ 0 & 0 & i\\ -1 & i & 0\end{pmatrix}$ \\
-\hline
-2 & $\frac{1}{\sqrt{6}}\begin{pmatrix} 1 & -i & 0\\ -i & -1 & 0\\ 0 & 0 & 0\end{pmatrix}$ \\
-\hline
-\end{tabularx}
-\end{center}
-
-This logic is handled in TrICal under the same helper function under the _polarization\textunderscore map_ dictionary.
-
-$$
-    \langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{15\pi\epsilon_0\hbar c^3}{\omega_0 A_{21}}} \sqrt{(2F_2 + 1)(2F_1 + 1)}
-    \begin{Bmatrix}
-        J_1 & J_2 & 2\\
-        F_2 & F_1 & I
-    \end{Bmatrix} \nonumber \\  \sqrt{2J_2+1} \hat{k}\cdot\hat{Q}\hat{\epsilon}\begin{pmatrix}
-        F_2 & 2 & F_1\\
-        M_2 & -q & -M_1
-    \end{pmatrix}
-$$
+    $$
+        \langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{15\pi\epsilon_0\hbar c^3}{\omega_0 A_{21}}} \sqrt{(2F_2 + 1)(2F_1 + 1)}
+        \begin{Bmatrix}
+            J_1 & J_2 & 2\\
+            F_2 & F_1 & I
+        \end{Bmatrix} \nonumber \\  \sqrt{2J_2+1} \hat{k}\cdot\hat{Q}\hat{\epsilon}\begin{pmatrix}
+            F_2 & 2 & F_1\\
+            M_2 & -q & -M_1
+        \end{pmatrix}
+    $$
 
 ## Zeeman Shifts
 
@@ -266,63 +253,62 @@ $$
 
 where $S$ is the spin angular momentum quantum number.
 
-Zeeman shifts are computed upon instantiation of the Chamber object by via calls to the _zeeman\textunderscore energy\textunderscore shift_ helper function in _utilities.py_. Given a magnetic field magnitude $B$, a chain of ions, and levels to consider within each them, those levels are shifted by $\Delta_B$ as computed above.
-
-## Time-dependent Quantities (IN PROGRESS)
+Zeeman shifts are computed upon instantiation of the Chamber object by via calls to the [zeeman_energy_shift][trical.light_matter.utilities.zeeman_energy_shift] helper function. Given a magnetic field magnitude $B$, a chain of ions, and levels to consider within each them, those levels are shifted by $\Delta_B$ as computed above.
 
 ## Other Formulae
 
 These formulas are often computed using helper functions as part of the Hamiltonian construction process. When this is the case, the name and location of the helper function is specified.
 
-### Atom-Light Interactions
 
-\begin{flalign}
-\Omega = \frac{\pi}{\tau\_\pi}&&
-\end{flalign}
+=== "Atom-Light Interactions"
+    $$
+    \Omega = \frac{\pi}{\tau_\pi}
+    $$
 
-- $\Omega \equiv$ Rabi frequency
-- $\tau_{\pi} \equiv$ $\pi$-time
+    - $\Omega \equiv$ Rabi frequency
+    - $\tau_{\pi} \equiv$ $\pi$-time
 
-\begin{flalign}
-I = \frac{\epsilon*0 c }{2}\left(\frac{\hbar\Omega}{e M*{12}}\right)^2&&
-\end{flalign}
+    $$
+    I = \frac{\epsilon_0 c }{2}\left(\frac{\hbar\Omega}{e M_{12}}\right)^2
+    $$
 
-- $M_{12} \equiv \langle 1| \hat{M}|2 \rangle \equiv$ Multipole transition matrix element
+    - $M_{12} \equiv \langle 1| \hat{M}|2 \rangle \equiv$ Multipole transition matrix element
 
-*Last two equations used in conjunction by *Chamber.set\textunderscore intensity\textunderscore from\textunderscore pi\textunderscore time* and *Chamber.set\textunderscore intensity\textunderscore from\textunderscore rabi\textunderscore frequency\* methods
+    !!! Note
+        Last two equations used in conjunction by [set_laser_intensity_from_pi_time][trical.light_matter.interface.Chamber.set_laser_intensity_from_pi_time] and [set_laser_intensity_from_rabi_frequency][trical.light_matter.interface.Chamber.set_laser_intensity_from_rabi_frequency].
 
-\begin{flalign}
-\eta = \vec{k}\cdot\hat{z}\sqrt{\frac{\hbar}{2m\nu}}&&
-\end{flalign}
+    $$
+    \eta = \vec{k}\cdot\hat{z}\sqrt{\frac{\hbar}{2m\nu}}
+    $$
 
-- $\eta \equiv$ Lamb-Dicke parameter
-- $\vec{k} \equiv$ Laser wavevector
-- $\hat{z} \equiv$ Motional mode axis
-- $m \equiv$ Ion mass
-- $\nu \equiv$ Angular motional mode eigenfrequency
+    - $\eta \equiv$ Lamb-Dicke parameter
+    - $\vec{k} \equiv$ Laser wavevector
+    - $\hat{z} \equiv$ Motional mode axis
+    - $m \equiv$ Ion mass
+    - $\nu \equiv$ Angular motional mode eigenfrequency
 
-*Helper function in *utilities.py* named *lambdicke\*
+    !!! Note
+        Calculated with [lambdicke][trical.light_matter.utilities.lambdicke]
 
-### Lasers
+=== "Lasers"
+    $$
+    E = \sqrt{\frac{2I}{\epsilon_0 c}}
+    $$
 
-\begin{flalign}
-E = \sqrt{\frac{2I}{\epsilon_0 c}}&&
-\end{flalign}
+    - $I \equiv$ Laser intensity
+    - $E \equiv$ magnitude of laser E-field $\vec{E}$
 
-- $I \equiv$ Laser intensity
-- $E \equiv$ magnitude of laser E-field $\vec{E}$
+    !!! Note
+        Used in [rabi_frequency_from_intensity][trical.light_matter.interface.Chamber.rabi_frequency_from_intensity] method
 
-*Used in *Chamber.rabi\textunderscore frequency\textunderscore from\textunderscore intensity\* method
+=== "Miscellaneous"
+    $$
+    \rho = \sum_i P_i |\psi_i\rangle
+    $$
 
-### Miscellaneous
+    - $\rho \equiv$ Density matrix
+    - $P_i \equiv$ Classical probability of being in state $|\psi_i \rangle$
 
-\begin{flalign}
-\rho = \sum_i P_i |\psi_i\rangle&&
-\end{flalign}
+    !!! Note
+        Calculated with [to_dm][trical.light_matter.utilities.to_dm]
 
-- $\rho \equiv$ Density matrix
-- $P_i \equiv$ Classical probability of being in state $|\psi_i \rangle$
-
-*Helper function in *utilities.py* named *to\textunderscore dm\*
-
-## Abstract Syntax Language

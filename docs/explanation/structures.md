@@ -9,7 +9,7 @@ The _Chamber_ packages together the entire experimental description and takes th
 - Magnetic field magnitude $B$
 - Magnetic field direction $\hat{B}$
 
-A fully assembled _Chamber_ instantiation gets passed into _construct\textunderscore H\textunderscore tree.py_ for Hamiltonian construction.
+A fully assembled _Chamber_ instantiation gets passed into _construct_H_tree.py_ for Hamiltonian construction.
 
 ### Chain
 
@@ -28,7 +28,7 @@ The _Ion_ object stores species and Hilbert-space specific information about eac
 - Mass
 - Charge
 - Dictionary mapping level aliases (e.g. "S1/2") to _Level_ objects
-- Dictionary of "full\textunderscore transitions" (from manifold 1 to manifold 2)
+- Dictionary of "full_transitions" (from manifold 1 to manifold 2)
 
 Note that users do not instantiate *Ion*s directly. Instead, one would instantiate a specific ion species, say _Ca40_, which inherits from _Ion_. This way, users don't have to pass in all the levels and their aliases each time they want to create a new ion.
 
@@ -40,8 +40,8 @@ _Level_ objects store the quantum numbers of hyperfine levels as well as their e
 - $S$: spin
 - $L$: orbital
 - $I$: nuclear
-- $J$: spin\textunderscore orbital
-- $F$: spin\textunderscore orbital\textunderscore nuclear
+- $J$: spin_orbital
+- $F$: spin_orbital_nuclear
 - $E/h$: energy (transition frequency)
 
 #### Transition

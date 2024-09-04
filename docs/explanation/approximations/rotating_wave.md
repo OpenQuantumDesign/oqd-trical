@@ -1,4 +1,4 @@
-The rotating wave approximation (RWA) simply states that any terms in the Hamiltonian oscillating faster than a user-specified cutoff, $\omega_{\text{cutoff}}$, are neglected. The RWA is taken at the same time as the Lamb-Dicke approximation within the _displace_ helper function in _utilities.py_.
+The rotating wave approximation (RWA) simply states that any terms in the Hamiltonian oscillating faster than a user-specified cutoff, $\omega_{\text{cutoff}}$, are neglected. The RWA is taken at the same time as the Lamb-Dicke approximation within the [displace][trical.light_matter.utilities.displace] helper function.
 
 Looking at Equation 28, we see that these oscillating terms will arise from the product of $e^{-i\Delta_{nmjk}t}$ and the matrix elements of $D(\alpha)$. Because we are computing these via Laguerre polynomials, it is straightforward to derive a condition on what terms must be dropped.
 

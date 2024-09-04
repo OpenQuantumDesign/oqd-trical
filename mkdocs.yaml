@@ -20,9 +20,9 @@ nav:
       - Installation: get-started/installation.md
   - Examples: examples/tutorial.md
   - Explanation:
+      - Structures: explanation/structures.md
       - Overview: explanation/overview.md
       - Hamiltonian Construction: explanation/hamiltonian_construction.md
-      - Classes: explanation/classes.md
       - Approximations:
           - Adiabatic Elimination: explanation/approximations/adiabatic_elimination.md
           - Lamb-Dicke Approximation: explanation/approximations/lamb_dicke.md
@@ -113,6 +113,9 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
 
+  # for notes/admonitions
+  - admonition
+  - pymdownx.details
   - pymdownx.blocks.admonition
   - pymdownx.blocks.details
 

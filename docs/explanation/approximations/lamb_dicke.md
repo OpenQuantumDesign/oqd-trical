@@ -64,18 +64,21 @@ Importantly, TrICal does not compute Equations 38, 40, and 41 (convert into a ma
 
 Instead, the order to which we must expand is used to discard $D(\alpha)$ matrix elements, computed using Laguerre polynomials. According to Glauber and Cahill, the matrix elements of $D(\alpha)$ in the Fock basis, $D_{mn} \equiv \langle m|D(\alpha)|n\rangle$, can be written as
 
+For $m \geq n$:
 $$
      D_{mn} = \sqrt{\frac{n!}{m!}}\alpha^{m-n}e^{-\frac{1}{2}|\alpha|^2}L_n^{(m-n)}(|\alpha|^2)
 $$
 
-for $m \geq n$ and
-
+For $m < n$:
 $$
     D_{mn} = \sqrt{\frac{m!}{n!}}(-\alpha^*)^{n-m}e^{-\frac{1}{2}|\alpha|^2}L_m^{(n-m)}(|\alpha|^2)
 $$
 
-for $m < n$. Note that these matrix elements are not computed until the abstract syntax tree representation is converted to a QuTiP-compatible object by the _QutipConversion_ rewrite rule; this rule calls the _displace_ helper function location _utilities.py_. _displace_ itself calls _D\textunderscore mn_ also located in _utilities.py_.
+!!! Note
+    the matrix elements are not computed until the abstract syntax tree representation is converted to a QuTiP-compatible object by the [QutipConversion][trical.backend.qutip.QutipConversion] rewrite rule.
+    
+    [QutipConversion][trical.backend.qutip.QutipConversion] calls the uses [displace][trical.light_matter.utilities.displace] and [D_mn][trical.light_matter.utilities.D_mn].
 
-It's at this point that the Lamb-Dicke approximation, and the order we've determined we must expand to, take effect: if $|m-n| > $ Lamb-Dicke order, set the matrix element to 0.
+It's at this point that the Lamb-Dicke approximation, and the order we've determined we must expand to, take effect: if $|m-n| >$ Lamb-Dicke order, set the matrix element to 0.
 
-Until then, information needed to compute both the Lamb-Dicke and rotating-wave approximations is stored in a _ApproxDisplacementMatrix_ object.
+Until then, information needed to compute both the Lamb-Dicke and rotating-wave approximations is stored in a [ApproxDisplacementMatrix][trical.light_matter.interface.operator.ApproxDisplacementMatrix].
