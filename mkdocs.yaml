@@ -23,7 +23,10 @@ nav:
       - Overview: explanation/overview.md
       - Hamiltonian Construction: explanation/hamiltonian_construction.md
       - Classes: explanation/classes.md
-      - Approximations: explanation/approximations.md
+      - Approximations:
+          - Adiabatic Elimination: explanation/approximations/adiabatic_elimination.md
+          - Lamb-Dicke Approximation: explanation/approximations/lamb_dicke.md
+          - Rotating Wave Approximation: explanation/approximations/rotating_wave.md
       - Examples: explanation/examples.md
   - API Reference:
       - Reference:
