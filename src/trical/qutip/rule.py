@@ -6,7 +6,7 @@ from midstack.compiler import *
 
 ########################################################################################
 
-from trical.light_matter.utilities import displace
+from ..light_matter.utilities import displace
 
 ########################################################################################
 

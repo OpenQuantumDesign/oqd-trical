@@ -1,3 +1,5 @@
+from typing import Dict, Tuple
+
 import itertools
 
 import numpy as np
@@ -103,8 +105,8 @@ class GetRabiFrequenciesDetunings(RewriteRule):
     """Rewrite rule class for traversing the Hamiltonian tree and extracting the Rabi frequencies and detunings
 
     Attributes:
-        self.rabis (Dict): Dictionary mapping (ion_indx, laser_indx, i, j) -> rabi; acquired from GetRabiFrequencyDetunings's traversal
-        self.detunings (Dict): Dictionary mapping (ion_indx, laser_indx, i, j) -> detuning; acquired from GetRabiFrequencyDetunings's traversal
+        rabis (Dict[Tuple[int,int,int,int],float]): Dictionary mapping (ion_indx, laser_indx, i, j) -> rabi; acquired from GetRabiFrequencyDetunings's traversal
+        detunings (Dict[Tuple[int,int,int,int],float]): Dictionary mapping (ion_indx, laser_indx, i, j) -> detuning; acquired from GetRabiFrequencyDetunings's traversal
     """
 
     def __init__(self):
@@ -141,12 +143,13 @@ class GetRabiFrequenciesDetunings(RewriteRule):
         return model
 
 
+# TODO: Implement Elimination approximations
 class Elimination(RewriteRule):
     """Rewrite rule for eliminating Hamiltonian tree terms according to the two-photon, adiabatic elimination approximation
 
     Args:
-        rabi_freqs (Dict): Dictionary mapping (ion_indx, laser_indx, i, j) -> rabi; acquired from GetRabiFrequencyDetunings's traversal
-        detunings (Dict): Dictionary mapping (ion_indx, laser_indx, i, j) -> detuning; acquired from GetRabiFrequencyDetunings's traversal
+        rabi_freqs (Dict[Tuple[int,int,int,int],float]): Dictionary mapping (ion_indx, laser_indx, i, j) -> rabi; acquired from GetRabiFrequencyDetunings's traversal
+        detunings (Dict[Tuple[int,int,int,int],float]): Dictionary mapping (ion_indx, laser_indx, i, j) -> detuning; acquired from GetRabiFrequencyDetunings's traversal
         threshold (float): Adiabatic threshold for ratio of Rabi_eff/ Delta detuning. Default: 1e-2
 
     Attributes:
@@ -258,7 +261,7 @@ class Elimination(RewriteRule):
 
         Returns:
             model (OperatorMul): if |iXj| coupling is NOT to be eliminated in ion with index ion_indx
-            Zero() (Zero): if |iXj| coupling SHOULD be eliminated in ion with index ion_indx
+            (Zero): if |iXj| coupling SHOULD be eliminated in ion with index ion_indx
         """
 
         op1 = model.op1
@@ -305,7 +308,7 @@ class SimplifyZero(RewriteRule):
 
         Returns:
             op1, op2: if ONE of these is a Zero object
-            Zero() (Zero): if BOTH op1, op2 are Zero objects
+            (Zero): if BOTH op1, op2 are Zero objects
             model (OperatorAdd): if NEITHER op1, op2 are Zero objects
         """
 

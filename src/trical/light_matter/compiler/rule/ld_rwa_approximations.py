@@ -1,3 +1,5 @@
+from typing import Union
+
 import numpy as np
 
 from midstack.compiler import Post, RewriteRule
@@ -50,14 +52,14 @@ def approximate(tree, n_cutoff, timescale, ld_cond_th=1e-2, rwa_cutoff="inf"):
     """Master function for performing both the Lamb-Dicke and rotating wave approximations (RWA)
 
     Args:
-        tree (OperatorAdd): Hamiltonian tree whose terms are joined via OperatorAdd's
+        tree (Operator): Hamiltonian tree whose terms are joined via OperatorAdd's
         n_cutoff (int): max phonon number for a given mode
         timescale (float): time unit (e.g. 1e-6 for microseconds)
         ld_cond_th (float): threshold on Lamb-Dicke approximation conditions
-        rwa_cutoff (float or str): all terms rotating faster than rwa_cutoff are set to 0. Acceptable str is 'inf'
+        rwa_cutoff (Union[float,str]): all terms rotating faster than rwa_cutoff are set to 0. Acceptable str is 'inf'
 
     Returns:
-        approx_tree (OperatorAdd):  Hamiltonian tree post LD and RWA approximations
+        approx_tree (Operator):  Hamiltonian tree post LD and RWA approximations
 
     """
     reorder = Post(ReorderScalarMul())
@@ -84,7 +86,7 @@ class approx_ekron(RewriteRule):
     Args:
         Delta (float): detuning present in the prefactor of the nested tensor product term
         n_cutoff (int): max phonon number for a given mode
-        rwa_cutoff (float or str): all terms rotating faster than rwa_cutoff are set to 0. Acceptable str is 'inf'
+        rwa_cutoff (Union[float,str]): all terms rotating faster than rwa_cutoff are set to 0. Acceptable str is 'inf'
         ld_cond_th (float): threshold on Lamb-Dicke approximation conditions
     """
 
@@ -138,7 +140,7 @@ class RWA_and_LD_Approximations(RewriteRule):
 
     Args:
         n_cutoff (int): max phonon number for a given mode
-        rwa_cutoff (float or str): all terms rotating faster than rwa_cutoff are set to 0. Acceptable str is 'inf'
+        rwa_cutoff (Union[float,str]): all terms rotating faster than rwa_cutoff are set to 0. Acceptable str is 'inf'
         timescale (float): time unit (e.g. 1e-6 for microseconds)
         ld_cond_th (float): threshold on Lamb-Dicke approximation conditions
     """

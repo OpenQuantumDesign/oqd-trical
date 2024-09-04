@@ -1,3 +1,5 @@
+from typing import Dict
+
 from midstack.compiler import Post
 
 ########################################################################################
@@ -16,13 +18,13 @@ class Hamiltonian:
     """Class representing the Hamiltonian
 
     Args:
-        tree (OperatorAdd): Hamiltonian tree whose terms are joined via OperatorAdd's
+        tree (Operator): Hamiltonian tree whose terms are joined via OperatorAdd's
         args (Dict): Dictionary of the form {'timescale': timescale, 'chamber': chamber}
         N (int): number of ions in the system
         M (int): number of lasers in the system
         L (int): number of motional modes under consideration
-        ion_N_levels (Dict): Dictionary mapping ion indices to number of levels in its Hilbert space
-        mode_cutoffs (Dict): Dictionary mapping mode indices to the phonon cutoff
+        ion_N_levels (Dict[str,Level]): Dictionary mapping ion indices to number of levels in its Hilbert space
+        mode_cutoffs (Dict[str,int]): Dictionary mapping mode indices to the phonon cutoff
     """
 
     def __init__(self, tree, args, N, M, L, ion_N_levels, mode_cutoffs):
