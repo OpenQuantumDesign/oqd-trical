@@ -1,4 +1,3 @@
-
 site_name: TriCal
 site_description: Trapped-ion Calculator
 
@@ -17,53 +16,61 @@ extra:
 
 nav:
   - Introduction:
-    - Welcome to TrICal: index.md
+      - Welcome to TrICal: index.md
+      - Installation: get-started/installation.md
+  - Examples: examples/tutorial.md
+  - Explanation:
+      - Overview: explanation/overview.md
+      - Hamiltonian Construction: explanation/hamiltonian_construction.md
+      - Classes: explanation/classes.md
+      - Approximations: explanation/approximations.md
+      - Examples: explanation/examples.md
   - API Reference:
-    - Reference:
-      - Mechanical:
-        - Base: reference/base.md
-        - Potential: reference/potential.md
-        - Trapped Ions: reference/trappedions.md
-        - Spin Lattice: reference/spinlattice.md
-      - Light Matter Interactions:
-        - Interface: reference/interface.md
-        - Compiler: reference/compiler.md
-      - Backend: reference/backend.md
-      - Miscellaneous: reference/misc.md
+      - Reference:
+          - Mechanical:
+              - Base: reference/base.md
+              - Potential: reference/potential.md
+              - Trapped Ions: reference/trappedions.md
+              - Spin Lattice: reference/spinlattice.md
+          - Light Matter Interactions:
+              - Interface: reference/interface.md
+              - Compiler: reference/compiler.md
+          - Backend: reference/backend.md
+          - Miscellaneous: reference/misc.md
 
 theme:
   name: material
 
   palette:
-  - media: '(prefers-color-scheme: light)'
-    scheme: default
-    primary: teal
-    accent: pink
-    toggle:
-      icon: material/lightbulb
-      name: Switch to dark mode
-  - media: '(prefers-color-scheme: dark)'
-    scheme: slate
-    primary: teal
-    accent: pink
-    toggle:
-      icon: material/lightbulb-outline
-      name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: pink
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: pink
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
 
   features:
-  - search.suggest
-  - search.highlight
-  - content.tabs.link
-  - content.tooltips
-  - content.code.annotate
-  - content.code.copy
-  - content.code.select
-  - navigation.tabs
-  - navigation.tabs.sticky
-  - navigation.sections
-  - navigation.top
-  - navigation.prune
-  - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.tooltips
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.prune
+    - toc.follow
 
 plugins:
   - mkdocstrings:
@@ -88,9 +95,7 @@ plugins:
             - https://numpy.org/doc/stable/objects.inv
             - https://matplotlib.org/stable/objects.inv
 
-
 markdown_extensions:
-
   - toc:
       permalink: true
       toc_depth: 10
