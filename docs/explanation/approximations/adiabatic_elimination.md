@@ -4,18 +4,17 @@ The adiabatic elimination step serves to ignore negligible physics that may resu
 
 A simple example of this in action is a three level system $|0\rangle, |1\rangle, |2\rangle$ in an ion being addressed by a single laser, resonant on the $|0\rangle \leftrightarrow |1\rangle$ transition. The full Hamiltonian predicts coupling between all pairs of levels (assuming their transitions are all allowed, hence _single-photon_).
 
-![](../../figures/single_photon.png)
+![](../../figures/single_photon.png){: style="width:360px"}
 
-It also predicts that $\Delta*{0002}$ and $\Delta_{0012}$ will be large since the laser is far-detuned from these transitions (refer to Section 2.1 for subscript meanings). Because the probability $P$ of exciting the transition goes as $\frac{\Omega^2}{\Delta^2}$ for large $\Delta$, we expect transitions into level 2 to be extremely unlikely.
+It also predicts that $\Delta_{0002}$ and $\Delta_{0012}$ will be large since the laser is far-detuned from these transitions (refer to Section 2.1 for subscript meanings). Because the probability $P$ of exciting the transition goes as $\frac{\Omega^2}{\Delta^2}$ for large $\Delta$, we expect transitions into level 2 to be extremely unlikely.
 
 As such, a RewriteRule named [PureElimination][trical.light_matter.compiler.rule.adiabatic_elimination.PureElimination] is tasked with traversing the Hamiltonian tree, and if $\Omega_{00ij}^2 / \Delta_{00ij}^2 \ll$ than the user-defined threshold, it will remove all terms coupling levels $i$ and $j$ ($|i\rangle\langle j|$). This has the same effect as simply removing $|2\rangle$ from the Hilbert space entirely as far as levels 0 and 1 are concerned.
-ｚ
 
 ## Raman Transitions (IN PROGRESS)
 
 Raman transitions make use of a third level to drive transitions that cannot be driven directly. We'll consider a three level $\Lambda$ system, irradiated by two lasers, where we'd like to drive population between $|0\rangle$ and $|1\rangle$, and we'll use virtual absorption and emission of photons from $|0\rangle$ to do so:
 
-![](../../figures/raman_transition.png)
+![](../../figures/raman_transition.png){: style="width:360px"}
 
 These transitions can be difficult to simulate because they rely on a large $\Delta$ that is usually many orders of magnitude larger than the relevant simulation timescales, specifically the effective Rabi frequency between $|0\rangle$ and $|1\rangle$. This discrepancy in timescale makes QuTiP's integrator have to take small time steps to try and resolve quickly-evolving dynamics introduced by $\Delta$, resulting in very slow simulation times or calls to the integrator being aborted.
 

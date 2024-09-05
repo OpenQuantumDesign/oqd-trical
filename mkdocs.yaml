@@ -20,8 +20,6 @@ nav:
       - Installation: get-started/installation.md
   - Examples: examples/examples.md
   - Explanation:
-      - Overview: explanation/overview.md
-      - Structures: explanation/structures.md
       - Hamiltonian Construction:
           - Derivation: explanation/hamiltonian_construction/derivation.md
           - Matrix Elements: explanation/hamiltonian_construction/matrix_elements.md
@@ -31,6 +29,7 @@ nav:
           - Adiabatic Elimination: explanation/approximations/adiabatic_elimination.md
           - Lamb-Dicke Approximation: explanation/approximations/lamb_dicke.md
           - Rotating Wave Approximation: explanation/approximations/rotating_wave.md
+      - Structures: explanation/structures.md
       - Outlook: explanation/outlook.md
       - Reference: explanation/reference.md
   - API Reference:
@@ -104,6 +103,7 @@ plugins:
             - https://matplotlib.org/stable/objects.inv
 
 markdown_extensions:
+  - attr_list
   - toc:
       permalink: true
       toc_depth: 10

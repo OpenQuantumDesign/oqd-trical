@@ -75,11 +75,14 @@ $$
     D_{mn} = \sqrt{\frac{m!}{n!}}(-\alpha^*)^{n-m}e^{-\frac{1}{2}|\alpha|^2}L_m^{(n-m)}(|\alpha|^2)
 $$
 
-!!! Note
+<!-- prettier-ignore -->
+/// admonition | Note
+    type: note
+the matrix elements are not computed until the abstract syntax tree representation is converted to a QuTiP-compatible object by the [QutipConversion][trical.backend.qutip.QutipConversion] rewrite rule.
 
-    the matrix elements are not computed until the abstract syntax tree representation is converted to a QuTiP-compatible object by the [QutipConversion][trical.backend.qutip.QutipConversion] rewrite rule.
+[QutipConversion][trical.backend.qutip.QutipConversion] calls the uses [displace][trical.light_matter.utilities.displace] and [D_mn][trical.light_matter.utilities.D_mn].
 
-    [QutipConversion][trical.backend.qutip.QutipConversion] calls the uses [displace][trical.light_matter.utilities.displace] and [D_mn][trical.light_matter.utilities.D_mn].
+///
 
 It's at this point that the Lamb-Dicke approximation, and the order we've determined we must expand to, take effect: if $|m-n| >$ Lamb-Dicke order, set the matrix element to 0.
 
