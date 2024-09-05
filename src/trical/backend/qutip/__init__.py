@@ -1,2 +1,2 @@
-from .Results import *
-from .rule import *
+from .results import Results
+from .rule import QutipConversion

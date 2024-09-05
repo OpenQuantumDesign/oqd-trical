@@ -192,13 +192,13 @@ def construct_H(
                         H += inner_ion_H + inner_ion_H.dag()
         if sym_rep:
             if boost_freq:
-                print(r"$H = U^{\dag}\biggl\{" + H_sym + r"H.C..\biggr\}U$")
+                print(r"$H = U^{\dag}\biggl\{" + H_sym + r"H.C.\biggr\}U$")
                 print(
                     "\nWhere $U = e^{-iH_0 t /\hbar},"
                     + r"H_0 = \frac{\hbar\Delta}{2}\sigma_z$"
                 )
             else:
-                print("$H = " + H_sym + "H.C..$")
+                print("$H = " + H_sym + "H.C.$")
         return H
 
     return QobjEvo(time_dep_H)

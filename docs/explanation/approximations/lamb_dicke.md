@@ -31,11 +31,10 @@ $$
 We can play a very similiar game with the second order condition where we consider the different ways to increase the number of phonons by 2 of a Fock state:
 
 $$
-    \eta^2 aa|n\rangle = \eta^2 \sqrt{n(n-1)}|n-2\rangle\nonumber
-$$
-
-$$
-    \eta^2 a^{\dagger} a^{\dagger} |n\rangle = \eta^2 \sqrt{(n+2)(n+1)}|n+2\rangle\nonumber
+    \begin{align}
+    \eta^2 aa|n\rangle &= \eta^2 \sqrt{n(n-1)}|n-2\rangle \\
+    \eta^2 a^{\dagger} a^{\dagger} |n\rangle &= \eta^2 \sqrt{(n+2)(n+1)}|n+2\rangle
+    \end{align}
 $$
 
 So if
@@ -65,18 +64,21 @@ Importantly, TrICal does not compute Equations 38, 40, and 41 (convert into a ma
 Instead, the order to which we must expand is used to discard $D(\alpha)$ matrix elements, computed using Laguerre polynomials. According to Glauber and Cahill, the matrix elements of $D(\alpha)$ in the Fock basis, $D_{mn} \equiv \langle m|D(\alpha)|n\rangle$, can be written as
 
 For $m \geq n$:
+
 $$
      D_{mn} = \sqrt{\frac{n!}{m!}}\alpha^{m-n}e^{-\frac{1}{2}|\alpha|^2}L_n^{(m-n)}(|\alpha|^2)
 $$
 
 For $m < n$:
+
 $$
     D_{mn} = \sqrt{\frac{m!}{n!}}(-\alpha^*)^{n-m}e^{-\frac{1}{2}|\alpha|^2}L_m^{(n-m)}(|\alpha|^2)
 $$
 
 !!! Note
+
     the matrix elements are not computed until the abstract syntax tree representation is converted to a QuTiP-compatible object by the [QutipConversion][trical.backend.qutip.QutipConversion] rewrite rule.
-    
+
     [QutipConversion][trical.backend.qutip.QutipConversion] calls the uses [displace][trical.light_matter.utilities.displace] and [D_mn][trical.light_matter.utilities.D_mn].
 
 It's at this point that the Lamb-Dicke approximation, and the order we've determined we must expand to, take effect: if $|m-n| >$ Lamb-Dicke order, set the matrix element to 0.

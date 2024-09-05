@@ -18,28 +18,33 @@ nav:
   - Introduction:
       - Welcome to TrICal: index.md
       - Installation: get-started/installation.md
-  - Examples: examples/tutorial.md
+  - Examples: examples/examples.md
   - Explanation:
-      - Structures: explanation/structures.md
       - Overview: explanation/overview.md
-      - Hamiltonian Construction: explanation/hamiltonian_construction.md
+      - Structures: explanation/structures.md
+      - Hamiltonian Construction:
+          - Derivation: explanation/hamiltonian_construction/derivation.md
+          - Matrix Elements: explanation/hamiltonian_construction/matrix_elements.md
+          - Zeeman Shifts: explanation/hamiltonian_construction/zeeman.md
+          - Additional Formulae: explanation/hamiltonian_construction/additional.md
       - Approximations:
           - Adiabatic Elimination: explanation/approximations/adiabatic_elimination.md
           - Lamb-Dicke Approximation: explanation/approximations/lamb_dicke.md
           - Rotating Wave Approximation: explanation/approximations/rotating_wave.md
-      - Examples: explanation/examples.md
+      - Outlook: explanation/outlook.md
+      - Reference: explanation/reference.md
   - API Reference:
-      - Reference:
-          - Mechanical:
-              - Base: reference/base.md
-              - Potential: reference/potential.md
-              - Trapped Ions: reference/trappedions.md
-              - Spin Lattice: reference/spinlattice.md
-          - Light Matter Interactions:
-              - Interface: reference/interface.md
-              - Compiler: reference/compiler.md
-          - Backend: reference/backend.md
-          - Miscellaneous: reference/misc.md
+      - Mechanical:
+          - Base: reference/base.md
+          - Potential: reference/potential.md
+          - Trapped Ions: reference/trappedions.md
+          - Spin Lattice: reference/spinlattice.md
+      - Light Matter Interactions:
+          - Interface: reference/interface.md
+          - Compiler: reference/compiler.md
+      - Backend:
+          - QuTiP: reference/qutip.md
+      - Miscellaneous: reference/misc.md
 
 theme:
   name: material
@@ -110,14 +115,11 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
 
-  - pymdownx.tabbed:
-      alternate_style: true
-
   # for notes/admonitions
-  - admonition
-  - pymdownx.details
   - pymdownx.blocks.admonition
   - pymdownx.blocks.details
+  - pymdownx.blocks.tab:
+      alternate_style: true
 
   - pymdownx.superfences:
       custom_fences:
@@ -132,3 +134,7 @@ extra_javascript:
   - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - stylesheets/headers.css
+  - stylesheets/admonitions.css
