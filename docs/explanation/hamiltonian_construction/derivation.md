@@ -4,7 +4,7 @@
 /// admonition | Goal
     type: goal
 
-Derive the General hamiltonian of the trapped-ion system for:
+Compute the general hamiltonian of the trapped-ion system for:
 
 - $N$ ions
   - $J$ considered electronic states each
