@@ -1,4 +1,3 @@
-
 site_name: TriCal
 site_description: Trapped-ion Calculator
 
@@ -17,50 +16,68 @@ extra:
 
 nav:
   - Introduction:
-    - Welcome to TrICal: index.md
+      - Welcome to TrICal: index.md
+      - Installation: get-started/installation.md
+  - Examples: examples/examples.md
+  - Explanation:
+      - Hamiltonian Construction:
+          - Derivation: explanation/hamiltonian_construction/derivation.md
+          - Matrix Elements: explanation/hamiltonian_construction/matrix_elements.md
+          - Zeeman Shifts: explanation/hamiltonian_construction/zeeman.md
+          - Additional Formulae: explanation/hamiltonian_construction/additional.md
+      - Approximations:
+          - Adiabatic Elimination: explanation/approximations/adiabatic_elimination.md
+          - Lamb-Dicke Approximation: explanation/approximations/lamb_dicke.md
+          - Rotating Wave Approximation: explanation/approximations/rotating_wave.md
+      - Structures: explanation/structures.md
+      - Outlook: explanation/outlook.md
+      - Reference: explanation/reference.md
   - API Reference:
-    - Reference:
       - Mechanical:
-        - Base: reference/base.md
-        - Potential: reference/potential.md
-        - Trapped Ions: reference/trappedions.md
-        - Spin Lattice: reference/spinlattice.md
-      - Light Matter Interactions: reference/light_matter.md
+          - Base: reference/base.md
+          - Potential: reference/potential.md
+          - Trapped Ions: reference/trappedions.md
+          - Spin Lattice: reference/spinlattice.md
+      - Light Matter Interactions:
+          - Interface: reference/interface.md
+          - Compiler: reference/compiler.md
+      - Backend:
+          - QuTiP: reference/qutip.md
       - Miscellaneous: reference/misc.md
 
 theme:
   name: material
 
   palette:
-  - media: '(prefers-color-scheme: light)'
-    scheme: default
-    primary: teal
-    accent: pink
-    toggle:
-      icon: material/lightbulb
-      name: Switch to dark mode
-  - media: '(prefers-color-scheme: dark)'
-    scheme: slate
-    primary: teal
-    accent: pink
-    toggle:
-      icon: material/lightbulb-outline
-      name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: pink
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: pink
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
 
   features:
-  - search.suggest
-  - search.highlight
-  - content.tabs.link
-  - content.tooltips
-  - content.code.annotate
-  - content.code.copy
-  - content.code.select
-  - navigation.tabs
-  - navigation.tabs.sticky
-  - navigation.sections
-  - navigation.top
-  - navigation.prune
-  - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.tooltips
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.prune
+    - toc.follow
 
 plugins:
   - mkdocstrings:
@@ -78,19 +95,18 @@ plugins:
             show_signature_annotations: true
             signature_crossrefs: true
             separate_signature: false
-            group_by_category: false
+            group_by_category: true
             members_order: "source"
           import:
             - https://docs.python.org/3/objects.inv
             - https://numpy.org/doc/stable/objects.inv
             - https://matplotlib.org/stable/objects.inv
 
-
 markdown_extensions:
-
+  - attr_list
   - toc:
       permalink: true
-      toc_depth: 4
+      toc_depth: 10
 
   - pymdownx.highlight:
       anchor_linenums: true
@@ -99,11 +115,11 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
 
-  - pymdownx.tabbed:
-      alternate_style: true
-
+  # for notes/admonitions
   - pymdownx.blocks.admonition
   - pymdownx.blocks.details
+  - pymdownx.blocks.tab:
+      alternate_style: true
 
   - pymdownx.superfences:
       custom_fences:
@@ -118,3 +134,7 @@ extra_javascript:
   - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - stylesheets/headers.css
+  - stylesheets/admonitions.css

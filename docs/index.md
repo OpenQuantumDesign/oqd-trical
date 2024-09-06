@@ -1,27 +1,22 @@
-# TrICal
-TrICal (Trapped-ion Calculator) is a python package for simulating systems of trapped ions.
+TrICal (Trapped-Ion Calculator) is a python package for simulating trapped-ion physics.
 
+Given a description of a trapped-ion experiment with:
 
+- $N$ ions in a chain, each with $D$ specified levels
+- $M$ lasers
+- $L$ motional modes
 
-## Installation
-Clone the repository using the following command:
-```sh
-git clone https://github.com/OpenQuantumDesign/TrICal.git
-```
-Install with pip:
-```sh
-cd TrICal
-pip install .
-```
+<!-- prettier-ignore -->
+/// admonition | Goal
+    type: goal
 
+1. TrICal constructs the system Hamiltonian.
+2. Applies approximations to the system Hamiltonian.
+3. Connects with a quantum simulation backend (e.g. QuTiP) to perform simulations.
 
-## Tutorial
-Run the following commands for the tutorial::
-```sh
-cd TrICal/tutorial
-jupyter notebook tutorial.ipynb
-```
+![](../figures/pipeline.png)
+///
 
-## Documentation Supplement
-For more information about the formulas being used and Hamiltonian derivation, and what's left to be done, please visit [this](https://www.overleaf.com/9387977917rzdzjnrkptpq#c41bbb) Overleaf doc.
+TrICal is developed under [Open Quantum Design (OQD)](https://openquantumdesign.org/) as a component of the OQD open-source full stack quantum computer with trapped-ions.
 
+![](../figures/stack_diagram.png)
