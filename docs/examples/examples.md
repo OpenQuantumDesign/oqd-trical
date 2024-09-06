@@ -1,10 +1,10 @@
-The Hamiltonian in Equation 28, describing an N-ion (with $J_n$-levels), N-laser, L-motional mode system, is the one used to construct all Hamiltonians in TrICal.
+The [general Hamiltonian](/explanation/hamiltonian_construction/derivation#eqn:general_hamiltonian), describing an $N$ ions (with $J_n$ levels), $N$ lasers, $L$ phonon modes system, is the one used to construct all Hamiltonians in TrICal.
 
 Though it can be cumbersome to work out problems by hand for even a few ions and lasers, we know what the dynamics of simple, special cases should look like. The following are examples we work through analytically, whose results we compare with TrICal's results.
 
 ## Rabi Oscillations
 
-We'll continue with the above system, but this time we'll keep $D(\alpha)$: coupling only to the axial mode and to first order in the Lamb-Dicke approximation (Equation 38). Equation 18 becomes
+We'll continue with the above system, but this time we'll keep $D(\alpha)$: coupling only to the axial mode and to [first order in the Lamb-Dicke approximation](/explanation/approximations/lamb_dicke#eqn:first_order_lamb_dicke). The [single-ion Hamiltonian](/explanation/hamiltonian_construction/derivation#eqn:single_ion_hamiltonian) becomes:
 
 $$
     \begin{align}
@@ -21,7 +21,7 @@ $$
 The red sideband resonance is when $\Delta = -\nu$, in which case the above equation simplifies to:
 
 $$
-    \tilde{H}_I = \frac{\hbar\Omega}{2}\left[e^{i(\nu t + \phi)} + i\eta\left(e^{2i\nu t}a^{\dagger} + a\right)e^{i\phi}\right]\sigma_+ + H.C..
+    \tilde{H}_I = \frac{\hbar\Omega}{2}\left[e^{i(\nu t + \phi)} + i\eta\left(e^{2i\nu t}a^{\dagger} + a\right)e^{i\phi}\right]\sigma_+ + H.C.
 $$
 
 Neglecting the terms oscillating at the motional mode frequency $\nu$ (or faster), we arrive at
