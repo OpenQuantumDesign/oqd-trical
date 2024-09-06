@@ -142,7 +142,7 @@ $$
     \end{align}
 $$
 
-### Additional Modes
+### Additional Phonon Modes
 
 We assumed motion in only one dimension, but we can easily generalize to $L$ mode coupling
 
