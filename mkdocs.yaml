@@ -13,6 +13,9 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/OpenQuantumDesign
       name: Open Quantum Design GitHub
+    - icon: fontawesome/solid/globe
+      link: https://openquantumdesign.org
+      name: Open Quantum Design Website
 
 nav:
   - Introduction:
