@@ -4,7 +4,7 @@
 /// admonition | Goal
     type: goal
 
-Compute the general hamiltonian of the trapped-ion system for:
+Derive the [general Hamiltonian](#eqn:general_hamiltonian) of the trapped-ion system for:
 
 - $N$ ions
   - $J$ considered electronic states each
@@ -196,7 +196,7 @@ Performing the same steps as before, we obtain:
     type: important
 
 $$
-    H'_I = \sum_m^M \frac{\hbar\Omega_m}{2}\left[e^{-i(\Delta_m t - \phi_m)}\sigma_+ \prod_l^L D(\alpha_{ml}) \right] + H.C.
+    H''_I = \sum_m^M \frac{\hbar\Omega_m}{2}\left[e^{-i(\Delta_m t - \phi_m)}\sigma_+ \prod_l^L D(\alpha_{ml}) \right] + H.C.
 $$
 
 ///
@@ -225,7 +225,7 @@ Performing the same steps as before, we obtain:
     type: important
 
 $$
-    H'_I = \sum_n^N \sum_{m}^N \frac{\hbar\Omega_{nm}}{2}\left[e^{-i(\Delta_{nm} t - \phi_m)}\sigma_+^{(n)} \prod_l^L D(\alpha_{nml}) \right] + H.C.
+    H''_I = \sum_n^N \sum_{m}^N \frac{\hbar\Omega_{nm}}{2}\left[e^{-i(\Delta_{nm} t - \phi_m)}\sigma_+^{(n)} \prod_l^L D(\alpha_{nml}) \right] + H.C.
 $$
 
 ///
@@ -266,7 +266,7 @@ Performing the same steps as before, we obtain:
     type: important
 
 $$
-H'_I = \sum_n^N \sum_{m}^N \sum_{j_n \neq k_n}^{J_n} \frac{\hbar\Omega_{nmjk}}{2}\left[e^{-i(\Delta_{nmjk} t - \phi_m)}\sigma_+^{(njk)} \prod_l^L D(\alpha_{nml}) \right] + H.C.
+H''_I = \sum_n^N \sum_{m}^N \sum_{j_n \neq k_n}^{J_n} \frac{\hbar\Omega_{nmjk}}{2}\left[e^{-i(\Delta_{nmjk} t - \phi_m)}\sigma_+^{(njk)} \prod_l^L D(\alpha_{nml}) \right] + H.C.
 $$
 
 ///
