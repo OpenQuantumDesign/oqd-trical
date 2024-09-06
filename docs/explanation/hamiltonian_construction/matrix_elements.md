@@ -8,9 +8,9 @@ Compute the multipole matrix elements with [compute_matrix_element][trical.light
 
 ///
 
-Multipole matrix elements determine the coupling between transitions. The Rabi frequencies is defined as $\Omega = \frac{eE_0}{\hbar} \langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle$. In this section we'll describe how these $\langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle$ elements are computed. Currently, TrICal supports matrix element computation for both E1 and E2 transitions.
+Multipole matrix elements determine the coupling between transitions. The Rabi frequencies is defined as $\Omega = \frac{eE_0}{\hbar} \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle$. In this section we'll describe how these $\langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle$ elements are computed. Currently, TrICal supports matrix element computation for both E1 and E2 transitions.
 
-Let's consider a transition from level 1 to 2 in an ion with nuclear spin $I$ and associated quantum numbers: $M_i, J_i, F_i$; these are the magnetization (a.k.a. $m_F$), spin-orbital, and total angular momentum quantum numbers. Also, let $q = M_2 - M_1$, the change in magnetization quantum number in the transiton.
+Let's consider a transition from level 0 to 1 in an ion with nuclear spin $I$ and associated quantum numbers: $M_i, J_i, F_i$; these are the magnetization (a.k.a. $m_F$), spin-orbital, and total angular momentum quantum numbers. Also, let $q = M_2 - M_1$, the change in magnetization quantum number in the transiton.
 
 /// tab | Dipole Transitions
 
@@ -23,14 +23,14 @@ For dipole transitions, $q$ can be $0, \pm 1$, each of which corresponds to a re
 As a result, the matrix element will depend on the overlap between the laser's polarization $\hat{\epsilon}$ and the required $\hat{q}$.
 
 $$
-    \langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{2\pi\epsilon_0\hbar c^3}{\omega_0 A_{21}}} \sqrt{(2F_2 + 1)(2F_1 + 1)}
+    \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{2\pi\epsilon_0\hbar c^3}{\omega_0 A_{10}}} \sqrt{(2F_1 + 1)(2F_0 + 1)}
     \begin{Bmatrix}
-        J_1 & J_2 & 1\\
-        F_2 & F_1 & I
+        J_0 & J_1 & 1\\
+        F_1 & F_0 & I
     \end{Bmatrix} \nonumber \\
-    \sqrt{2J_2+1} \hat{q}\cdot\hat{\epsilon}\begin{pmatrix}
-        F_2 & 1 & F_1\\
-        M_2 & -q & -M_1
+    \sqrt{2J_1+1} \hat{q}\cdot\hat{\epsilon}\begin{pmatrix}
+        F_1 & 1 & F_0\\
+        M_1 & -q & -M_0
     \end{pmatrix}
 $$
 
@@ -53,13 +53,13 @@ For quadrupole transitions, the laser's unit wave-vector $\hat{k}$ becomes relev
 This logic is handled in TrICal under the same helper function under the _polarization_map_ dictionary.
 
 $$
-    \langle 2|\vec{r}_e \cdot \hat{\epsilon}|1 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{15\pi\epsilon_0\hbar c^3}{\omega_0 A_{21}}} \sqrt{(2F_2 + 1)(2F_1 + 1)}
+    \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{15\pi\epsilon_0\hbar c^3}{\omega_0 A_{10}}} \sqrt{(2F_1 + 1)(2F_0 + 1)}
     \begin{Bmatrix}
-        J_1 & J_2 & 2\\
-        F_2 & F_1 & I
-    \end{Bmatrix} \nonumber \\  \sqrt{2J_2+1} \hat{k}\cdot\hat{Q}\hat{\epsilon}\begin{pmatrix}
-        F_2 & 2 & F_1\\
-        M_2 & -q & -M_1
+        J_0 & J_1 & 2\\
+        F_1 & F_0 & I
+    \end{Bmatrix} \nonumber \\  \sqrt{2J_1+1} \hat{k}\cdot\hat{Q}\hat{\epsilon}\begin{pmatrix}
+        F_1 & 2 & F_0\\
+        M_1 & -q & -M_0
     \end{pmatrix}
 $$
 
