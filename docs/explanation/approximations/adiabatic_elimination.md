@@ -10,7 +10,12 @@ It also predicts that $\Delta_{0002}$ and $\Delta_{0012}$ will be large since th
 
 As such, a RewriteRule named [PureElimination][trical.light_matter.compiler.rule.adiabatic_elimination.PureElimination] is tasked with traversing the Hamiltonian tree, and if $\Omega_{00ij}^2 / \Delta_{00ij}^2 \ll$ than the user-defined threshold, it will remove all terms coupling levels $i$ and $j$ ($|i\rangle\langle j|$). This has the same effect as simply removing $|2\rangle$ from the Hilbert space entirely as far as levels 0 and 1 are concerned.
 
-## Raman Transitions (IN PROGRESS)
+## Raman Transitions
+
+<!-- prettier-ignore -->
+/// admonition | In Progress
+    type: warning
+///
 
 Raman transitions make use of a third level to drive transitions that cannot be driven directly. We'll consider a three level $\Lambda$ system, irradiated by two lasers, where we'd like to drive population between $|0\rangle$ and $|1\rangle$, and we'll use virtual absorption and emission of photons from $|0\rangle$ to do so:
 
