@@ -7,7 +7,7 @@
 Derive the [general Hamiltonian](#eqn:general_hamiltonian) of the trapped-ion system for:
 
 - $N$ ions
-  - $J$ considered electronic states each
+  - $J$ specified levels each
 - $M$ lasers
 - $L$ phonon modes
 

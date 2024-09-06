@@ -2,7 +2,8 @@ TrICal (Trapped-Ion Calculator) is a python package for simulating trapped-ion p
 
 Given a description of a trapped-ion experiment with:
 
-- $N$ ions in a chain, each with $D$ specified levels
+- $N$ ions in a chain
+  - $J$ specified levels each
 - $M$ lasers
 - $L$ motional modes
 
