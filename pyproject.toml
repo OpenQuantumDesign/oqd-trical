@@ -14,7 +14,7 @@ dependencies = [
     "scipy",
     "sympy",
     "qutip",
-    "midstack",
+    "oqd_compiler_infrastructure",
 ]
 
 [project.optional-dependencies]

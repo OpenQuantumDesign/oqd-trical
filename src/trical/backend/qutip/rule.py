@@ -2,7 +2,7 @@ from cmath import exp
 
 from qutip import qeye, basis, tensor, destroy, QobjEvo
 
-from midstack.compiler import *
+from oqd_compiler_infrastructure import RewriteRule
 
 ########################################################################################
 

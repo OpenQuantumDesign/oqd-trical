@@ -2,7 +2,7 @@ from typing import Union
 
 import numpy as np
 
-from midstack.compiler import Post, RewriteRule
+from oqd_compiler_infrastructure import Post, RewriteRule
 
 ########################################################################################
 

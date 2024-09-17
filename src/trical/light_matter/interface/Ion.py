@@ -9,7 +9,7 @@ from pydantic import (
 
 from qutip import basis
 
-from midstack.interface.base import TypeReflectBaseModel
+from oqd_compiler_infrastructure import TypeReflectBaseModel
 
 ########################################################################################
 

@@ -1,4 +1,4 @@
-from midstack.interface.base import TypeReflectBaseModel
+from oqd_compiler_infrastructure import TypeReflectBaseModel
 
 ########################################################################################
 

@@ -10,8 +10,8 @@ from qutip import mesolve, Qobj, QobjEvo
 ########################################################################################
 
 from ..misc import constants as cst
-from .interface.Ion import Level
-from ..backend.qutip.Results import Results
+from .interface.ion import Level
+from ..backend.qutip.results import Results
 
 ########################################################################################
 

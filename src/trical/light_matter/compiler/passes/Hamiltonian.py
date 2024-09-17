@@ -1,6 +1,6 @@
 from typing import Dict
 
-from midstack.compiler import Post
+from oqd_compiler_infrastructure import Post
 
 ########################################################################################
 

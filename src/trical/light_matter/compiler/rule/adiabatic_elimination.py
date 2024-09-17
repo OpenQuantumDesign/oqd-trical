@@ -4,8 +4,12 @@ import itertools
 
 import numpy as np
 
-from midstack.interface.base import TypeReflectBaseModel
-from midstack.compiler import Post, RewriteRule, FixedPoint
+from oqd_compiler_infrastructure import (
+    TypeReflectBaseModel,
+    Post,
+    RewriteRule,
+    FixedPoint,
+)
 
 ########################################################################################
 

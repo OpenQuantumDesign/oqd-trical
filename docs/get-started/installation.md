@@ -12,17 +12,8 @@ Install with pip:
 pip install .
 ```
 
-TrICal has a dependency on [midstack](https://github.com/OpenQuantumDesign/midstack), when TrICal in cloned, [midstack](https://github.com/OpenQuantumDesign/midstack) is referenced as a git submodule.
-
-This submodule can be initialized with:
+TrICal has a dependency on [oqd_compiler_infrastructure](https://github.com/OpenQuantumDesign/compiler_infrastructure), which can be installed with:
 
 ```sh
-git submodule update --init --recursive
-```
-
-[midstack](https://github.com/OpenQuantumDesign/midstack) can be installed with:
-
-```sh
-cd .submodules/midstack
-pip install .
+pip install git+https://github.com/OpenQuantumDesign/compiler_infrastructure.git
 ```
