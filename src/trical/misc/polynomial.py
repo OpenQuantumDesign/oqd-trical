@@ -17,6 +17,21 @@ from .optimize import dflt_ls_opt
 
 ########################################################################################
 
+class PolynomialPotential:
+    """
+    Class to represent a polynomial potential for the ion trap
+
+    Attributes:
+        alpha (np.ndarray): Coefficients defining the polynomial potential
+        N (int): Number of ions in the chain
+    """
+
+    def __init__(self, alpha: np.ndarray, N: int):
+        self.alpha = alpha
+        self.N = N
+
+    def evaluate(self, positions):
+        return polyval(positions, self.alpha)
 
 def multivariate_polyfit(x, vals, deg, l=1, opt=dflt_ls_opt):
     """

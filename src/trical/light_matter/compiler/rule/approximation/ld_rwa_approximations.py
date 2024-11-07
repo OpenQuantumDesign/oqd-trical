@@ -1,12 +1,8 @@
-from typing import Union
-
 import numpy as np
-
+from typing import Union
 from oqd_compiler_infrastructure import Post, RewriteRule
 
-########################################################################################
-
-from ...interface import (
+from ....interface import (
     OperatorScalarMul,
     OperatorMul,
     OperatorKron,
@@ -14,71 +10,6 @@ from ...interface import (
     ApproxDisplacementMatrix,
     Displacement,
 )
-
-########################################################################################
-
-
-class ReorderScalarMul(RewriteRule):
-    """ReWrite rule for reordering terms in the Hamiltonian tree to facilitate taking the LD, RWA approximations"""
-
-    def map_OperatorMul(self, model):
-        """Method for moving the location of the WaveCoefficient prefactor
-
-        Args:
-            model (OperatorMul): OperatorMul object
-        """
-
-        op1 = model.op1
-        op2 = model.op2
-
-        if isinstance(op1, OperatorScalarMul) and isinstance(op2, OperatorKron):
-
-            if isinstance(op1.op, OperatorKron) and isinstance(
-                op1.coeff, WaveCoefficient
-            ):
-                coeff = op1.coeff
-                int_term = op1.op
-                mot_term = op2
-
-                return OperatorMul(
-                    op1=int_term, op2=OperatorScalarMul(coeff=coeff, op=mot_term)
-                )
-
-        else:
-            return model
-
-
-def approximate(tree, n_cutoff, timescale, ld_cond_th=1e-2, rwa_cutoff="inf"):
-    """Master function for performing both the Lamb-Dicke and rotating wave approximations (RWA)
-
-    Args:
-        tree (Operator): Hamiltonian tree whose terms are joined via OperatorAdd's
-        n_cutoff (int): max phonon number for a given mode
-        timescale (float): time unit (e.g. 1e-6 for microseconds)
-        ld_cond_th (float): threshold on Lamb-Dicke approximation conditions
-        rwa_cutoff (Union[float,str]): all terms rotating faster than rwa_cutoff are set to 0. Acceptable str is 'inf'
-
-    Returns:
-        approx_tree (Operator):  Hamiltonian tree post LD and RWA approximations
-
-    """
-    reorder = Post(ReorderScalarMul())
-
-    reordered_tree = reorder(tree)
-
-    approximator = Post(
-        RWA_and_LD_Approximations(
-            n_cutoff=n_cutoff,
-            rwa_cutoff=rwa_cutoff,
-            timescale=timescale,
-            ld_cond_th=ld_cond_th,
-        )
-    )
-
-    approx_tree = approximator(reordered_tree)
-
-    return approx_tree
-
 
 class approx_ekron(RewriteRule):
     """ReWrite rule for approximating displacement term nested withn tensor products

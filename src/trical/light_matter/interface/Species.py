@@ -1,7 +1,12 @@
-# Energies E are in Hz
-from .ion import *
+#from .ion import *
+from trical.light_matter.interface.Chamber import Ion, Level, Transition
+from trical.light_matter.ion_utilities import select_levels
+from qutip import Qobj
+from typing import Dict, Any
+from pydantic import Field
 
 ########################################################################################
+#fine splitting and hyperfine splitting needs to be added
 
 levels = {
     "S1/2": Level(
@@ -46,7 +51,7 @@ levels = {
     ),
 }
 
-full_transitions = {
+transitions = {
     ("S1/2", "D5/2"): Transition(
         level1=levels["S1/2"], level2=levels["D5/2"], einsteinA=8.562e-1, multipole="E2"
     ),
@@ -70,19 +75,19 @@ full_transitions = {
     ),
 }
 
-
 class Ca40(Ion):
     """Class representing calcium 40 species
 
     Args:
         selected_levels (list): List of tuples of the form (manifold, alias, m_F); restrict ion's internal Hilbert space to these
     """
-
-    def __init__(self, selected_levels):
+    def __init__(self):
         super().__init__(
+            levels=levels,       
+            transitions=transitions,
             mass=6.635943757345042e-26,
             charge=1,
-            levels=levels,
-            full_transitions=full_transitions,
         )
-        self.select_levels(selected_levels)
+
+    class Config:
+        arbitrary_types_allowed = True

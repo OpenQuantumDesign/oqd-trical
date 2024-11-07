@@ -1,15 +1,53 @@
 from cmath import exp
+from qutip import qeye, basis, tensor, destroy, QobjEvo, Qobj, mesolve
+from oqd_compiler_infrastructure import RewriteRule 
+from trical.light_matter.utilities import displace
+from oqd_compiler_infrastructure import Post, Pre 
+from trical.backend.qutip.conversion import (
+    QutipBackendCompiler as CompilerBackend,
+    QutipExperimentVM as ExperimentViewModel,
+    QutipMetricConversion as MetricConversion,
+)
 
-from qutip import qeye, basis, tensor, destroy, QobjEvo
+__all__ = [
+    "entanglement_entropy_vn",
+    "MetricConversion",
+    "CompilerBackend",
+    "ExperimentViewModel",
+]
 
-from oqd_compiler_infrastructure import RewriteRule
+def time_evolve(H, psi_0, times, e_ops=None, progress_bar=True):
+    """Function for time-evolving a quantum state using QuTiP's mesolve.
 
-########################################################################################
+    Attributes:
+        operands (list): Operand stack used for time evolution.
+    """
 
-from ...light_matter.utilities import displace
+    return mesolve(
+        H,
+        psi_0,
+        times,
+        e_ops=e_ops,
+        options={
+            "progress_bar": progress_bar,
+            "store_final_state": True,
+        },
+    )
 
-########################################################################################
+class QuantumOperator(RewriteRule):
+    """
+    Class representing quantum operators for expectation values.
 
+    Attributes:
+        qobj (Qobj): Qutip-compatible object.
+        name (str): Alias/name for the operator.
+    """
+
+    qobj: Qobj
+    name: str
+
+    class Config:
+        arbitrary_types_allowed = True
 
 class QutipConversion(RewriteRule):
     """ReWrite rule for converting a Hamiltonian tree object to a time-dependent QuTiP object (QobjEvo)
@@ -222,3 +260,57 @@ class QutipConversion(RewriteRule):
         self.operands.append(time_dep_fn)
 
         pass
+
+    def compiler_circuit_to_backendIR(model, fock_cutoff):
+        """
+        This compiles ([`Circuit`][your_project.interface.circuit.Circuit] to a list of [`BackendOperation`][your_project.interface.BackendOperation] objects
+
+        Args:
+            model (Circuit):
+            fock_cutoff (int): fock_cutoff for Ladder Operators
+
+        Returns:
+            (list(BackendOperation)):
+        """
+        return Post(CompilerBackend(fock_cutoff=fock_cutoff))(model=model)
+
+
+    def compiler_args_to_backendIR(model):
+        """
+        This compiles TaskArgs to a list of TaskArgsBackend
+
+        Args:
+            model (TaskArgs):
+
+        Returns:
+            (TaskArgsBackend):
+        """
+        return Post(CompilerBackend(fock_cutoff=model.fock_cutoff))(model=model)
+
+
+    def run_backend_experiment(model: ExperimentViewModel, args):
+        """
+        This takes in a [`BackendExperiment`][your_project.interface.BackendExperiment] and produces a TaskResult object
+
+        Args:
+            model (BackendExperiment):
+            args: (BackendArgs)
+
+        Returns:
+            (TaskResult): Contains results of the simulation
+        """
+        n_qubit = model.n_qubit
+        n_mode = model.n_mode
+        metrics = Post(MetricConversion(n_qubit=n_qubit, n_mode=n_mode))(args.metrics)
+        interpreter = Pre(
+            ExperimentViewModel(
+                backend_metrics=metrics,
+                n_shots=args.n_shots,
+                fock_cutoff=args.fock_cutoff,
+                dt=args.dt,
+            )
+        )
+        interpreter(model=model)
+
+        return interpreter.children[0].results 
+
