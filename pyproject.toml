@@ -14,7 +14,8 @@ dependencies = [
     "scipy",
     "sympy",
     "qutip",
-    "oqd_compiler_infrastructure",
+    "oqd_core@git+https://github.com/openquantumdesign/oqd-core",
+    "oqd_compiler_infrastructure@git+https://github.com/openquantumdesign/oqd-compiler-infrastructure",
 ]
 
 [project.optional-dependencies]

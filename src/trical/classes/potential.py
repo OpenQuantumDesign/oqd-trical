@@ -180,7 +180,9 @@ class Potential(Base):
         nd_dphi = lambda var: (lambda x: self.dphi(var)(x * l))
         nd_d2phi = lambda var1, var2: (lambda x: self.d2phi(var1, var2)(x * l))
         return (
-            Potential(nd_phi, nd_dphi, nd_d2phi, **self.params) * l / (cst.k * cst.e**2)
+            Potential(nd_phi, nd_dphi, nd_d2phi, **self.params)
+            * l
+            / (cst.k_e * cst.e**2)
         )
 
     def update_params(self, **kwargs):
@@ -230,7 +232,7 @@ class CoulombPotential(Potential):
             .transpose()
         )
         nxij = np.linalg.norm(x[i] - x[j], axis=-1)
-        return cst.k * self.q**2 * (1 / nxij).sum()
+        return cst.k_e * self.q**2 * (1 / nxij).sum()
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
@@ -241,7 +243,7 @@ class CoulombPotential(Potential):
             xia = x[i, a]
             xja = x[j, a]
             nxij = np.linalg.norm(x[i] - x[j], axis=-1)
-            return cst.k * self.q**2 * ((xja - xia) / nxij**3).sum()
+            return cst.k_e * self.q**2 * ((xja - xia) / nxij**3).sum()
 
         return dphi_dai
 
@@ -261,13 +263,13 @@ class CoulombPotential(Potential):
                 nxik = np.linalg.norm(x[i] - x[k], axis=-1)
                 if a == b:
                     return (
-                        cst.k
+                        cst.k_e
                         * self.q**2
                         * ((-1 / nxik**3 + 3 * (xka - xia) ** 2 / nxik**5)).sum()
                     )
                 else:
                     return (
-                        cst.k
+                        cst.k_e
                         * self.q**2
                         * (3 * (xka - xia) * (xkb - xib) / nxik**5).sum()
                     )
@@ -279,19 +281,19 @@ class CoulombPotential(Potential):
                 nxij = np.linalg.norm(x[i] - x[j])
                 if a == b:
                     return (
-                        cst.k
+                        cst.k_e
                         * self.q**2
                         * (1 / nxij**3 - 3 * (xja - xia) ** 2 / nxij**5)
                     )
                 else:
                     return (
-                        cst.k * self.q**2 * (-3 * (xja - xia) * (xjb - xib) / nxij**5)
+                        cst.k_e * self.q**2 * (-3 * (xja - xia) * (xjb - xib) / nxij**5)
                     )
 
         return d2phi_daidbj
 
     def nondimensionalize(self, l):
-        return self / (cst.k * cst.e**2)
+        return self / (cst.k_e * cst.e**2)
 
     pass
 
@@ -360,7 +362,7 @@ class PolynomialPotential(Potential):
         alpha = (
             l ** np.indices(self.alpha.shape).sum(0)
             * self.alpha
-            * (l / (cst.k * cst.e**2))
+            * (l / (cst.k_e * cst.e**2))
         )
         return PolynomialPotential(alpha, **self.params)
 
@@ -552,7 +554,7 @@ class GaussianOpticalPotential(Potential):
                 refractive_index=self.refractive_index,
             )
             * l
-            / (cst.k * cst.e**2)
+            / (cst.k_e * cst.e**2)
         )
         ndgop.update_params(**self.params)
         return ndgop
@@ -623,7 +625,7 @@ class SymbolicPotential(Potential):
 
     def nondimensionalize(self, l):
         expr = self.expr.subs({k: k * l for k in self.symbol}) * (
-            l / (cst.k * cst.e**2)
+            l / (cst.k_e * cst.e**2)
         )
         return SymbolicPotential(expr, **self.params)
 
@@ -698,7 +700,7 @@ class AdvancedSymbolicPotential(Potential):
 
     def nondimensionalize(self, l):
         expr = self.expr.subs({k: k * l for k in self.symbol}) * (
-            l / (cst.k * cst.e**2)
+            l / (cst.k_e * cst.e**2)
         )
         params = self.params
         if "N" in params.keys():
@@ -809,7 +811,7 @@ class AutoDiffPotential(Potential):
         return lambda x: self.hessian()(x)[a * self.N + i][b * self.N + j]
 
     def nondimensionalize(self, l):
-        expr = lambda x: self.expr(x * l) * l / (cst.k * cst.e**2)
+        expr = lambda x: self.expr(x * l) * l / (cst.k_e * cst.e**2)
         ndadp = AutoDiffPotential(expr, **self.params)
         ndadp.update_params(**self.params)
         return ndadp
