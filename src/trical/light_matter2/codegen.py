@@ -16,7 +16,7 @@ from .interface.operator import (
     Wave,
 )
 
-from .utils import intensity, rabi_from_intensity
+from .utils import intensity_from_laser, rabi_from_intensity
 
 ########################################################################################
 
@@ -66,7 +66,7 @@ class ConstructHamiltonian(ConversionRule):
     def map_Beam(self, model, operands):
         op = Zero()
 
-        I = intensity(model)
+        I = intensity_from_laser(model)
         for transition in self.ions[model.target].transitions:
             rabi = rabi_from_intensity(model, transition, I)
 

@@ -22,8 +22,12 @@ For dipole transitions, $q$ can be $0, \pm 1$, each of which corresponds to a re
 
 As a result, the matrix element will depend on the overlap between the laser's polarization $\hat{\epsilon}$ and the required $\hat{q}$.
 
+<!-- prettier-ignore -->
+//// admonition | Important
+    type: important
+
 $$
-    \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{2\pi\epsilon_0\hbar c^3}{\omega_0 A_{10}}} \sqrt{(2F_1 + 1)(2F_0 + 1)}
+    \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{3\pi\epsilon_0\hbar c^3}{\omega_0 A_{10}}} \sqrt{(2F_1 + 1)(2F_0 + 1)}
     \begin{Bmatrix}
         J_0 & J_1 & 1\\
         F_1 & F_0 & I
@@ -33,6 +37,8 @@ $$
         M_1 & -q & -M_0
     \end{pmatrix}
 $$
+
+////
 
 where $\{\}$ refers to the Wigner-6j symbol and $()$ refers to the Wigner-3j symbol.
 
@@ -52,6 +58,10 @@ For quadrupole transitions, the laser's unit wave-vector $\hat{k}$ becomes relev
 
 This logic is handled in TrICal under the same helper function under the _polarization_map_ dictionary.
 
+<!-- prettier-ignore -->
+//// admonition | Important
+    type: important
+
 $$
     \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{15\pi\epsilon_0\hbar c^3}{\omega_0 A_{10}}} \sqrt{(2F_1 + 1)(2F_0 + 1)}
     \begin{Bmatrix}
@@ -62,5 +72,7 @@ $$
         M_1 & -q & -M_0
     \end{pmatrix}
 $$
+
+////
 
 ///

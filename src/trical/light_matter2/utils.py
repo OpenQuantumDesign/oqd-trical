@@ -48,18 +48,18 @@ def compute_matrix_element(laser, transition):
 
     q = M2 - M1
 
-    omega_0 = E2 - E1
+    omega = E2 - E1
 
     # TODO M1 transition multipole
-
     if transition.multipole == "M1":
         pass
 
     if transition.multipole == "E1":
 
         units_term = np.sqrt(
-            (2 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3) / (omega_0 * A)
-        ) / (omega_0 * cst.e)
+            (3 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3 * A)
+            / (omega**3 * cst.e**2)
+        )
         hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * wigner_6j(
             J1, J2, 1, F2, F1, I
         )
@@ -84,9 +84,9 @@ def compute_matrix_element(laser, transition):
     elif transition.multipole == "E2":
 
         units_term = np.sqrt(
-            (15 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3) / (omega_0 * A)
+            (15 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3) / (omega * A)
         ) / (
-            omega_0 * cst.e
+            omega * cst.e
         )  # <- anomalous constants I needed to add... hmm
         hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * wigner_6j(
             J1, J2, 2, F2, F1, I
@@ -138,8 +138,9 @@ def rabi_from_intensity(laser, transition, intensity):
     return matrix_elem * E * cst.e / cst.hbar
 
 
-def intensity(laser):
+def intensity_from_laser(laser):
     matrix_elem = compute_matrix_element(laser, laser.transition)
 
     I = cst.c * cst.epsilon_0 / 2 * (cst.hbar * laser.rabi / (matrix_elem * cst.e)) ** 2
+
     return I
