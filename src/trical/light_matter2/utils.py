@@ -52,7 +52,7 @@ def compute_matrix_element(laser, transition):
 
     # TODO M1 transition multipole
     if transition.multipole == "M1":
-        pass
+        raise NotImplementedError
 
     if transition.multipole == "E1":
 
