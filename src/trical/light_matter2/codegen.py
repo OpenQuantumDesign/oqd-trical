@@ -145,4 +145,4 @@ class ConstructHamiltonian(ConversionRule):
         return reduce(lambda x, y: x + y, operands["sequence"])
 
     def map_SeqeuntialProtocol(self, model, operands):
-        return reduce(lambda x, y: x + y, operands["sequence"])
+        raise NotImplementedError
