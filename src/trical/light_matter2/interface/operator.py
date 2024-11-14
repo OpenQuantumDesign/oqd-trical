@@ -128,7 +128,7 @@ class Coefficient(TypeReflectBaseModel):
 
 class WaveCoefficient(Coefficient):
     """
-    A cos(omega t + phi)
+    A exp(i * (omega t + phi))
     """
 
     amplitude: CastMathExpr
