@@ -15,6 +15,7 @@ from .interface.operator import (
     Identity,
     Wave,
 )
+from .interface.emulator import AtomicEmulatorCircuit, AtomicEmulatorGate
 
 from .utils import intensity_from_laser, rabi_from_intensity
 
@@ -23,7 +24,14 @@ from .utils import intensity_from_laser, rabi_from_intensity
 
 class ConstructHamiltonian(ConversionRule):
     def map_AtomicCircuit(self, model, operands):
-        return operands["system"] + operands["protocol"]
+        return AtomicEmulatorCircuit(
+            base=operands["system"],
+            sequence=(
+                [operands["protocol"]]
+                if isinstance(operands["protocol"], AtomicEmulatorGate)
+                else operands["protocol"]
+            ),
+        )
 
     def map_System(self, model, operands):
         self.N = len(model.ions)
@@ -139,10 +147,16 @@ class ConstructHamiltonian(ConversionRule):
         return op
 
     def map_Pulse(self, model, operands):
-        return operands["beam"]
+        return AtomicEmulatorGate(hamiltonian=operands["beam"], duration=model.duration)
 
     def map_ParallelProtocol(self, model, operands):
-        return reduce(lambda x, y: x + y, operands["sequence"])
+        op = Zero()
+        durations = []
+        for _op in operands["sequence"]:
+            op += _op.hamiltonian
+            durations.append(_op.duration)
 
-    def map_SeqeuntialProtocol(self, model, operands):
-        raise NotImplementedError
+        return AtomicEmulatorGate(hamiltonian=op, duration=durations[0])
+
+    def map_SequentialProtocol(self, model, operands):
+        return operands["sequence"]
