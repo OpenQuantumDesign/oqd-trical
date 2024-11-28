@@ -34,7 +34,11 @@ class QutipVM(RewriteRule):
     def map_QutipGate(self, model):
         tspan = np.arange(0, model.duration, self.timestep)
 
-        res = sesolve(model.hamiltonian + self.base, self.current_state, tspan)
+        res = sesolve(
+            lambda t: model.hamiltonian(t) + self.base(t),
+            self.current_state,
+            tspan,
+        )
 
         self.current_state = res.final_state
 
