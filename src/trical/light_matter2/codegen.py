@@ -2,6 +2,7 @@ from functools import reduce
 
 import numpy as np
 
+from oqd_core.interface.math import MathFunc, MathVar
 from oqd_compiler_infrastructure import ConversionRule
 
 ########################################################################################
@@ -151,12 +152,22 @@ class ConstructHamiltonian(ConversionRule):
 
     def map_ParallelProtocol(self, model, operands):
         op = Zero()
-        durations = []
-        for _op in operands["sequence"]:
-            op += _op.hamiltonian
-            durations.append(_op.duration)
 
-        return AtomicEmulatorGate(hamiltonian=op, duration=durations[0])
+        duration_max = np.max([_op.duration for _op in operands["sequence"]])
+
+        for _op in operands["sequence"]:
+            if _op.duration != duration_max:
+                op += _op.hamiltonian * WaveCoefficient(
+                    amplitude=MathFunc(
+                        func="heaviside", expr=_op.duration - MathVar(name="t")
+                    ),
+                    frequency=0,
+                    phase=0,
+                )
+            else:
+                op += _op.hamiltonian
+
+        return AtomicEmulatorGate(hamiltonian=op, duration=duration_max)
 
     def map_SequentialProtocol(self, model, operands):
         return operands["sequence"]
