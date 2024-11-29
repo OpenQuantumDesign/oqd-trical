@@ -44,10 +44,12 @@ class QutipCodeGeneration(ConversionRule):
         return lambda t: op
 
     def map_Wave(self, model, operands):
-        op = (
-            1j * 0.001 * (qt.create(self.fock_cutoff) + qt.destroy(self.fock_cutoff))
+        f_op = lambda t: (
+            1j
+            * operands["lamb_dicke"](t)
+            * (qt.create(self.fock_cutoff) + qt.destroy(self.fock_cutoff))
         ).expm()
-        return lambda t: op
+        return f_op
 
     def map_OperatorMul(self, model, operands):
         return lambda t: operands["op1"](t) * operands["op2"](t)
