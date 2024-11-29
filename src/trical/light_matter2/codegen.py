@@ -7,6 +7,8 @@ from oqd_compiler_infrastructure import ConversionRule
 
 ########################################################################################
 
+from .interface.atomic import SequentialProtocol
+
 from .interface.operator import (
     KetBra,
     Annihilation,
@@ -151,6 +153,14 @@ class ConstructHamiltonian(ConversionRule):
         return AtomicEmulatorGate(hamiltonian=operands["beam"], duration=model.duration)
 
     def map_ParallelProtocol(self, model, operands):
+        # TODO: Implement correct procedure for SequentialProtocol
+        # within ParallelProtocol
+        for p in model.sequence:
+            if isinstance(p, SequentialProtocol):
+                raise NotImplementedError(
+                    "SequentialProtocol within ParallelProtocol currently unsupported"
+                )
+
         op = Zero()
 
         duration_max = np.max([_op.duration for _op in operands["sequence"]])
