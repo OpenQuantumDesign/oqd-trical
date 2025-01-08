@@ -84,7 +84,10 @@ class ConstructHamiltonian(ConversionRule):
             [
                 Wave(
                     lamb_dicke=WaveCoefficient(
-                        amplitude=np.dot(model.wavevector, mode.eigenvector)
+                        amplitude=np.dot(
+                            model.wavevector,
+                            mode.eigenvector[model.target * 3 : model.target * 3 + 3],
+                        )
                         * np.sqrt(1 / (2 * self.ions[model.target].mass * mode.energy)),
                         frequency=0,
                         phase=0,
@@ -99,7 +102,10 @@ class ConstructHamiltonian(ConversionRule):
             [
                 Wave(
                     lamb_dicke=WaveCoefficient(
-                        amplitude=-np.dot(model.wavevector, mode.eigenvector)
+                        amplitude=-np.dot(
+                            model.wavevector,
+                            mode.eigenvector[model.target * 3 : model.target * 3 + 3],
+                        )
                         * np.sqrt(1 / (2 * self.ions[model.target].mass * mode.energy)),
                         frequency=0,
                         phase=0,
