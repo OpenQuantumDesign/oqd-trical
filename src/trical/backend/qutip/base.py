@@ -7,8 +7,8 @@ class QutipBackend(BackendBase):
     def __init__(self):
         pass
 
-    def compile(self):
+    def compile(self, circuit):
         pass
 
-    def run(self):
+    def run(self, experiment):
         pass
