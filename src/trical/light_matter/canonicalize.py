@@ -41,6 +41,8 @@ class Prune(RewriteRule):
             model.coeff, WaveCoefficient
         ) and model.coeff.amplitude == MathNum(value=0):
             return Zero()
+        if isinstance(model.op, Zero):
+            return Zero()
 
     def map_OperatorKron(self, model):
         if isinstance(model.op1, Zero) or isinstance(model.op2, Zero):
@@ -235,12 +237,12 @@ canonicalization_pass = Chain(
     ),
     simplify_math_expr,
     FixedPoint(Post(Prune())),
+    # Post(CombineTerms()),
     Chain(
         FixedPoint(Post(DistributeMathExpr())),
         FixedPoint(Post(ProperOrderMathExpr())),
         FixedPoint(Post(PartitionMathExpr())),
         FixedPoint(Post(PruneZeroPowers())),
     ),
-    Post(CombineTerms()),
     simplify_math_expr,
 )
