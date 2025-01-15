@@ -136,6 +136,10 @@ class WaveCoefficient(Coefficient):
     phase: CastMathExpr
 
 
+def ConstantCoefficient(value):
+    return WaveCoefficient(amplitude=value, frequency=0, phase=0)
+
+
 class CoefficientAdd(Coefficient):
     coeff1: CoefficientSubTypes
     coeff2: CoefficientSubTypes
