@@ -1,6 +1,12 @@
-from oqd_compiler_infrastructure import RewriteRule, Pre
+from oqd_compiler_infrastructure import RewriteRule, Pre, Chain, Post, FixedPoint
 
 from oqd_core.interface.math import MathNum
+from oqd_core.compiler.math.rules import (
+    DistributeMathExpr,
+    ProperOrderMathExpr,
+    PartitionMathExpr,
+)
+from oqd_core.compiler.math.passes import simplify_math_expr
 
 from functools import reduce
 
@@ -211,3 +217,30 @@ class CombineTerms(RewriteRule):
         combiner = _CombineTerms()
         Pre(combiner)(model)
         return model.__class__(hamiltonian=combiner.emit(), duration=model.duration)
+
+
+########################################################################################
+
+canonicalization_pass = Chain(
+    Chain(
+        FixedPoint(Post(OperatorDistributivity())),
+        FixedPoint(Post(OperatorAssociativity())),
+        Post(GatherCoefficient()),
+    ),
+    Chain(
+        FixedPoint(Post(DistributeMathExpr())),
+        FixedPoint(Post(ProperOrderMathExpr())),
+        FixedPoint(Post(PartitionMathExpr())),
+        FixedPoint(Post(PruneZeroPowers())),
+    ),
+    simplify_math_expr,
+    FixedPoint(Post(Prune())),
+    Chain(
+        FixedPoint(Post(DistributeMathExpr())),
+        FixedPoint(Post(ProperOrderMathExpr())),
+        FixedPoint(Post(PartitionMathExpr())),
+        FixedPoint(Post(PruneZeroPowers())),
+    ),
+    Post(CombineTerms()),
+    simplify_math_expr,
+)
