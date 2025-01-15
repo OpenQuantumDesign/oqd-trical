@@ -225,11 +225,6 @@ class CombineTerms(RewriteRule):
 
 canonicalization_pass = Chain(
     Chain(
-        FixedPoint(Post(OperatorDistributivity())),
-        FixedPoint(Post(OperatorAssociativity())),
-        Post(GatherCoefficient()),
-    ),
-    Chain(
         FixedPoint(Post(DistributeMathExpr())),
         FixedPoint(Post(ProperOrderMathExpr())),
         FixedPoint(Post(PartitionMathExpr())),
@@ -237,7 +232,12 @@ canonicalization_pass = Chain(
     ),
     simplify_math_expr,
     FixedPoint(Post(Prune())),
-    # Post(CombineTerms()),
+    Chain(
+        FixedPoint(Post(OperatorDistributivity())),
+        FixedPoint(Post(OperatorAssociativity())),
+        Post(GatherCoefficient()),
+    ),
+    Post(CombineTerms()),
     Chain(
         FixedPoint(Post(DistributeMathExpr())),
         FixedPoint(Post(ProperOrderMathExpr())),
