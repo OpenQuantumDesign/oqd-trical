@@ -79,47 +79,146 @@ class ConstructHamiltonian(ConversionRule):
 
         I = intensity_from_laser(model)
 
-        wave_plus = reduce(
-            lambda x, y: x @ y,
-            [
-                Wave(
-                    lamb_dicke=WaveCoefficient(
-                        amplitude=np.dot(
-                            model.wavevector,
-                            mode.eigenvector[model.target * 3 : model.target * 3 + 3],
+        if self.modes:
+            wave_plus = reduce(
+                lambda x, y: x @ y,
+                [
+                    Wave(
+                        lamb_dicke=WaveCoefficient(
+                            amplitude=np.dot(
+                                model.wavevector,
+                                mode.eigenvector[
+                                    model.target * 3 : model.target * 3 + 3
+                                ],
+                            )
+                            * np.sqrt(
+                                1 / (2 * self.ions[model.target].mass * mode.energy)
+                            ),
+                            frequency=0,
+                            phase=0,
                         )
-                        * np.sqrt(1 / (2 * self.ions[model.target].mass * mode.energy)),
-                        frequency=0,
-                        phase=0,
                     )
-                )
-                for mode in self.modes
-            ],
-        )
+                    for mode in self.modes
+                ],
+            )
 
-        wave_minus = reduce(
-            lambda x, y: x @ y,
-            [
-                Wave(
-                    lamb_dicke=WaveCoefficient(
-                        amplitude=-np.dot(
-                            model.wavevector,
-                            mode.eigenvector[model.target * 3 : model.target * 3 + 3],
+            wave_minus = reduce(
+                lambda x, y: x @ y,
+                [
+                    Wave(
+                        lamb_dicke=WaveCoefficient(
+                            amplitude=-np.dot(
+                                model.wavevector,
+                                mode.eigenvector[
+                                    model.target * 3 : model.target * 3 + 3
+                                ],
+                            )
+                            * np.sqrt(
+                                1 / (2 * self.ions[model.target].mass * mode.energy)
+                            ),
+                            frequency=0,
+                            phase=0,
                         )
-                        * np.sqrt(1 / (2 * self.ions[model.target].mass * mode.energy)),
-                        frequency=0,
-                        phase=0,
                     )
+                    for mode in self.modes
+                ],
+            )
+
+            for transition in self.ions[model.target].transitions:
+                rabi = rabi_from_intensity(model, transition, I)
+
+                op += (
+                    reduce(
+                        lambda x, y: x @ y,
+                        [
+                            (
+                                WaveCoefficient(
+                                    amplitude=rabi / 2,
+                                    frequency=-(
+                                        abs(
+                                            model.transition.level2.energy
+                                            - model.transition.level1.energy
+                                        )
+                                        + model.detuning
+                                    ),
+                                    phase=model.phase,
+                                )
+                                * (
+                                    KetBra(
+                                        ket=self.ions[model.target].levels.index(
+                                            transition.level1
+                                        ),
+                                        bra=self.ions[model.target].levels.index(
+                                            transition.level2
+                                        ),
+                                    )
+                                    + KetBra(
+                                        ket=self.ions[model.target].levels.index(
+                                            transition.level2
+                                        ),
+                                        bra=self.ions[model.target].levels.index(
+                                            transition.level1
+                                        ),
+                                    )
+                                )
+                                if i == model.target
+                                else Identity()
+                            )
+                            for i in range(self.N)
+                        ],
+                    )
+                    @ wave_plus
                 )
-                for mode in self.modes
-            ],
-        )
 
-        for transition in self.ions[model.target].transitions:
-            rabi = rabi_from_intensity(model, transition, I)
+                op += (
+                    reduce(
+                        lambda x, y: x @ y,
+                        [
+                            (
+                                WaveCoefficient(
+                                    amplitude=rabi / 2,
+                                    frequency=(
+                                        abs(
+                                            model.transition.level2.energy
+                                            - model.transition.level1.energy
+                                        )
+                                        + model.detuning
+                                    ),
+                                    phase=-model.phase,
+                                )
+                                * (
+                                    KetBra(
+                                        ket=self.ions[model.target].levels.index(
+                                            transition.level1
+                                        ),
+                                        bra=self.ions[model.target].levels.index(
+                                            transition.level2
+                                        ),
+                                    )
+                                    + KetBra(
+                                        ket=self.ions[model.target].levels.index(
+                                            transition.level2
+                                        ),
+                                        bra=self.ions[model.target].levels.index(
+                                            transition.level1
+                                        ),
+                                    )
+                                )
+                                if i == model.target
+                                else Identity()
+                            )
+                            for i in range(self.N)
+                        ],
+                    )
+                    @ wave_minus
+                )
 
-            op += (
-                reduce(
+        else:
+
+            for transition in self.ions[model.target].transitions:
+                rabi = rabi_from_intensity(model, transition, I)
+
+                op += reduce(
                     lambda x, y: x @ y,
                     [
                         (
@@ -158,51 +257,6 @@ class ConstructHamiltonian(ConversionRule):
                         for i in range(self.N)
                     ],
                 )
-                @ wave_plus
-            )
-
-            op += (
-                reduce(
-                    lambda x, y: x @ y,
-                    [
-                        (
-                            WaveCoefficient(
-                                amplitude=rabi / 2,
-                                frequency=(
-                                    abs(
-                                        model.transition.level2.energy
-                                        - model.transition.level1.energy
-                                    )
-                                    + model.detuning
-                                ),
-                                phase=-model.phase,
-                            )
-                            * (
-                                KetBra(
-                                    ket=self.ions[model.target].levels.index(
-                                        transition.level1
-                                    ),
-                                    bra=self.ions[model.target].levels.index(
-                                        transition.level2
-                                    ),
-                                )
-                                + KetBra(
-                                    ket=self.ions[model.target].levels.index(
-                                        transition.level2
-                                    ),
-                                    bra=self.ions[model.target].levels.index(
-                                        transition.level1
-                                    ),
-                                )
-                            )
-                            if i == model.target
-                            else Identity()
-                        )
-                        for i in range(self.N)
-                    ],
-                )
-                @ wave_minus
-            )
 
         return op
 
