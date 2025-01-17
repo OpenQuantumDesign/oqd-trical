@@ -10,12 +10,15 @@ from oqd_core.compiler.math.passes import simplify_math_expr
 
 from functools import reduce
 
+from typing import Union
+
 ########################################################################################
 
 from .interface.operator import (
     Zero,
     Identity,
     WaveCoefficient,
+    ConstantCoefficient,
     OperatorAdd,
     OperatorScalarMul,
     OperatorKron,
@@ -168,6 +171,36 @@ class GatherCoefficient(RewriteRule):
             return model.op2.coeff * model.__class__(op1=model.op1, op2=model.op2.op)
 
 
+class ScaleTerms(RewriteRule):
+    def __init__(self):
+        super().__init__()
+        self.op_add_root = False
+
+    def map_AtomicEmulatorGate(self, model):
+        self.op_add_root = False
+
+    def map_OperatorAdd(self, model):
+        self.op_add_root = True
+        if isinstance(model.op1, Union[OperatorAdd, OperatorScalarMul]):
+            op1 = model.op1
+        else:
+            op1 = ConstantCoefficient(value=1) * model.op1
+        if isinstance(model.op2, OperatorScalarMul):
+            op2 = model.op2
+        else:
+            op2 = ConstantCoefficient(value=1) * model.op2
+        return op1 + op2
+
+    def map_OperatorScalarMul(self, model):
+        self.op_add_root = True
+        pass
+
+    def map_Operator(self, model):
+        if not self.op_add_root:
+            self.op_add_root = True
+            return ConstantCoefficient(value=1) * model
+
+
 ########################################################################################
 
 
@@ -215,26 +248,29 @@ class CombineTerms(RewriteRule):
 
 ########################################################################################
 
-canonicalization_pass = Chain(
-    Chain(
-        FixedPoint(Post(DistributeMathExpr())),
-        FixedPoint(Post(ProperOrderMathExpr())),
-        FixedPoint(Post(PartitionMathExpr())),
-        FixedPoint(Post(PruneZeroPowers())),
-    ),
-    simplify_math_expr,
-    FixedPoint(Post(Prune())),
-    Chain(
-        FixedPoint(Post(OperatorDistributivity())),
-        FixedPoint(Post(OperatorAssociativity())),
-        Post(GatherCoefficient()),
-    ),
-    Post(CombineTerms()),
-    Chain(
-        FixedPoint(Post(DistributeMathExpr())),
-        FixedPoint(Post(ProperOrderMathExpr())),
-        FixedPoint(Post(PartitionMathExpr())),
-        FixedPoint(Post(PruneZeroPowers())),
-    ),
-    simplify_math_expr,
-)
+
+def canonicalization_pass_factory():
+    return Chain(
+        Chain(
+            FixedPoint(Post(DistributeMathExpr())),
+            FixedPoint(Post(ProperOrderMathExpr())),
+            FixedPoint(Post(PartitionMathExpr())),
+            FixedPoint(Post(PruneZeroPowers())),
+        ),
+        simplify_math_expr,
+        FixedPoint(Post(Prune())),
+        Chain(
+            FixedPoint(Post(OperatorDistributivity())),
+            FixedPoint(Post(OperatorAssociativity())),
+            Post(GatherCoefficient()),
+        ),
+        Pre(ScaleTerms()),
+        Post(CombineTerms()),
+        Chain(
+            FixedPoint(Pre(DistributeMathExpr())),
+            FixedPoint(Post(ProperOrderMathExpr())),
+            FixedPoint(Post(PartitionMathExpr())),
+            FixedPoint(Post(PruneZeroPowers())),
+        ),
+        simplify_math_expr,
+    )

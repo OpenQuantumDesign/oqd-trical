@@ -6,7 +6,7 @@ from oqd_compiler_infrastructure import In, Chain, Post, Pre
 
 from ...light_matter.analysis import AnalyseHilbertSpace
 from ...light_matter.codegen import ConstructHamiltonian
-from ...light_matter.canonicalize import canonicalization_pass
+from ...light_matter.canonicalize import canonicalization_pass_factory
 
 from .codegen import QutipCodeGeneration
 from .vm import QutipVM
@@ -27,7 +27,7 @@ class QutipBackend(BackendBase):
 
         compiler = Chain(
             Post(ConstructHamiltonian()),
-            canonicalization_pass,
+            canonicalization_pass_factory(),
             Post(QutipCodeGeneration(fock_cutoff=fock_cutoff)),
         )
 
