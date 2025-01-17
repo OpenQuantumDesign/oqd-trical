@@ -1,9 +1,9 @@
-from oqd_compiler_infrastructure import ConversionRule, Post
+from oqd_compiler_infrastructure import ConversionRule, Post, PrettyPrint
 
 from oqd_core.compiler.math.rules import PrintMathExpr
 from oqd_core.interface.math import MathNum
 
-from .interface.operator import OperatorAdd
+from .interface.operator import OperatorAdd, CoefficientAdd
 
 ########################################################################################
 
@@ -65,7 +65,12 @@ class OperatorPrinter(ConversionRule):
         return f"{'(' + operands['op1'] + ')' if isinstance(model.op1, OperatorAdd) else operands['op1']} @ {'(' + operands['op2'] + ')' if isinstance(model.op2, OperatorAdd) else operands['op2']}"
 
     def map_OperatorScalarMul(self, model, operands):
-        return f"({operands['coeff']}) * {operands['op']}"
+        return f"{'(' + operands['coeff'] + ')' if isinstance(model.coeff, CoefficientAdd) else operands['coeff']} * {'(' + operands['op'] + ')' if isinstance(model.op, OperatorAdd) else operands['op']}"
 
     def map_Coefficient(self, model, operands):
         return Post(CoeffiecientPrinter())(model)
+
+
+class CircuitPrinter(PrettyPrint):
+    def map_Operator(self, model, operands):
+        return f"Operator({Post(OperatorPrinter())(model)})"
