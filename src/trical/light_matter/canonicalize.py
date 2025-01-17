@@ -191,21 +191,12 @@ class _CombineTerms(RewriteRule):
             [o[0] * o[1] for o in reversed(self.operators)],
         )
 
-    def map_OperatorAdd(self, model):
-        if model.op2.op in self.terms:
-            i = self.terms.index(model.op2.op)
-            self.operators[i] = (model.op2.coeff + self.coefficients[i], model.op2.op)
+    def map_OperatorScalarMul(self, model):
+        if model.op in self.terms:
+            i = self.terms.index(model.op)
+            self.operators[i] = (model.coeff + self.coefficients[i], model.op)
         else:
-            self.operators.append((model.op2.coeff, model.op2.op))
-
-        if isinstance(model.op1, OperatorAdd):
-            return
-
-        if model.op1.op in self.terms:
-            i = self.terms.index(model.op1.op)
-            self.operators[i] = (model.op1.coeff + self.coefficients[i], model.op1.op)
-        else:
-            self.operators.append((model.op1.coeff, model.op1.op))
+            self.operators.append((model.coeff, model.op))
 
 
 class CombineTerms(RewriteRule):
@@ -218,6 +209,7 @@ class CombineTerms(RewriteRule):
     def map_AtomicEmulatorGate(self, model):
         combiner = _CombineTerms()
         Pre(combiner)(model)
+
         return model.__class__(hamiltonian=combiner.emit(), duration=model.duration)
 
 
