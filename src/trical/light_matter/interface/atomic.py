@@ -21,7 +21,7 @@ class AtomicCircuit(TypeReflectBaseModel):
     """
 
     system: System
-    protocol: Protocol
+    protocol: ProtocolSubTypes
 
 
 ########################################################################################
@@ -80,7 +80,7 @@ class ParallelProtocol(Protocol):
         sequence: List of pulses or subprotocols to compose together in a parallel fashion.
     """
 
-    sequence: List[Union[Pulse, Protocol]]
+    sequence: List[Union[Pulse, ProtocolSubTypes]]
 
 
 class SequentialProtocol(Protocol):
@@ -91,7 +91,13 @@ class SequentialProtocol(Protocol):
         sequence: List of pulses or subprotocols to compose together in a sequntial fashion.
     """
 
-    sequence: List[Union[Pulse, Protocol]]
+    sequence: List[Union[Pulse, ProtocolSubTypes]]
+
+
+ProtocolSubTypes = Union[
+    SequentialProtocol,
+    ParallelProtocol,
+]
 
 
 ########################################################################################
