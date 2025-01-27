@@ -12,6 +12,9 @@ class CoeffiecientPrinter(ConversionRule):
     def map_MathExpr(self, model, operands):
         return Post(PrintMathExpr())(model)
 
+    def map_MathAdd(self, model, operands):
+        return f"({Post(PrintMathExpr())(model)})"
+
     def map_WaveCoefficient(self, model, operands):
 
         frequency_term = (
@@ -30,10 +33,10 @@ class CoeffiecientPrinter(ConversionRule):
         return f"{operands['amplitude']}{wave_term}"
 
     def map_CoefficientAdd(self, model, operands):
-        return f"{operands['coeff1']} + {operands['coeff2']}"
+        return f"{'(' + operands['coeff1'] + ')' if isinstance(model.coeff1, CoefficientAdd) else operands['coeff1']} + {'(' + operands['coeff2'] + ')' if isinstance(model.coeff2, CoefficientAdd) else operands['coeff2']}"
 
     def map_CoefficientMul(self, model, operands):
-        return f"{operands['coeff1']} * {operands['coeff2']}"
+        return f"{'(' + operands['coeff1'] + ')' if isinstance(model.coeff1, CoefficientAdd) else operands['coeff1']} * {'(' + operands['coeff2'] + ')' if isinstance(model.coeff2, CoefficientAdd) else operands['coeff2']}"
 
 
 class OperatorPrinter(ConversionRule):
