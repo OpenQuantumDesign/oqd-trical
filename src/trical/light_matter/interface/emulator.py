@@ -14,6 +14,7 @@ from .operator import OperatorSubTypes
 class AtomicEmulatorCircuit(TypeReflectBaseModel):
     """Class representing a quantum information experiment represented in terms of atomic operations expressed in terms of their Hamiltonians."""
 
+    frame: Union[None, OperatorSubTypes] = None
     base: OperatorSubTypes
     sequence: List[AtomicEmulatorGate]
 
