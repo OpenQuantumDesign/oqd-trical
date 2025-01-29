@@ -30,4 +30,4 @@ test = ["pytest"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["trical"]
+include = ["trical*"]
