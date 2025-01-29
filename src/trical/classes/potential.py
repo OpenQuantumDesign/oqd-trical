@@ -46,9 +46,9 @@ class Potential(Base):
 
     def __add__(self, other):
         for i in np.intersect1d(list(self.params.keys()), list(other.params.keys())):
-            assert (
-                self.params[i] == other.params[i]
-            ), "Potentials with incompatible dimensions"
+            assert self.params[i] == other.params[i], (
+                "Potentials with incompatible dimensions"
+            )
 
         params = {}
         params.update(self.params)
@@ -62,9 +62,9 @@ class Potential(Base):
 
     def __sub__(self, other):
         for i in np.intersect1d(list(self.params.keys()), list(other.params.keys())):
-            assert (
-                self.params[i] == other.params[i]
-            ), "Potentials with incompatible dimensions"
+            assert self.params[i] == other.params[i], (
+                "Potentials with incompatible dimensions"
+            )
 
         params = {}
         params.update(self.params)
@@ -265,7 +265,7 @@ class CoulombPotential(Potential):
                     return (
                         cst.k_e
                         * self.q**2
-                        * ((-1 / nxik**3 + 3 * (xka - xia) ** 2 / nxik**5)).sum()
+                        * (-1 / nxik**3 + 3 * (xka - xia) ** 2 / nxik**5).sum()
                     )
                 else:
                     return (

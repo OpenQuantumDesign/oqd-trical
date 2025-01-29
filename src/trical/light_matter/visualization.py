@@ -18,7 +18,6 @@ class CoeffiecientPrinter(ConversionRule):
         return f"({Post(PrintMathExpr())(model)})"
 
     def map_WaveCoefficient(self, model, operands):
-
         frequency_term = (
             f"{operands['frequency']} * t"
             if model.frequency != MathNum(value=0)

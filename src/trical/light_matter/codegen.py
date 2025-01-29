@@ -54,7 +54,7 @@ class ConstructHamiltonian(ConversionRule):
                             self._map_Ion(ion, n)
                             if i == n
                             else Identity(
-                                subsystem=f"E{i}" if i < self.N else f"P{i-self.N}"
+                                subsystem=f"E{i}" if i < self.N else f"P{i - self.N}"
                             )
                         )
                         for i in range(self.N + self.M)
@@ -71,7 +71,7 @@ class ConstructHamiltonian(ConversionRule):
                             self._map_Phonon(mode, m)
                             if i == self.N + m
                             else Identity(
-                                subsystem=f"E{i}" if i < self.N else f"P{i-self.N}"
+                                subsystem=f"E{i}" if i < self.N else f"P{i - self.N}"
                             )
                         )
                         for i in range(self.N + self.M)

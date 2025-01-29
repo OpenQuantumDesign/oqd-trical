@@ -25,7 +25,6 @@ class Coefficient(TypeReflectBaseModel):
         return CoefficientAdd(coeff1=self, coeff2=other)
 
     def __sub__(self, other):
-
         return OperatorAdd(
             op1=self,
             op2=CoefficientMul(
@@ -86,11 +85,9 @@ class Operator(TypeReflectBaseModel):
         return self
 
     def __add__(self, other):
-
         return OperatorAdd(op1=self, op2=other)
 
     def __sub__(self, other):
-
         return OperatorAdd(
             op1=self,
             op2=OperatorScalarMul(

@@ -9,7 +9,6 @@ from oqd_compiler_infrastructure import RewriteRule
 
 class QutipVM(RewriteRule):
     def __init__(self, hilbert_space, timestep):
-
         self.hilbert_space = hilbert_space
         self.timestep = timestep
 

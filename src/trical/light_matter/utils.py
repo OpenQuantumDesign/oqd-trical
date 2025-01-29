@@ -55,7 +55,6 @@ def compute_matrix_element(laser, transition):
         raise NotImplementedError
 
     if transition.multipole == "E1":
-
         units_term = np.sqrt(
             (3 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3 * A)
             / (omega**3 * cst.e**2)
@@ -82,12 +81,9 @@ def compute_matrix_element(laser, transition):
         )
 
     elif transition.multipole == "E2":
-
         units_term = np.sqrt(
             (15 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3) / (omega * A)
-        ) / (
-            omega * cst.e
-        )  # <- anomalous constants I needed to add... hmm
+        ) / (omega * cst.e)  # <- anomalous constants I needed to add... hmm
         hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * wigner_6j(
             J1, J2, 2, F2, F1, I
         )
