@@ -25,6 +25,8 @@ from .utils import intensity_from_laser, rabi_from_intensity
 
 
 class ConstructHamiltonian(ConversionRule):
+    """Maps an AtomicCircuit to an AtomicEmulatorCircuit replaces laser descriptions of operations with Hamiltonian description of operations"""
+
     def map_AtomicCircuit(self, model, operands):
         return AtomicEmulatorCircuit(
             base=operands["system"],

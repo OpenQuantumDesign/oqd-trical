@@ -29,6 +29,8 @@ from .interface.operator import (
 
 
 class Prune(RewriteRule):
+    """Prunes an Operator AST by removing zeros"""
+
     def map_OperatorAdd(self, model):
         if isinstance(model.op1, PrunedOperator):
             return model.op2
@@ -76,6 +78,8 @@ class Prune(RewriteRule):
 
 
 class PruneZeroPowers(RewriteRule):
+    """Prunes a MathExpr AST by MathPow when base is zero"""
+
     def map_MathPow(self, model):
         if model.expr1 == MathNum(value=0):
             return MathNum(value=0)
@@ -85,6 +89,8 @@ class PruneZeroPowers(RewriteRule):
 
 
 class OperatorDistributivity(RewriteRule):
+    """Implements distributivity of addition over multiplication, kronecker product and scalar multiplication"""
+
     def map_OperatorMul(self, model):
         if isinstance(model.op1, (OperatorAdd)):
             return model.op1.__class__(
@@ -130,6 +136,8 @@ class OperatorDistributivity(RewriteRule):
 
 
 class OperatorAssociativity(RewriteRule):
+    """Implements associativity of addition, multiplication and kronecker product"""
+
     def map_OperatorAdd(self, model):
         return self._map_addmullkron(model=model)
 
@@ -149,6 +157,8 @@ class OperatorAssociativity(RewriteRule):
 
 
 class GatherCoefficient(RewriteRule):
+    """Gathers the coefficients of an operator into a single scalar multiplication for each term"""
+
     def map_OperatorScalarMul(self, model):
         if isinstance(model.op, OperatorScalarMul):
             return (model.coeff * model.op.coeff) * model.op.op
@@ -176,6 +186,8 @@ class GatherCoefficient(RewriteRule):
 
 
 class ScaleTerms(RewriteRule):
+    """Adds a scalar multiplication for each term if it does not exist"""
+
     def __init__(self):
         super().__init__()
         self.op_add_root = False
@@ -209,6 +221,8 @@ class ScaleTerms(RewriteRule):
 
 
 class _CombineTerms(RewriteRule):
+    """Helper for combining terms of the same operator by combining their coefficients"""
+
     def __init__(self):
         super().__init__()
 
@@ -237,6 +251,8 @@ class _CombineTerms(RewriteRule):
 
 
 class CombineTerms(RewriteRule):
+    """Combines terms of the same operator by combining their coefficients"""
+
     def map_AtomicEmulatorCircuit(self, model):
         combiner = _CombineTerms()
         Pre(combiner)(model.base)
@@ -254,6 +270,7 @@ class CombineTerms(RewriteRule):
 
 
 def canonicalization_pass_factory():
+    """Creates a new instance of the canonicalization pass"""
     return Chain(
         Chain(
             FixedPoint(Post(DistributeMathExpr())),

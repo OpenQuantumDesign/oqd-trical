@@ -17,7 +17,7 @@ def compute_matrix_element(laser, transition):
         transition (Transition): transition to compute matrix element of
 
     Returns:
-        (float): Multipole matrix elements corresponding to the interaction between the laser and the transition
+        matrix_element (float): Multipole matrix elements corresponding to the interaction between the laser and the transition
     """
 
     # If this happens there's probably an error with the ion species card
@@ -127,6 +127,7 @@ def rabi_from_intensity(laser, transition, intensity):
         laser (Beam): laser to compute resonant rabi frequency of
         transition (Transition): transition to compute resonant rabi frequency of
         intensity (float): intensity of laser
+
     Returns:
         rabi_frequency (float): resonant rabi frequency corresponding to the interaction between the laser and transition
     """
