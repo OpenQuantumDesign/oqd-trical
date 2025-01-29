@@ -46,14 +46,17 @@ class QutipCodeGeneration(ConversionRule):
         return lambda t: op
 
     def map_Wave(self, model, operands):
-        f_op = lambda t: (
-            1j
-            * operands["lamb_dicke"](t)
-            * (
-                qt.create(self.hilbert_space[model.subsystem])
-                + qt.destroy(self.hilbert_space[model.subsystem])
-            )
-        ).expm()
+        def f_op(t):
+            lamb_dicke = operands["lamb_dicke"](t)
+            return (
+                1j
+                * (
+                    lamb_dicke * qt.create(self.hilbert_space[model.subsystem])
+                    + np.conj(lamb_dicke)
+                    * qt.destroy(self.hilbert_space[model.subsystem])
+                )
+            ).expm()
+
         return f_op
 
     def map_OperatorMul(self, model, operands):
