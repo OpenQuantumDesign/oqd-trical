@@ -8,9 +8,9 @@ from oqd_compiler_infrastructure import RewriteRule
 
 
 class QutipVM(RewriteRule):
-    def __init__(self, hilbert_space, fock_cutoff, timestep):
+    def __init__(self, hilbert_space, timestep):
 
-        self.hilbert_space = [fock_cutoff if h == "f" else h for h in hilbert_space]
+        self.hilbert_space = hilbert_space
         self.timestep = timestep
 
         self.states = []
@@ -26,7 +26,9 @@ class QutipVM(RewriteRule):
     def map_QutipExperiment(self, model):
         self.base = model.base
 
-        self.current_state = tensor([basis(h, 0) for h in self.hilbert_space])
+        self.current_state = tensor(
+            [basis(self.hilbert_space[k], 0) for k in self.hilbert_space.keys()]
+        )
 
         self.states.append(self.current_state)
         self.tspan.append(0)

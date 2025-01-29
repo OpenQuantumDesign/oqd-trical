@@ -2,6 +2,8 @@ import qutip as qt
 import numpy as np
 import math
 
+from typing import Dict
+
 from oqd_compiler_infrastructure import ConversionRule
 
 ########################################################################################
@@ -12,10 +14,10 @@ from .interface import QutipExperiment, QutipGate
 
 
 class QutipCodeGeneration(ConversionRule):
-    def __init__(self, fock_cutoff: int):
+    def __init__(self, hilbert_space: Dict[str, int]):
         super().__init__()
 
-        self.fock_cutoff = fock_cutoff
+        self.hilbert_space = hilbert_space
 
     def map_AtomicEmulatorCircuit(self, model, operands):
         return QutipExperiment(base=operands["base"], sequence=operands["sequence"])
@@ -26,28 +28,31 @@ class QutipCodeGeneration(ConversionRule):
         )
 
     def map_Identity(self, model, operands):
-        op = qt.identity(10)
+        op = qt.identity(self.hilbert_space[model.subsystem])
         return lambda t: op
 
     def map_KetBra(self, model, operands):
-        ket = qt.basis(10, model.ket)
-        bra = qt.basis(10, model.bra).dag()
+        ket = qt.basis(self.hilbert_space[model.subsystem], model.ket)
+        bra = qt.basis(self.hilbert_space[model.subsystem], model.bra).dag()
         op = ket * bra
         return lambda t: op
 
     def map_Annihilation(self, model, operands):
-        op = qt.destroy(self.fock_cutoff)
+        op = qt.destroy(self.hilbert_space[model.subsystem])
         return lambda t: op
 
     def map_Creation(self, model, operands):
-        op = qt.create(self.fock_cutoff)
+        op = qt.create(self.hilbert_space[model.subsystem])
         return lambda t: op
 
     def map_Wave(self, model, operands):
         f_op = lambda t: (
             1j
             * operands["lamb_dicke"](t)
-            * (qt.create(self.fock_cutoff) + qt.destroy(self.fock_cutoff))
+            * (
+                qt.create(self.hilbert_space[model.subsystem])
+                + qt.destroy(self.hilbert_space[model.subsystem])
+            )
         ).expm()
         return f_op
 

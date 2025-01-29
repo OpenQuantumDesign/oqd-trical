@@ -15,8 +15,11 @@ from .vm import QutipVM
 
 
 class QutipBackend(BackendBase):
-    def __init__(self):
-        pass
+    def __init__(self, save_intermediate=True):
+        super().__init__()
+
+        self.save_intermediate = save_intermediate
+        self.intermediate = None
 
     def compile(self, circuit, fock_cutoff):
         analysis = In(AnalyseHilbertSpace())
@@ -25,21 +28,30 @@ class QutipBackend(BackendBase):
 
         hilbert_space = analysis.children[0].hilbert_space
 
-        compiler = Chain(
+        for k in hilbert_space.keys():
+            if k[0] == "P":
+                hilbert_space[k] = fock_cutoff
+
+        compiler_p1 = Chain(
             Post(ConstructHamiltonian()),
             canonicalization_pass_factory(),
-            Post(QutipCodeGeneration(fock_cutoff=fock_cutoff)),
         )
 
-        experiment = compiler(circuit)
+        compiler_p2 = Post(QutipCodeGeneration(hilbert_space=hilbert_space))
 
-        return experiment, hilbert_space, fock_cutoff
+        intermediate = compiler_p1(circuit)
 
-    def run(self, experiment, hilbert_space, fock_cutoff, timestep):
+        if self.save_intermediate:
+            self.intermediate = intermediate
+
+        experiment = compiler_p2(intermediate)
+
+        return experiment, hilbert_space
+
+    def run(self, experiment, hilbert_space, timestep):
         vm = Pre(
             QutipVM(
                 hilbert_space=hilbert_space,
-                fock_cutoff=fock_cutoff,
                 timestep=timestep,
             )
         )

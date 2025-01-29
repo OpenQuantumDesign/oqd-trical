@@ -15,7 +15,7 @@ from typing import Union
 ########################################################################################
 
 from .interface.operator import (
-    Zero,
+    PrunedOperator,
     Identity,
     WaveCoefficient,
     ConstantCoefficient,
@@ -30,26 +30,30 @@ from .interface.operator import (
 
 class Prune(RewriteRule):
     def map_OperatorAdd(self, model):
-        if isinstance(model.op1, Zero):
+        if isinstance(model.op1, PrunedOperator):
             return model.op2
-        if isinstance(model.op2, Zero):
+        if isinstance(model.op2, PrunedOperator):
             return model.op1
 
     def map_OperatorMul(self, model):
-        if isinstance(model.op1, Zero) or isinstance(model.op2, Zero):
-            return Zero()
+        if isinstance(model.op1, PrunedOperator) or isinstance(
+            model.op2, PrunedOperator
+        ):
+            return PrunedOperator()
 
     def map_OperatorScalarMul(self, model):
         if isinstance(
             model.coeff, WaveCoefficient
         ) and model.coeff.amplitude == MathNum(value=0):
-            return Zero()
-        if isinstance(model.op, Zero):
-            return Zero()
+            return PrunedOperator()
+        if isinstance(model.op, PrunedOperator):
+            return PrunedOperator()
 
     def map_OperatorKron(self, model):
-        if isinstance(model.op1, Zero) or isinstance(model.op2, Zero):
-            return Zero()
+        if isinstance(model.op1, PrunedOperator) or isinstance(
+            model.op2, PrunedOperator
+        ):
+            return PrunedOperator()
 
     def map_CoefficientAdd(self, model):
         if isinstance(
@@ -65,7 +69,7 @@ class Prune(RewriteRule):
         if isinstance(
             model.lamb_dicke, WaveCoefficient
         ) and model.lamb_dicke.amplitude == MathNum(value=0):
-            return Identity()
+            return Identity(subsystem=model.subsystem)
 
 
 ########################################################################################

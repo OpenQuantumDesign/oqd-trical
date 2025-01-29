@@ -1,88 +1,11 @@
 from __future__ import annotations
-from typing import Union
+
+from typing import Union, Annotated
+
+from pydantic import AfterValidator
 
 from oqd_compiler_infrastructure import TypeReflectBaseModel
 from oqd_core.interface.math import CastMathExpr
-
-########################################################################################
-
-
-class Operator(TypeReflectBaseModel):
-    def __neg__(self):
-        return OperatorScalarMul(
-            op=self, coeff=WaveCoefficient(amplitude=-1, frequency=0, phase=0)
-        )
-
-    def __pos__(self):
-        return self
-
-    def __add__(self, other):
-
-        return OperatorAdd(op1=self, op2=other)
-
-    def __sub__(self, other):
-
-        return OperatorAdd(
-            op1=self,
-            op2=OperatorScalarMul(
-                op=other, coeff=WaveCoefficient(amplitude=-1, frequency=0, phase=0)
-            ),
-        )
-
-    def __matmul__(self, other):
-        if isinstance(other, Coefficient):
-            raise TypeError(
-                "Tried Kron product between Operator and Coefficient. "
-                + "Scalar multiplication of Coefficient and Operator should be bracketed when perfoming Kron product."
-            )
-        return OperatorKron(op1=self, op2=other)
-
-    def __mul__(self, other):
-        if isinstance(other, Operator):
-            return OperatorMul(op1=self, op2=other)
-        else:
-            return OperatorScalarMul(op=self, coeff=other)
-
-    def __rmul__(self, other):
-        return self * other
-
-    pass
-
-
-########################################################################################
-
-
-class KetBra(Operator):
-    ket: int
-    bra: int
-
-
-class Ladder(Operator):
-    pass
-
-
-class Annihilation(Ladder):
-    pass
-
-
-class Creation(Ladder):
-    pass
-
-
-class Displacement(Operator):
-    alpha: CoefficientSubTypes
-
-
-class Identity(Operator):
-    pass
-
-
-class Zero(Operator):
-    pass
-
-
-class Wave(Operator):
-    lamb_dicke: CoefficientSubTypes
 
 
 ########################################################################################
@@ -153,6 +76,100 @@ class CoefficientMul(Coefficient):
 ########################################################################################
 
 
+class Operator(TypeReflectBaseModel):
+    def __neg__(self):
+        return OperatorScalarMul(
+            op=self, coeff=WaveCoefficient(amplitude=-1, frequency=0, phase=0)
+        )
+
+    def __pos__(self):
+        return self
+
+    def __add__(self, other):
+
+        return OperatorAdd(op1=self, op2=other)
+
+    def __sub__(self, other):
+
+        return OperatorAdd(
+            op1=self,
+            op2=OperatorScalarMul(
+                op=other, coeff=WaveCoefficient(amplitude=-1, frequency=0, phase=0)
+            ),
+        )
+
+    def __matmul__(self, other):
+        if isinstance(other, Coefficient):
+            raise TypeError(
+                "Tried Kron product between Operator and Coefficient. "
+                + "Scalar multiplication of Coefficient and Operator should be bracketed when perfoming Kron product."
+            )
+        return OperatorKron(op1=self, op2=other)
+
+    def __mul__(self, other):
+        if isinstance(other, Operator):
+            return OperatorMul(op1=self, op2=other)
+        else:
+            return OperatorScalarMul(op=self, coeff=other)
+
+    def __rmul__(self, other):
+        return self * other
+
+    pass
+
+
+########################################################################################
+
+
+def issubsystem(value: str):
+    subsystem_type = value[0]
+    subsystem_index = value[1:]
+
+    if subsystem_type not in ["E", "P"]:
+        raise ValueError()
+
+    if not subsystem_index.isdigit():
+        raise ValueError()
+
+    return value
+
+
+class OperatorLeaf(Operator):
+    subsystem: Annotated[str, AfterValidator(issubsystem)]
+
+
+class KetBra(OperatorLeaf):
+    ket: int
+    bra: int
+
+
+class Annihilation(OperatorLeaf):
+    pass
+
+
+class Creation(OperatorLeaf):
+    pass
+
+
+class Displacement(OperatorLeaf):
+    alpha: CoefficientSubTypes
+
+
+class Identity(OperatorLeaf):
+    pass
+
+
+class Wave(OperatorLeaf):
+    lamb_dicke: CoefficientSubTypes
+
+
+class PrunedOperator(Operator):
+    pass
+
+
+########################################################################################
+
+
 class OperatorAdd(Operator):
     op1: OperatorSubTypes
     op2: OperatorSubTypes
@@ -180,7 +197,7 @@ OperatorSubTypes = Union[
     Annihilation,
     Creation,
     Identity,
-    Zero,
+    PrunedOperator,
     Wave,
     Displacement,
     OperatorAdd,

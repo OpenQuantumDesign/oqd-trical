@@ -7,12 +7,12 @@ class AnalyseHilbertSpace(RewriteRule):
     def __init__(self):
         super().__init__()
 
-        self.hilbert_space = []
+        self.hilbert_space = {}
 
-    def map_Ion(self, model):
+    def map_System(self, model):
 
-        self.hilbert_space.append(len(model.levels))
+        for n, ion in enumerate(model.ions):
+            self.hilbert_space[f"E{n}"] = len(ion.levels)
 
-    def map_Phonon(self, model):
-
-        self.hilbert_space.append("f")
+        for m, mode in enumerate(model.modes):
+            self.hilbert_space[f"P{m}"] = None

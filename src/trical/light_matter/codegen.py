@@ -14,7 +14,6 @@ from .interface.operator import (
     Annihilation,
     Creation,
     WaveCoefficient,
-    Zero,
     Identity,
     Wave,
 )
@@ -44,20 +43,35 @@ class ConstructHamiltonian(ConversionRule):
         self.modes = model.modes
 
         ops = []
-        for n, ion in enumerate(operands["ions"]):
-            ops.append(
-                reduce(
-                    lambda x, y: x @ y,
-                    [ion if i == n else Identity() for i in range(self.N + self.M)],
-                )
-            )
-
-        for m, mode in enumerate(operands["modes"]):
+        for n, ion in enumerate(model.ions):
             ops.append(
                 reduce(
                     lambda x, y: x @ y,
                     [
-                        mode if i == self.N + m else Identity()
+                        (
+                            self._map_Ion(ion, n)
+                            if i == n
+                            else Identity(
+                                subsystem=f"E{i}" if i < self.N else f"P{i-self.N}"
+                            )
+                        )
+                        for i in range(self.N + self.M)
+                    ],
+                )
+            )
+
+        for m, mode in enumerate(model.modes):
+            ops.append(
+                reduce(
+                    lambda x, y: x @ y,
+                    [
+                        (
+                            self._map_Phonon(mode, m)
+                            if i == self.N + m
+                            else Identity(
+                                subsystem=f"E{i}" if i < self.N else f"P{i-self.N}"
+                            )
+                        )
                         for i in range(self.N + self.M)
                     ],
                 )
@@ -66,19 +80,19 @@ class ConstructHamiltonian(ConversionRule):
         op = reduce(lambda x, y: x + y, ops)
         return op
 
-    def map_Ion(self, model, operands):
+    def _map_Ion(self, model, index):
         ops = [
             WaveCoefficient(amplitude=level.energy, frequency=0, phase=0)
-            * KetBra(ket=n, bra=n)
+            * KetBra(ket=n, bra=n, subsystem=f"E{index}")
             for n, level in enumerate(model.levels)
         ]
 
         op = reduce(lambda x, y: x + y, ops)
         return op
 
-    def map_Phonon(self, model, operands):
+    def _map_Phonon(self, model, index):
         return WaveCoefficient(amplitude=model.energy, frequency=0, phase=0) * (
-            Creation() * Annihilation()
+            Creation(subsystem=f"P{index}") * Annihilation(subsystem=f"P{index}")
         )
 
     def map_Beam(self, model, operands):
@@ -102,9 +116,10 @@ class ConstructHamiltonian(ConversionRule):
                             ),
                             frequency=0,
                             phase=0,
-                        )
+                        ),
+                        subsystem=f"P{i}",
                     )
-                    for mode in self.modes
+                    for i, mode in enumerate(self.modes)
                 ],
             )
 
@@ -124,9 +139,10 @@ class ConstructHamiltonian(ConversionRule):
                             ),
                             frequency=0,
                             phase=0,
-                        )
+                        ),
+                        subsystem=f"P{i}",
                     )
-                    for mode in self.modes
+                    for i, mode in enumerate(self.modes)
                 ],
             )
 
@@ -158,6 +174,7 @@ class ConstructHamiltonian(ConversionRule):
                                             bra=self.ions[model.target].levels.index(
                                                 transition.level2
                                             ),
+                                            subsystem=f"E{model.target}",
                                         )
                                         + KetBra(
                                             ket=self.ions[model.target].levels.index(
@@ -166,10 +183,11 @@ class ConstructHamiltonian(ConversionRule):
                                             bra=self.ions[model.target].levels.index(
                                                 transition.level1
                                             ),
+                                            subsystem=f"E{model.target}",
                                         )
                                     )
                                     if i == model.target
-                                    else Identity()
+                                    else Identity(subsystem=f"E{i}")
                                 )
                                 for i in range(self.N)
                             ],
@@ -203,6 +221,7 @@ class ConstructHamiltonian(ConversionRule):
                                             bra=self.ions[model.target].levels.index(
                                                 transition.level2
                                             ),
+                                            subsystem=f"E{model.target}",
                                         )
                                         + KetBra(
                                             ket=self.ions[model.target].levels.index(
@@ -211,10 +230,11 @@ class ConstructHamiltonian(ConversionRule):
                                             bra=self.ions[model.target].levels.index(
                                                 transition.level1
                                             ),
+                                            subsystem=f"E{model.target}",
                                         )
                                     )
                                     if i == model.target
-                                    else Identity()
+                                    else Identity(subsystem=f"E{i}")
                                 )
                                 for i in range(self.N)
                             ],
@@ -251,6 +271,7 @@ class ConstructHamiltonian(ConversionRule):
                                         bra=self.ions[model.target].levels.index(
                                             transition.level2
                                         ),
+                                        subsystem=f"E{model.target}",
                                     )
                                     + KetBra(
                                         ket=self.ions[model.target].levels.index(
@@ -259,10 +280,11 @@ class ConstructHamiltonian(ConversionRule):
                                         bra=self.ions[model.target].levels.index(
                                             transition.level1
                                         ),
+                                        subsystem=f"E{model.target}",
                                     )
                                 )
                                 if i == model.target
-                                else Identity()
+                                else Identity(subsystem=f"E{i}")
                             )
                             for i in range(self.N)
                         ],

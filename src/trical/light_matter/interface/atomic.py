@@ -192,6 +192,19 @@ class Level(TypeReflectBaseModel):
     #     return self
 
 
+def ismultipole(value: str):
+    multipole_type = value[0]
+    multipole_index = value[1:]
+
+    if multipole_type not in ["E", "M"]:
+        raise ValueError()
+
+    if not multipole_index.isdigit():
+        raise ValueError()
+
+    return value
+
+
 class Transition(TypeReflectBaseModel):
     """
     Class representing a transition between electronic states of an ion.
@@ -206,7 +219,7 @@ class Transition(TypeReflectBaseModel):
     level1: Level
     level2: Level
     einsteinA: float
-    multipole: Literal["E1", "E2", "M1"]
+    multipole: Annotated[str, AfterValidator(ismultipole)]
 
 
 class Ion(TypeReflectBaseModel):

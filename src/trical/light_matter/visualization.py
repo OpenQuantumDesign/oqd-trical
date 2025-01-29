@@ -41,22 +41,22 @@ class CoeffiecientPrinter(ConversionRule):
 
 class OperatorPrinter(ConversionRule):
     def map_KetBra(self, model, operands):
-        return f"|{model.ket}><{model.bra}|"
+        return f"|{model.ket}><{model.bra}|_{model.subsystem}"
 
     def map_Annihilation(self, model, operands):
-        return f"A"
+        return f"A_{model.subsystem}"
 
     def map_Creation(self, model, operands):
-        return f"C"
+        return f"C_{model.subsystem}"
 
     def map_Identity(self, model, operands):
-        return f"I"
+        return f"I_{model.subsystem}"
 
-    def map_Zero(self, model, operands):
-        return f"Zero"
+    def map_PrunedOperator(self, model, operands):
+        return f"PrunedOperator"
 
     def map_Wave(self, model, operands):
-        return f"exp(1j * {operands['lamb_dicke']} * (A + C))"
+        return f"exp(1j * {operands['lamb_dicke']} * (A_{model.subsystem} + C_{model.subsystem}))"
 
     def map_OperatorAdd(self, model, operands):
         return f"{operands['op1']} + {operands['op2']}"
