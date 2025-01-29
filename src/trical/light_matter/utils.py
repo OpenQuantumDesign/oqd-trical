@@ -10,14 +10,14 @@ from ..misc import constants as cst
 
 
 def compute_matrix_element(laser, transition):
-    """Method that compute dipole and quadrupole matrix elements
+    """Computes matrix element corresponding to a laser interacting with a particular transition
 
     Args:
-        laser (Laser): laser object for accessing polarization and wavevector information
-        transition (Transition): transition object for accessing quantum number of levels
+        laser (Beam): laser to compute matrix element of
+        transition (Transition): transition to compute matrix element of
 
     Returns:
-        (float): Multipole matrix elements for E1, E2 transitions
+        (float): Multipole matrix elements corresponding to the interaction between the laser and the transition
     """
 
     # If this happens there's probably an error with the ion species card
@@ -121,15 +121,14 @@ def compute_matrix_element(laser, transition):
 
 
 def rabi_from_intensity(laser, transition, intensity):
-    """Method computing a transition's resonant rabi frequency addressed by a laser and its intensity
+    """Computes a transition's resonant rabi frequency when addressed by a laser with intensity
 
     Args:
-        laser_index (int): 0-indexed integer pointing to the laser user would like set wavelength for.
-                            Order based on chamber instantiation.
-        intensity (float): laser intensity in W/m^2
-        transition (Transition): transition object
+        laser (Beam): laser to compute resonant rabi frequency of
+        transition (Transition): transition to compute resonant rabi frequency of
+        intensity (float): intensity of laser
     Returns:
-        rabi_frequency (float)
+        rabi_frequency (float): resonant rabi frequency corresponding to the interaction between the laser and transition
     """
 
     matrix_elem = compute_matrix_element(laser, transition)
@@ -139,6 +138,14 @@ def rabi_from_intensity(laser, transition, intensity):
 
 
 def intensity_from_laser(laser):
+    """Computes the intensity from a laser
+
+    Args:
+        laser (Beam): laser to compute intensity of.
+
+    Returns:
+        intensity (float): intensity of the laser
+    """
     matrix_elem = compute_matrix_element(laser, laser.transition)
 
     I = cst.c * cst.epsilon_0 / 2 * (cst.hbar * laser.rabi / (matrix_elem * cst.e)) ** 2

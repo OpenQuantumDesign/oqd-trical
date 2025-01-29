@@ -7,6 +7,7 @@ from oqd_compiler_infrastructure import In, Chain, Post, Pre
 from ...light_matter.analysis import AnalyseHilbertSpace
 from ...light_matter.codegen import ConstructHamiltonian
 from ...light_matter.canonicalize import canonicalization_pass_factory
+from ...light_matter.interface import AtomicEmulatorCircuit
 
 from .codegen import QutipCodeGeneration
 from .vm import QutipVM
@@ -15,6 +16,13 @@ from .vm import QutipVM
 
 
 class QutipBackend(BackendBase):
+    """Backend for running simulation of AtomicCircuit with QuTiP
+
+    Attributes:
+        save_intermediate (bool): Whether compiler saves the intermediate representation of the atomic circuit
+        intermediate (AtomicEmulatorCircuit): Intermediate representation of the atomic circuit during compilation
+    """
+
     def __init__(self, save_intermediate=True):
         super().__init__()
 

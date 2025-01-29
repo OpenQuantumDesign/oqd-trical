@@ -9,6 +9,8 @@ from .interface.operator import OperatorAdd, CoefficientAdd
 
 
 class CoeffiecientPrinter(ConversionRule):
+    """Prints Coefficients in a pretty manner"""
+
     def map_MathExpr(self, model, operands):
         return Post(PrintMathExpr())(model)
 
@@ -40,6 +42,8 @@ class CoeffiecientPrinter(ConversionRule):
 
 
 class OperatorPrinter(ConversionRule):
+    """Prints Operators in a pretty manner"""
+
     def map_KetBra(self, model, operands):
         return f"|{model.ket}><{model.bra}|_{model.subsystem}"
 
@@ -75,5 +79,7 @@ class OperatorPrinter(ConversionRule):
 
 
 class CircuitPrinter(PrettyPrint):
+    """Prints An AtomicEmulatorCircuit in a pretty manner"""
+
     def map_Operator(self, model, operands):
         return f"Operator({Post(OperatorPrinter())(model)})"
