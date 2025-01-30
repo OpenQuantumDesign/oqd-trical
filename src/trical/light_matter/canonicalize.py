@@ -185,6 +185,18 @@ class GatherCoefficient(RewriteRule):
             return model.op2.coeff * model.__class__(op1=model.op1, op2=model.op2.op)
 
 
+class CombineCoefficient(RewriteRule):
+    def map_CoefficientMul(self, model):
+        if isinstance(model.coeff1, WaveCoefficient) and isinstance(
+            model.coeff2, WaveCoefficient
+        ):
+            return WaveCoefficient(
+                amplitude=model.coeff1.amplitude * model.coeff2.amplitude,
+                frequency=model.coeff1.frequency + model.coeff2.frequency,
+                phase=model.coeff1.phase + model.coeff2.phase,
+            )
+
+
 class ScaleTerms(RewriteRule):
     """Adds a scalar multiplication for each term if it does not exist"""
 
