@@ -77,7 +77,7 @@ class OperatorPrinter(ConversionRule):
         return Post(CoeffiecientPrinter())(model)
 
 
-class CircuitPrinter(PrettyPrint):
+class CondensedOperatorPrettyPrint(PrettyPrint):
     """Prints An AtomicEmulatorCircuit in a pretty manner"""
 
     def map_Operator(self, model, operands):
