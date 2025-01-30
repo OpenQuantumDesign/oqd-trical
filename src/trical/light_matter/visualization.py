@@ -59,7 +59,7 @@ class OperatorPrinter(ConversionRule):
         return f"PrunedOperator"
 
     def map_Wave(self, model, operands):
-        return f"exp(1j * {operands['lamb_dicke']} * (A_{model.subsystem} + C_{model.subsystem}))"
+        return f"exp(1j * ({operands['lamb_dicke']} * C_{model.subsystem} + conj({operands['lamb_dicke']}) * A_{model.subsystem}))"
 
     def map_OperatorAdd(self, model, operands):
         return f"{operands['op1']} + {operands['op2']}"
