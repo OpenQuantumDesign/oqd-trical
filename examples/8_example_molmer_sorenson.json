@@ -447,11 +447,11 @@
               },
               "rabi": {
                 "class_": "MathNum",
-                "value": 62.83185307179586
+                "value": 31.41592653589793
               },
               "detuning": {
                 "class_": "MathNum",
-                "value": 157.83361491635122
+                "value": 157.77078306327942
               },
               "phase": {
                 "class_": "MathNum",
@@ -504,11 +504,11 @@
               },
               "rabi": {
                 "class_": "MathNum",
-                "value": 62.83185307179586
+                "value": 31.41592653589793
               },
               "detuning": {
                 "class_": "MathNum",
-                "value": 156.3256504426281
+                "value": 156.3884822956999
               },
               "phase": {
                 "class_": "MathNum",
@@ -618,11 +618,11 @@
               },
               "rabi": {
                 "class_": "MathNum",
-                "value": 62.83185307179586
+                "value": 31.41592653589793
               },
               "detuning": {
                 "class_": "MathNum",
-                "value": 157.83361491635122
+                "value": 157.77078306327942
               },
               "phase": {
                 "class_": "MathNum",
@@ -675,11 +675,11 @@
               },
               "rabi": {
                 "class_": "MathNum",
-                "value": 62.83185307179586
+                "value": 31.41592653589793
               },
               "detuning": {
                 "class_": "MathNum",
-                "value": 156.3256504426281
+                "value": 156.3884822956999
               },
               "phase": {
                 "class_": "MathNum",
