@@ -23,11 +23,12 @@ class QutipBackend(BackendBase):
         intermediate (AtomicEmulatorCircuit): Intermediate representation of the atomic circuit during compilation
     """
 
-    def __init__(self, save_intermediate=True):
+    def __init__(self, save_intermediate=True, approx_pass=None):
         super().__init__()
 
         self.save_intermediate = save_intermediate
         self.intermediate = None
+        self.approx_pass = approx_pass
 
     def compile(self, circuit, fock_cutoff):
         analysis = In(AnalyseHilbertSpace())
@@ -45,12 +46,17 @@ class QutipBackend(BackendBase):
             canonicalization_pass_factory(),
         )
 
-        compiler_p2 = Post(QutipCodeGeneration(hilbert_space=hilbert_space))
-
         intermediate = compiler_p1(circuit)
+
+        if self.approx_pass:
+            intermediate = Chain(self.approx_pass, canonicalization_pass_factory())(
+                intermediate
+            )
 
         if self.save_intermediate:
             self.intermediate = intermediate
+
+        compiler_p2 = Post(QutipCodeGeneration(hilbert_space=hilbert_space))
 
         experiment = compiler_p2(intermediate)
 
