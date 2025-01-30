@@ -103,6 +103,9 @@ class QutipCodeGeneration(ConversionRule):
         if model.func == "heaviside":
             return lambda t: np.heaviside(operands["expr"](t), 1)
 
+        if model.func == "conj":
+            return lambda t: np.conj(operands["expr"](t))
+
         raise ValueError(f"Unsupported function {model.func}")
 
     def map_MathAdd(self, model, operands):
