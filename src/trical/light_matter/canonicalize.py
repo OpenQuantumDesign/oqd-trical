@@ -239,7 +239,7 @@ class _CombineTerms(RewriteRule):
     def emit(self):
         return reduce(
             lambda op1, op2: op1 + op2,
-            [o[0] * o[1] for o in reversed(self.operators)],
+            [o[0] * o[1] for o in self.operators],
         )
 
     def map_OperatorScalarMul(self, model):
