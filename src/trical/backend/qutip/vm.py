@@ -1,6 +1,6 @@
 import numpy as np
 
-from qutip import tensor, basis, sesolve
+from qutip import tensor, basis, SESolver, MESolver, QobjEvo
 
 from oqd_compiler_infrastructure import RewriteRule
 
@@ -8,12 +8,18 @@ from oqd_compiler_infrastructure import RewriteRule
 
 
 class QutipVM(RewriteRule):
-    def __init__(self, hilbert_space, timestep):
+    def __init__(self, hilbert_space, timestep, solver="SESolver", solver_options={}):
         self.hilbert_space = hilbert_space
         self.timestep = timestep
 
         self.states = []
         self.tspan = []
+
+        self.solver = {
+            "SESolver": SESolver,
+            "MESolver": MESolver,
+        }[solver]
+        self.solver_options = solver_options
         pass
 
     @property
@@ -35,8 +41,10 @@ class QutipVM(RewriteRule):
     def map_QutipGate(self, model):
         tspan = np.arange(0, model.duration, self.timestep)
 
-        res = sesolve(
-            lambda t: model.hamiltonian(t) + self.base(t),
+        H = QobjEvo(lambda t: model.hamiltonian(t) + self.base(t), tlist=tspan)
+        solver = self.solver(H, options=self.solver_options)
+
+        res = solver.run(
             self.current_state,
             tspan,
         )

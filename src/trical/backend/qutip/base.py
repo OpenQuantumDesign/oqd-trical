@@ -23,12 +23,20 @@ class QutipBackend(BackendBase):
         intermediate (AtomicEmulatorCircuit): Intermediate representation of the atomic circuit during compilation
     """
 
-    def __init__(self, save_intermediate=True, approx_pass=None):
+    def __init__(
+        self,
+        save_intermediate=True,
+        approx_pass=None,
+        solver="SESolver",
+        solver_options={},
+    ):
         super().__init__()
 
         self.save_intermediate = save_intermediate
         self.intermediate = None
         self.approx_pass = approx_pass
+        self.solver = solver
+        self.solver_options = solver_options
 
     def compile(self, circuit, fock_cutoff):
         analysis = In(AnalyseHilbertSpace())
@@ -67,6 +75,8 @@ class QutipBackend(BackendBase):
             QutipVM(
                 hilbert_space=hilbert_space,
                 timestep=timestep,
+                solver=self.solver,
+                solver_options=self.solver_options,
             )
         )
 
