@@ -41,7 +41,7 @@ class QutipVM(RewriteRule):
     def map_QutipGate(self, model):
         tspan = np.arange(0, model.duration, self.timestep)
 
-        H = QobjEvo(lambda t: model.hamiltonian(t) + self.base(t), tlist=tspan)
+        H = QobjEvo(lambda t: model.hamiltonian(t) + self.base(t))
         solver = self.solver(H, options=self.solver_options)
 
         res = solver.run(
