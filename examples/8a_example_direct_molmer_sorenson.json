@@ -181,7 +181,7 @@
           },
           "rabi": {
             "class_": "MathNum",
-            "value": 6.283185307179586
+            "value": 3.141592653589793
           },
           "detuning": {
             "class_": "MathNum",
@@ -238,7 +238,7 @@
           },
           "rabi": {
             "class_": "MathNum",
-            "value": 6.283185307179586
+            "value": 3.141592653589793
           },
           "detuning": {
             "class_": "MathNum",
@@ -295,7 +295,7 @@
           },
           "rabi": {
             "class_": "MathNum",
-            "value": 6.283185307179586
+            "value": 3.141592653589793
           },
           "detuning": {
             "class_": "MathNum",
@@ -352,7 +352,7 @@
           },
           "rabi": {
             "class_": "MathNum",
-            "value": 6.283185307179586
+            "value": 3.141592653589793
           },
           "detuning": {
             "class_": "MathNum",
