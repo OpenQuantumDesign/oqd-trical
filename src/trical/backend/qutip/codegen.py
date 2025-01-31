@@ -59,6 +59,11 @@ class QutipCodeGeneration(ConversionRule):
 
         return f_op
 
+    def map_Displacement(self, model, operands):
+        return lambda t: qt.displace(
+            self.hilbert_space[model.subsystem], operands["alpha"](t)
+        )
+
     def map_OperatorMul(self, model, operands):
         return lambda t: operands["op1"](t) * operands["op2"](t)
 
