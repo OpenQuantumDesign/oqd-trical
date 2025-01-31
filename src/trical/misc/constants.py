@@ -25,9 +25,12 @@ k_e: float = 8.9875517923e9
 Coulomb constant
 """
 epsilon_0: float = 8.8541878188e-12
-
 """
 Permittivity of free space
+"""
+m_u: float = 1.66053906892e-27
+"""
+Atomic mass unit
 """
 
 ########################################################################################
@@ -43,7 +46,7 @@ def convert_m_a(A):
     Returns:
         (float): Atomic mass in kilograms
     """
-    return A * 1.66053906660e-27
+    return A * m_u
 
 
 def convert_lamb_to_omega(lamb):
