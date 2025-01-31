@@ -100,6 +100,12 @@ class ConstructHamiltonian(ConversionRule):
     def map_Beam(self, model, operands):
         I = intensity_from_laser(model)
 
+        angular_frequency = (
+            abs(model.transition.level2.energy - model.transition.level1.energy)
+            + model.detuning
+        )
+        wavevector = angular_frequency * np.array(model.wavevector)
+
         ops = []
         if self.modes:
             wave_plus = reduce(
@@ -108,7 +114,7 @@ class ConstructHamiltonian(ConversionRule):
                     Wave(
                         lamb_dicke=WaveCoefficient(
                             amplitude=np.dot(
-                                model.wavevector,
+                                wavevector,
                                 mode.eigenvector[
                                     model.target * 3 : model.target * 3 + 3
                                 ],
@@ -131,7 +137,7 @@ class ConstructHamiltonian(ConversionRule):
                     Wave(
                         lamb_dicke=WaveCoefficient(
                             amplitude=-np.dot(
-                                model.wavevector,
+                                wavevector,
                                 mode.eigenvector[
                                     model.target * 3 : model.target * 3 + 3
                                 ],
@@ -159,13 +165,7 @@ class ConstructHamiltonian(ConversionRule):
                                 (
                                     WaveCoefficient(
                                         amplitude=rabi / 2,
-                                        frequency=-(
-                                            abs(
-                                                model.transition.level2.energy
-                                                - model.transition.level1.energy
-                                            )
-                                            + model.detuning
-                                        ),
+                                        frequency=-angular_frequency,
                                         phase=model.phase,
                                     )
                                     * (
@@ -206,13 +206,7 @@ class ConstructHamiltonian(ConversionRule):
                                 (
                                     WaveCoefficient(
                                         amplitude=rabi / 2,
-                                        frequency=(
-                                            abs(
-                                                model.transition.level2.energy
-                                                - model.transition.level1.energy
-                                            )
-                                            + model.detuning
-                                        ),
+                                        frequency=angular_frequency,
                                         phase=-model.phase,
                                     )
                                     * (
