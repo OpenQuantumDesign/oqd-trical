@@ -8,7 +8,7 @@ from .interface.operator import OperatorAdd, CoefficientAdd
 ########################################################################################
 
 
-class CoeffiecientPrinter(ConversionRule):
+class CoefficientPrinter(ConversionRule):
     """Prints Coefficients in a pretty manner"""
 
     def map_MathExpr(self, model, operands):
@@ -58,9 +58,6 @@ class OperatorPrinter(ConversionRule):
     def map_PrunedOperator(self, model, operands):
         return f"PrunedOperator"
 
-    def map_Wave(self, model, operands):
-        return f"exp(1j * ({operands['lamb_dicke']} * C_{model.subsystem} + conj({operands['lamb_dicke']}) * A_{model.subsystem}))"
-
     def map_Displacement(self, model, operands):
         return f"D({operands['alpha']})_{model.subsystem}"
 
@@ -77,7 +74,7 @@ class OperatorPrinter(ConversionRule):
         return f"{'(' + operands['coeff'] + ')' if isinstance(model.coeff, CoefficientAdd) else operands['coeff']} * {'(' + operands['op'] + ')' if isinstance(model.op, OperatorAdd) else operands['op']}"
 
     def map_Coefficient(self, model, operands):
-        return Post(CoeffiecientPrinter())(model)
+        return Post(CoefficientPrinter())(model)
 
 
 class CondensedOperatorPrettyPrint(PrettyPrint):
