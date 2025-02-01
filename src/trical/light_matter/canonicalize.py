@@ -67,10 +67,10 @@ class Prune(RewriteRule):
         ) and model.coeff2.amplitude == MathNum(value=0):
             return model.coeff1
 
-    def map_Wave(self, model):
+    def map_Displacement(self, model):
         if isinstance(
-            model.lamb_dicke, WaveCoefficient
-        ) and model.lamb_dicke.amplitude == MathNum(value=0):
+            model.alpha, WaveCoefficient
+        ) and model.alpha.amplitude == MathNum(value=0):
             return Identity(subsystem=model.subsystem)
 
 

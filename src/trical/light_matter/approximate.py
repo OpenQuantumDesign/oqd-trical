@@ -11,6 +11,7 @@ from .interface.operator import (
     ConstantCoefficient,
     Creation,
     Annihilation,
+    WaveCoefficient,
 )
 
 ########################################################################################
@@ -23,15 +24,19 @@ class FirstOrderLambDickeApprox(RewriteRule):
 
         self.approximated_operators = []
 
-    def map_Wave(self, model):
-        if isinstance(model.lamb_dicke.amplitude, MathNum):
-            if np.abs(model.lamb_dicke.amplitude.value) < self.cutoff:
+    def map_Displacement(self, model):
+        if isinstance(model.alpha.amplitude, MathNum):
+            if np.abs(model.alpha.amplitude.value) < self.cutoff:
                 self.approximated_operators.append(model)
-                return Identity(subsystem=model.subsystem) + ConstantCoefficient(
-                    value=1j
-                ) * (
-                    model.lamb_dicke * Creation(subsystem=model.subsystem)
-                    + model.lamb_dicke * Annihilation(subsystem=model.subsystem)
+
+                alpha_conj = WaveCoefficient(
+                    amplitude=model.alpha.amplitude,
+                    frequency=-model.alpha.frequency,
+                    phase=-model.alpha.phase,
+                )
+                return Identity(subsystem=model.subsystem) + (
+                    model.alpha * Creation(subsystem=model.subsystem)
+                    - alpha_conj * Annihilation(subsystem=model.subsystem)
                 )
 
 
@@ -43,25 +48,29 @@ class SecondOrderLambDickeApprox(RewriteRule):
 
         self.approximated_operators = []
 
-    def map_Wave(self, model):
-        if isinstance(model.lamb_dicke.amplitude, MathNum):
-            if np.abs(model.lamb_dicke.amplitude.value) < self.cutoff:
+    def map_Displacement(self, model):
+        if isinstance(model.alpha.amplitude, MathNum):
+            if np.abs(model.alpha.amplitude.value) < self.cutoff:
                 self.approximated_operators.append(model)
+
+                alpha_conj = WaveCoefficient(
+                    amplitude=model.alpha.amplitude,
+                    frequency=-model.alpha.frequency,
+                    phase=-model.alpha.phase,
+                )
                 return (
                     Identity(subsystem=model.subsystem)
-                    + ConstantCoefficient(value=1j)
-                    * (
-                        model.lamb_dicke * Creation(subsystem=model.subsystem)
-                        + model.lamb_dicke * Annihilation(subsystem=model.subsystem)
+                    + (
+                        model.alpha * Creation(subsystem=model.subsystem)
+                        - alpha_conj * Annihilation(subsystem=model.subsystem)
                     )
-                    + ConstantCoefficient(value=-1)
-                    * (
-                        model.lamb_dicke * Creation(subsystem=model.subsystem)
-                        + model.lamb_dicke * Annihilation(subsystem=model.subsystem)
+                    + (
+                        model.alpha * Creation(subsystem=model.subsystem)
+                        - alpha_conj * Annihilation(subsystem=model.subsystem)
                     )
                     * (
-                        model.lamb_dicke * Creation(subsystem=model.subsystem)
-                        + model.lamb_dicke * Annihilation(subsystem=model.subsystem)
+                        model.alpha * Creation(subsystem=model.subsystem)
+                        - alpha_conj * Annihilation(subsystem=model.subsystem)
                     )
                 )
 

@@ -15,7 +15,7 @@ from .interface.operator import (
     Creation,
     WaveCoefficient,
     Identity,
-    Wave,
+    Displacement,
 )
 from .interface.emulator import AtomicEmulatorCircuit, AtomicEmulatorGate
 
@@ -108,51 +108,33 @@ class ConstructHamiltonian(ConversionRule):
 
         ops = []
         if self.modes:
-            wave_plus = reduce(
-                lambda x, y: x @ y,
-                [
-                    Wave(
-                        lamb_dicke=WaveCoefficient(
-                            amplitude=np.dot(
-                                wavevector,
-                                mode.eigenvector[
-                                    model.target * 3 : model.target * 3 + 3
-                                ],
-                            )
-                            * np.sqrt(
-                                1 / (2 * self.ions[model.target].mass * mode.energy)
-                            ),
-                            frequency=0,
-                            phase=0,
-                        ),
-                        subsystem=f"P{i}",
-                    )
-                    for i, mode in enumerate(self.modes)
-                ],
-            )
+            displacement_plus = []
+            displacement_minus = []
+            for m, mode in enumerate(self.modes):
+                eta = np.dot(
+                    wavevector,
+                    mode.eigenvector[model.target * 3 : model.target * 3 + 3],
+                ) * np.sqrt(1 / (2 * self.ions[model.target].mass * mode.energy))
 
-            wave_minus = reduce(
-                lambda x, y: x @ y,
-                [
-                    Wave(
-                        lamb_dicke=WaveCoefficient(
-                            amplitude=-np.dot(
-                                wavevector,
-                                mode.eigenvector[
-                                    model.target * 3 : model.target * 3 + 3
-                                ],
-                            )
-                            * np.sqrt(
-                                1 / (2 * self.ions[model.target].mass * mode.energy)
-                            ),
-                            frequency=0,
-                            phase=0,
+                displacement_plus.append(
+                    Displacement(
+                        alpha=WaveCoefficient(
+                            amplitude=eta, frequency=0, phase=np.pi / 2
                         ),
-                        subsystem=f"P{i}",
+                        subsystem=f"P{m}",
                     )
-                    for i, mode in enumerate(self.modes)
-                ],
-            )
+                )
+                displacement_minus.append(
+                    Displacement(
+                        alpha=WaveCoefficient(
+                            amplitude=eta, frequency=0, phase=-np.pi / 2
+                        ),
+                        subsystem=f"P{m}",
+                    )
+                )
+
+            displacement_plus = reduce(lambda x, y: x @ y, displacement_plus)
+            displacement_minus = reduce(lambda x, y: x @ y, displacement_minus)
 
             for transition in self.ions[model.target].transitions:
                 rabi = rabi_from_intensity(model, transition, I)
@@ -194,7 +176,7 @@ class ConstructHamiltonian(ConversionRule):
                                 for i in range(self.N)
                             ],
                         )
-                        @ wave_plus
+                        @ displacement_plus
                     )
                 )
 
@@ -235,7 +217,7 @@ class ConstructHamiltonian(ConversionRule):
                                 for i in range(self.N)
                             ],
                         )
-                        @ wave_minus
+                        @ displacement_minus
                     )
                 )
 
@@ -250,13 +232,7 @@ class ConstructHamiltonian(ConversionRule):
                             (
                                 WaveCoefficient(
                                     amplitude=rabi / 2,
-                                    frequency=-(
-                                        abs(
-                                            model.transition.level2.energy
-                                            - model.transition.level1.energy
-                                        )
-                                        + model.detuning
-                                    ),
+                                    frequency=angular_frequency,
                                     phase=model.phase,
                                 )
                                 * (
@@ -291,7 +267,10 @@ class ConstructHamiltonian(ConversionRule):
         return op
 
     def map_Pulse(self, model, operands):
-        return AtomicEmulatorGate(hamiltonian=operands["beam"], duration=model.duration)
+        return AtomicEmulatorGate(
+            hamiltonian=operands["beam"],
+            duration=model.duration,
+        )
 
     def map_ParallelProtocol(self, model, operands):
         # TODO: Implement correct procedure for SequentialProtocol

@@ -156,10 +156,6 @@ class Identity(OperatorLeaf):
     pass
 
 
-class Wave(OperatorLeaf):
-    lamb_dicke: CoefficientSubTypes
-
-
 class PrunedOperator(Operator):
     pass
 
@@ -195,7 +191,6 @@ OperatorSubTypes = Union[
     Creation,
     Identity,
     PrunedOperator,
-    Wave,
     Displacement,
     OperatorAdd,
     OperatorMul,
