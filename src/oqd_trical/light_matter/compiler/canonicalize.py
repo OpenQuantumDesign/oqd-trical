@@ -1,28 +1,39 @@
-from oqd_compiler_infrastructure import RewriteRule, Pre, Chain, Post, FixedPoint
+# Copyright 2024-2025 Open Quantum Design
 
-from oqd_core.interface.math import MathNum
-from oqd_core.compiler.math.rules import (
-    DistributeMathExpr,
-    ProperOrderMathExpr,
-    PartitionMathExpr,
-)
-from oqd_core.compiler.math.passes import simplify_math_expr
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 from functools import reduce
-
 from typing import Union
 
-########################################################################################
+from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRule
+from oqd_core.compiler.math.passes import simplify_math_expr
+from oqd_core.compiler.math.rules import (
+    DistributeMathExpr,
+    PartitionMathExpr,
+    ProperOrderMathExpr,
+)
+from oqd_core.interface.math import MathNum
 
-from ..interface.operator import (
-    PrunedOperator,
-    Identity,
-    WaveCoefficient,
+########################################################################################
+from oqd_trical.light_matter.interface.operator import (
     ConstantCoefficient,
+    Identity,
     OperatorAdd,
-    OperatorScalarMul,
     OperatorKron,
     OperatorMul,
+    OperatorScalarMul,
+    PrunedOperator,
+    WaveCoefficient,
 )
 
 ########################################################################################

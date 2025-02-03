@@ -1,10 +1,22 @@
-import numpy as np
+# Copyright 2024-2025 Open Quantum Design
 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import numpy as np
 from sympy.physics.wigner import wigner_3j, wigner_6j
 
 ########################################################################################
-
-from ...misc import constants as cst
+from oqd_trical.misc import constants as cst
 
 ########################################################################################
 
@@ -36,7 +48,7 @@ def compute_matrix_element(laser, transition):
     polarization = np.array(laser.polarization).T  # make it a column vector
     wavevector = laser.wavevector
 
-    J1, J2, F1, F2, M1, M2, E1, E2, I, A = (
+    J1, J2, F1, F2, M1, M2, E1, E2, I, A = (  # noqa: E741
         transition.level1.spin_orbital,
         transition.level2.spin_orbital,
         transition.level1.spin_orbital_nuclear,
@@ -148,6 +160,6 @@ def intensity_from_laser(laser):
     """
     matrix_elem = compute_matrix_element(laser, laser.transition)
 
-    I = cst.c * cst.epsilon_0 / 2 * (cst.hbar * laser.rabi / (matrix_elem * cst.e)) ** 2
+    I = cst.c * cst.epsilon_0 / 2 * (cst.hbar * laser.rabi / (matrix_elem * cst.e)) ** 2  # noqa: E741
 
     return I

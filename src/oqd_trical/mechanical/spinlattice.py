@@ -1,13 +1,26 @@
+# Copyright 2024-2025 Open Quantum Design
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import matplotlib.cm as cm
+import matplotlib.colors as colors
+import matplotlib.pyplot as plt
 import numpy as np
 
-import matplotlib.colors as colors
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
+from oqd_trical.misc import constants as cst
 
 ########################################################################################
-
 from .base import Base
-from ..misc import constants as cst
 
 ########################################################################################
 
@@ -150,7 +163,7 @@ class SimulatedSpinLattice(SpinLattice):
                 self.b,
                 2 * self.k * np.sqrt(cst.hbar / (2 * np.outer(self.m, self.w))),
             )
-        except:
+        except Exception:
             eta = np.einsum(
                 "in,n->in",
                 self.b,

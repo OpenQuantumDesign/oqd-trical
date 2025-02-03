@@ -1,12 +1,24 @@
+# Copyright 2024-2025 Open Quantum Design
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from oqd_compiler_infrastructure import Chain, In, Post, Pre
 from oqd_core.backend.base import BackendBase
 
-from oqd_compiler_infrastructure import In, Chain, Post, Pre
-
 ########################################################################################
-
-from ...light_matter.compiler.analysis import AnalyseHilbertSpace
-from ...light_matter.compiler.codegen import ConstructHamiltonian
-from ...light_matter.compiler.canonicalize import canonicalization_pass_factory
+from oqd_trical.light_matter.compiler.analysis import AnalyseHilbertSpace
+from oqd_trical.light_matter.compiler.canonicalize import canonicalization_pass_factory
+from oqd_trical.light_matter.compiler.codegen import ConstructHamiltonian
 
 from .codegen import QutipCodeGeneration
 from .vm import QutipVM
