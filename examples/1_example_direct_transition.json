@@ -150,7 +150,7 @@
           },
           {
             "class_": "Transition",
-            "label": "q1->q1",
+            "label": "q1->e1",
             "level1": {
               "class_": "Level",
               "label": "q1",
@@ -179,22 +179,14 @@
             "multipole": "E1"
           }
         ],
-        "position": [
-          0.0,
-          0.0,
-          0.0
-        ]
+        "position": [0.0, 0.0, 0.0]
       }
     ],
     "modes": [
       {
         "class_": "Phonon",
         "energy": 0.1,
-        "eigenvector": [
-          1.0,
-          0.0,
-          0.0
-        ]
+        "eigenvector": [1.0, 0.0, 0.0]
       }
     ]
   },
@@ -247,16 +239,8 @@
             "class_": "MathNum",
             "value": 0
           },
-          "polarization": [
-            1.0,
-            0.0,
-            0.0
-          ],
-          "wavevector": [
-            0.0,
-            1.0,
-            0.0
-          ],
+          "polarization": [1.0, 0.0, 0.0],
+          "wavevector": [0.0, 1.0, 0.0],
           "target": 0
         },
         "duration": 10.0

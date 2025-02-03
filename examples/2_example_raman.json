@@ -10,6 +10,7 @@
         "levels": [
           {
             "class_": "Level",
+            "label": "q0",
             "principal": 6,
             "spin": 0.5,
             "orbital": 0.0,
@@ -21,6 +22,7 @@
           },
           {
             "class_": "Level",
+            "label": "q1",
             "principal": 6,
             "spin": 0.5,
             "orbital": 0.0,
@@ -32,6 +34,7 @@
           },
           {
             "class_": "Level",
+            "label": "e0",
             "principal": 5,
             "spin": 0.5,
             "orbital": 1.0,
@@ -43,6 +46,7 @@
           },
           {
             "class_": "Level",
+            "label": "e1",
             "principal": 5,
             "spin": 0.5,
             "orbital": 1.0,
@@ -56,8 +60,10 @@
         "transitions": [
           {
             "class_": "Transition",
+            "label": "q0->e0",
             "level1": {
               "class_": "Level",
+              "label": "q0",
               "principal": 6,
               "spin": 0.5,
               "orbital": 0.0,
@@ -69,6 +75,7 @@
             },
             "level2": {
               "class_": "Level",
+              "label": "e0",
               "principal": 5,
               "spin": 0.5,
               "orbital": 1.0,
@@ -83,8 +90,10 @@
           },
           {
             "class_": "Transition",
+            "label": "q0->e1",
             "level1": {
               "class_": "Level",
+              "label": "q0",
               "principal": 6,
               "spin": 0.5,
               "orbital": 0.0,
@@ -96,6 +105,7 @@
             },
             "level2": {
               "class_": "Level",
+              "label": "e1",
               "principal": 5,
               "spin": 0.5,
               "orbital": 1.0,
@@ -110,8 +120,10 @@
           },
           {
             "class_": "Transition",
+            "label": "q1->e0",
             "level1": {
               "class_": "Level",
+              "label": "q1",
               "principal": 6,
               "spin": 0.5,
               "orbital": 0.0,
@@ -123,6 +135,7 @@
             },
             "level2": {
               "class_": "Level",
+              "label": "e0",
               "principal": 5,
               "spin": 0.5,
               "orbital": 1.0,
@@ -137,8 +150,10 @@
           },
           {
             "class_": "Transition",
+            "label": "q1->e1",
             "level1": {
               "class_": "Level",
+              "label": "q1",
               "principal": 6,
               "spin": 0.5,
               "orbital": 0.0,
@@ -150,6 +165,7 @@
             },
             "level2": {
               "class_": "Level",
+              "label": "e1",
               "principal": 5,
               "spin": 0.5,
               "orbital": 1.0,
@@ -191,8 +207,10 @@
           "class_": "Beam",
           "transition": {
             "class_": "Transition",
+            "label": "q0->e0",
             "level1": {
               "class_": "Level",
+              "label": "q0",
               "principal": 6,
               "spin": 0.5,
               "orbital": 0.0,
@@ -204,6 +222,7 @@
             },
             "level2": {
               "class_": "Level",
+              "label": "e0",
               "principal": 5,
               "spin": 0.5,
               "orbital": 1.0,
@@ -248,8 +267,10 @@
           "class_": "Beam",
           "transition": {
             "class_": "Transition",
+            "label": "q1->e0",
             "level1": {
               "class_": "Level",
+              "label": "q1",
               "principal": 6,
               "spin": 0.5,
               "orbital": 0.0,
@@ -261,6 +282,7 @@
             },
             "level2": {
               "class_": "Level",
+              "label": "e0",
               "principal": 5,
               "spin": 0.5,
               "orbital": 1.0,
