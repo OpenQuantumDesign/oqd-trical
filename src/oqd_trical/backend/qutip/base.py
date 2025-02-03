@@ -19,6 +19,9 @@ class QutipBackend(BackendBase):
 
     Attributes:
         save_intermediate (bool): Whether compiler saves the intermediate representation of the atomic circuit
+        approx_pass (PassBase): Pass of approximations to apply to the system.
+        solver (Literal["SESolver","MESolver"]): QuTiP solver to use.
+        solver_options (Dict[str,Any]): Qutip solver options
         intermediate (AtomicEmulatorCircuit): Intermediate representation of the atomic circuit during compilation
     """
 
@@ -38,6 +41,17 @@ class QutipBackend(BackendBase):
         self.solver_options = solver_options
 
     def compile(self, circuit, fock_cutoff):
+        """
+        Compiles a AtomicCircuit to a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+
+        Args:
+            circuit (AtomicCircuit): AtomicCircuit to be compiled.
+            fock_cutoff (int): Truncation for fock spaces.
+
+        Returns:
+            experiment (QutipExperiment): Compiled [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+            hilbert_space (Dict[str, int]): Hilbert space of the system.
+        """
         analysis = In(AnalyseHilbertSpace())
 
         analysis(circuit)
@@ -70,6 +84,17 @@ class QutipBackend(BackendBase):
         return experiment, hilbert_space
 
     def run(self, experiment, hilbert_space, timestep):
+        """
+        Runs a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+
+        Args:
+            experiment (QutipExperiment): [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment] to be executed.
+            hilbert_space (Dict[str, int]): Hilbert space of the system.
+            timestep (float): Timestep between tracked states of the evolution.
+
+        Returns:
+            result (Dict[str,Any]): Result of execution of [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+        """
         vm = Pre(
             QutipVM(
                 hilbert_space=hilbert_space,

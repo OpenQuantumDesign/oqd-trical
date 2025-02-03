@@ -8,6 +8,16 @@ from oqd_compiler_infrastructure import RewriteRule
 
 
 class QutipVM(RewriteRule):
+    """
+    Rule that executes a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+
+    Attributes:
+        hilbert_space (Dict[str, int]): Hilbert space of the system.
+        timestep (float): Timestep between tracked states of the evolution.
+        solver (Literal["SESolver","MESolver"]): QuTiP solver to use.
+        solver_options (Dict[str,Any]): Qutip solver options
+    """
+
     def __init__(self, hilbert_space, timestep, solver="SESolver", solver_options={}):
         self.hilbert_space = hilbert_space
         self.timestep = timestep

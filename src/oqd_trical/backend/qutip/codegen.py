@@ -14,6 +14,14 @@ from .interface import QutipExperiment, QutipGate
 
 
 class QutipCodeGeneration(ConversionRule):
+    """
+    Rule that converts an [`AtomicEmulatorCircuit`][oqd_trical.light_matter.interface.emulator.AtomicEmulatorCircuit]
+    to a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment]
+
+    Attributes:
+        hilbert_space (Dict[str, int]): Hilbert space of the system.
+    """
+
     def __init__(self, hilbert_space: Dict[str, int]):
         super().__init__()
 
