@@ -21,6 +21,7 @@ nav:
   - Introduction:
       - Welcome to TrICal: index.md
       - Installation: get-started/installation.md
+      - Acknowledgement: get-started/acknowledgement.md
   - Examples: examples/examples.md
   - Explanation:
       - Hamiltonian Construction:

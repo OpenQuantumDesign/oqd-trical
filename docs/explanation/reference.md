@@ -1,3 +1,7 @@
+# Reference
+
+## Quantum dynamics of single trapped ions <div style="float:right;"> [![](https://img.shields.io/badge/Paper-40C4FF)](https://link.aps.org/doi/10.1103/RevModPhys.75.281) </div>
+
 ```bib
 @article{leibfried_quantum_2003,
 title = {Quantum dynamics of single trapped ions},
@@ -15,7 +19,11 @@ note = {Publisher: American Physical Society},
 pages = {281--324},
 file = {APS Snapshot:C\:\\Users\\Salieri\\Zotero\\storage\\SF4FPDHB\\RevModPhys.75.html:text/html;Full Text PDF:C\:\\Users\\Salieri\\Zotero\\storage\\LCRZRSV4\\Leibfried et al. - 2003 - Quantum dynamics of single trapped ions.pdf:application/pdf},
 }
+```
 
+## Ordered expansions in boson amplitude operators <div style="float:right;"> [![](https://img.shields.io/badge/Paper-40C4FF)](https://link.aps.org/doi/10.1103/PhysRev.177.1857) </div>
+
+```bib
 @article{cahill_ordered_1969,
 title = {Ordered {Expansions} in {Boson} {Amplitude} {Operators}},
 volume = {177},
