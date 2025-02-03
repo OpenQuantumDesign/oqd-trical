@@ -1,0 +1,149 @@
+site_name: Open Quantum Design - TrICal
+site_description: Trapped-ion Calculator
+
+repo_name: OpenQuantumDesign/oqd-trical
+repo_url: https://github.com/OpenQuantumDesign/oqd-trical
+
+copyright: Copyright &copy; 2024 Open Quantum Design
+
+use_directory_urls: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/OpenQuantumDesign
+      name: Open Quantum Design GitHub
+    - icon: fontawesome/solid/globe
+      link: https://openquantumdesign.org
+      name: Open Quantum Design Website
+
+nav:
+  - Introduction:
+      - Welcome to TrICal: index.md
+      - Installation: get-started/installation.md
+      - Features in development: get-started/outlook.md
+      - Acknowledgement: get-started/acknowledgement.md
+  - Explanation:
+      - Mechanical Properties: explanation/mechanical_properties.md
+      - Hamiltonian Construction:
+          - Derivation: explanation/hamiltonian_construction/derivation.md
+          - Matrix Elements: explanation/hamiltonian_construction/matrix_elements.md
+          - Zeeman Shifts: explanation/hamiltonian_construction/zeeman.md
+          - Additional Formulae: explanation/hamiltonian_construction/additional.md
+      - Approximations:
+          - Adiabatic Elimination: explanation/approximations/adiabatic_elimination.md
+          - Lamb-Dicke Approximation: explanation/approximations/lamb_dicke.md
+          - Rotating Wave Approximation: explanation/approximations/rotating_wave.md
+      - Reference: explanation/reference.md
+  - API Reference:
+      - Mechanical:
+          - Potential: reference/potential.md
+          - Trapped Ions: reference/trappedions.md
+          - Spin Lattice: reference/spinlattice.md
+      - Light Matter Interactions:
+          - Interface: reference/interface.md
+          - Compiler: reference/compiler.md
+      - Backend:
+          - QuTiP: reference/qutip.md
+      - Miscellaneous: reference/misc.md
+
+theme:
+  name: material
+
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: pink
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: pink
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+  features:
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.tooltips
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.prune
+    - toc.follow
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            show_submodules: true
+            docstring_style: "google"
+            docstring_section_style: "table"
+            show_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            separate_signature: false
+            group_by_category: true
+            members_order: "source"
+          import:
+            - https://docs.python.org/3/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
+            - https://matplotlib.org/stable/objects.inv
+
+markdown_extensions:
+  - attr_list
+  - toc:
+      permalink: true
+      toc_depth: 10
+
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+
+  # for notes/admonitions
+  - pymdownx.blocks.admonition
+  - pymdownx.blocks.details
+  - pymdownx.blocks.tab:
+      alternate_style: true
+
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+  - pymdownx.arithmatex:
+      generic: true
+
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+  - mdx_truly_sane_lists:
+      nested_indent: 2
+      truly_sane: True
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - stylesheets/headers.css
+  - stylesheets/admonitions.css

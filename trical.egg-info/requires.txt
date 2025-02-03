@@ -1,5 +1,0 @@
-autograd
-matplotlib
-numpy
-scipy
-sympy

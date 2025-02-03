@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "oqd-trical"
+version = "0.1.0dev1"
+requires-python = ">=3.10"
+readme = "README.md"
+license = { text = "Apache 2.0" }
+keywords = ["quantum", "computing", "compiler", "transpilation", "atomic"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+
+    "Intended Audience :: Science/Research ",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Compilers",
+
+    "License :: OSI Approved :: Apache Software License",
+
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "autograd",
+    "matplotlib",
+    "numpy",
+    "scipy",
+    "sympy",
+    "qutip",
+    "oqd_core@git+https://github.com/openquantumdesign/oqd-core@atomic",
+    "oqd_compiler_infrastructure@git+https://github.com/openquantumdesign/oqd-compiler-infrastructure",
+]
+
+[project.optional-dependencies]
+docs = [
+    "pymdown-extensions",
+    "mkdocstrings",
+    "mkdocs-material",
+    "mkdocstrings-python",
+    "mdx_truly_sane_lists",
+]
+test = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["oqd_trical*"]
+
+
+[project.urls]
+Homepage = "https://github.com/OpenQuantumDesign/oqd-trical"
+Repository = "https://github.com/OpenQuantumDesign/oqd-trical.git"
+Issues = "https://github.com/OpenQuantumDesign/oqd-trical/issues"
