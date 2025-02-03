@@ -1,1 +1,1 @@
-::: trical.light_matter.interface
+::: oqd_trical.light_matter.interface

@@ -1,1 +1,1 @@
-::: trical.backend.qutip
+::: oqd_trical.backend.qutip

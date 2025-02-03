@@ -1,1 +1,1 @@
-::: trical.misc
+::: oqd_trical.misc
