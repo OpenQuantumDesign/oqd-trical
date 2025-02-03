@@ -18,6 +18,9 @@ def compute_matrix_element(laser, transition):
 
     Returns:
         matrix_element (float): Multipole matrix elements corresponding to the interaction between the laser and the transition
+
+    Warning:
+        Currently implemented for only `E1` and `E2` transitions.
     """
 
     # If this happens there's probably an error with the ion species card

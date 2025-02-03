@@ -4,7 +4,7 @@ from oqd_compiler_infrastructure import RewriteRule
 
 
 class AnalyseHilbertSpace(RewriteRule):
-    """Analyses the hilbert space of a atomic system"""
+    """Analyses the atomic system and extracts the Hilbert space."""
 
     def __init__(self):
         super().__init__()

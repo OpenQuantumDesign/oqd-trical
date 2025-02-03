@@ -17,6 +17,13 @@ from ..interface.operator import (
 
 
 class FirstOrderLambDickeApprox(RewriteRule):
+    """
+    Applies the Lamb-Dicke approximation to first order.
+
+    Attributes:
+        cutoff (float): Lamb-Dicke parameter cutoff below which approximation is applied.
+    """
+
     def __init__(self, cutoff=1):
         super().__init__()
         self.cutoff = cutoff
@@ -40,6 +47,13 @@ class FirstOrderLambDickeApprox(RewriteRule):
 
 
 class SecondOrderLambDickeApprox(RewriteRule):
+    """
+    Applies the Lamb-Dicke approximation to second order.
+
+    Attributes:
+        cutoff (float): Lamb-Dicke parameter cutoff below which approximation is applied.
+    """
+
     def __init__(self, cutoff=1):
         super().__init__()
 
@@ -75,6 +89,16 @@ class SecondOrderLambDickeApprox(RewriteRule):
 
 
 class RotatingWaveApprox(RewriteRule):
+    """
+    Applies the rotating wave approximation.
+
+    Attributes:
+        cutoff (float): Frequency cutoff above which approximation is applied.
+
+    Warning:
+        Currently not implmented!
+    """
+
     def __init__(self):
         super().__init__()
 
@@ -85,6 +109,16 @@ class RotatingWaveApprox(RewriteRule):
 
 
 class RotatingReferenceFrame(RewriteRule):
+    """
+    Moves to an interaction picture with a rotating frame of reference.
+
+    Attributes:
+        frame (Operator): [`Operator`][oqd_trical.light_matter.interface.operator.Operator] that defines the rotating frame of reference.
+
+    Warning:
+        Currently not implmented!
+    """
+
     def __init__(self, frame):
         super().__init__()
 
