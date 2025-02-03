@@ -13,12 +13,12 @@
 # limitations under the License.
 
 from __future__ import annotations
+
 from typing import List, Optional
 
 from oqd_compiler_infrastructure import TypeReflectBaseModel
 
 ########################################################################################
-
 from .operator import OperatorSubTypes
 
 ########################################################################################

@@ -13,10 +13,8 @@
 # limitations under the License.
 
 import numpy as np
-
-from qutip import tensor, basis, SESolver, MESolver, QobjEvo
-
 from oqd_compiler_infrastructure import RewriteRule
+from qutip import MESolver, QobjEvo, SESolver, basis, tensor
 
 ########################################################################################
 

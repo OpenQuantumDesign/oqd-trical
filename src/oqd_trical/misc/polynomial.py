@@ -18,15 +18,12 @@ Module containing relevant functions regarding polynomials for TrIcal.
 
 ########################################################################################
 
-from typing import Callable
-
-from autograd import numpy as agnp
 
 import numpy as np
+from autograd import numpy as agnp
 from numpy.polynomial import polynomial as poly
 
 ########################################################################################
-
 from .optimize import dflt_ls_opt
 
 ########################################################################################

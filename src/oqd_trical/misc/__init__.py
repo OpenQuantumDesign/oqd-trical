@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import constants, linalg, optimize, polynomial, multispecies
+from . import constants, linalg, multispecies, optimize, polynomial

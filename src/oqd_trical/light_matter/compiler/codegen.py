@@ -15,23 +15,21 @@
 from functools import reduce
 
 import numpy as np
-
-from oqd_core.interface.math import MathFunc, MathVar
-from oqd_core.interface.atomic import SequentialProtocol
 from oqd_compiler_infrastructure import ConversionRule
+from oqd_core.interface.atomic import SequentialProtocol
+from oqd_core.interface.math import MathFunc, MathVar
 
-########################################################################################
-
-from ..interface.operator import (
-    KetBra,
-    Annihilation,
-    Creation,
-    WaveCoefficient,
-    Identity,
-    Displacement,
-)
 from ..interface.emulator import AtomicEmulatorCircuit, AtomicEmulatorGate
 
+########################################################################################
+from ..interface.operator import (
+    Annihilation,
+    Creation,
+    Displacement,
+    Identity,
+    KetBra,
+    WaveCoefficient,
+)
 from .utils import intensity_from_laser, rabi_from_intensity
 
 ########################################################################################

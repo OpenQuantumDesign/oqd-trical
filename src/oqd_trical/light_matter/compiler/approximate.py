@@ -12,18 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import numpy as np
 from oqd_compiler_infrastructure import RewriteRule
-
 from oqd_core.interface.math import MathNum
 
-import numpy as np
-
 ########################################################################################
-
 from ..interface.operator import (
-    Identity,
-    Creation,
     Annihilation,
+    Creation,
+    Identity,
     WaveCoefficient,
 )
 

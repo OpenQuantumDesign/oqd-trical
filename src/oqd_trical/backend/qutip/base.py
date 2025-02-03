@@ -12,16 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oqd_compiler_infrastructure import Chain, In, Post, Pre
 from oqd_core.backend.base import BackendBase
 
-from oqd_compiler_infrastructure import In, Chain, Post, Pre
-
 ########################################################################################
-
 from ...light_matter.compiler.analysis import AnalyseHilbertSpace
-from ...light_matter.compiler.codegen import ConstructHamiltonian
 from ...light_matter.compiler.canonicalize import canonicalization_pass_factory
-
+from ...light_matter.compiler.codegen import ConstructHamiltonian
 from .codegen import QutipCodeGeneration
 from .vm import QutipVM
 

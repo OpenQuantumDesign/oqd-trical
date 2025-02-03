@@ -14,15 +14,15 @@
 
 from .base import Base
 from .potential import (
-    Potential,
-    CoulombPotential,
-    PolynomialPotential,
-    SymbolicPotential,
     AdvancedSymbolicPotential,
-    OpticalPotential,
-    GaussianOpticalPotential,
     AutoDiffPotential,
+    CoulombPotential,
+    GaussianOpticalPotential,
+    OpticalPotential,
+    PolynomialPotential,
+    Potential,
     SymbolicOpticalPotential,
+    SymbolicPotential,
 )
-from .spinlattice import SpinLattice, SimulatedSpinLattice
+from .spinlattice import SimulatedSpinLattice, SpinLattice
 from .trappedions import TrappedIons

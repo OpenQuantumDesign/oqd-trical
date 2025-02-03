@@ -12,16 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import matplotlib.cm as cm
+import matplotlib.colors as colors
+import matplotlib.pyplot as plt
 import numpy as np
 
-import matplotlib.colors as colors
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
+from ..misc import constants as cst
 
 ########################################################################################
-
 from .base import Base
-from ..misc import constants as cst
 
 ########################################################################################
 

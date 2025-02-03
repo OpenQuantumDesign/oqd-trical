@@ -13,11 +13,10 @@
 # limitations under the License.
 
 from oqd_compiler_infrastructure import ConversionRule, Post, PrettyPrint
-
 from oqd_core.compiler.math.rules import PrintMathExpr
 from oqd_core.interface.math import MathNum
 
-from ..interface.operator import OperatorAdd, CoefficientAdd
+from ..interface.operator import CoefficientAdd, OperatorAdd
 
 ########################################################################################
 
@@ -70,7 +69,7 @@ class OperatorPrinter(ConversionRule):
         return f"I_{model.subsystem}"
 
     def map_PrunedOperator(self, model, operands):
-        return f"PrunedOperator"
+        return "PrunedOperator"
 
     def map_Displacement(self, model, operands):
         return f"D({operands['alpha']})_{model.subsystem}"

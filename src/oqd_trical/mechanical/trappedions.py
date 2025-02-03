@@ -14,12 +14,12 @@
 
 import numpy as np
 
-########################################################################################
-
-from .base import Base
 from ..misc import constants as cst
 from ..misc.linalg import orthonormal_subset
 from ..misc.optimize import dflt_opt
+
+########################################################################################
+from .base import Base
 from .potential import CoulombPotential
 
 ########################################################################################

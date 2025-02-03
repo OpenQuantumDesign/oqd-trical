@@ -14,13 +14,11 @@
 
 from __future__ import annotations
 
-from typing import Union, Annotated
-
-from pydantic import AfterValidator
+from typing import Annotated, Union
 
 from oqd_compiler_infrastructure import TypeReflectBaseModel
 from oqd_core.interface.math import CastMathExpr
-
+from pydantic import AfterValidator
 
 ########################################################################################
 

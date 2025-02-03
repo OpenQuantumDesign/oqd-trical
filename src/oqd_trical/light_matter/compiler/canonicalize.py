@@ -12,31 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oqd_compiler_infrastructure import RewriteRule, Pre, Chain, Post, FixedPoint
-
-from oqd_core.interface.math import MathNum
-from oqd_core.compiler.math.rules import (
-    DistributeMathExpr,
-    ProperOrderMathExpr,
-    PartitionMathExpr,
-)
-from oqd_core.compiler.math.passes import simplify_math_expr
-
 from functools import reduce
-
 from typing import Union
 
-########################################################################################
+from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRule
+from oqd_core.compiler.math.passes import simplify_math_expr
+from oqd_core.compiler.math.rules import (
+    DistributeMathExpr,
+    PartitionMathExpr,
+    ProperOrderMathExpr,
+)
+from oqd_core.interface.math import MathNum
 
+########################################################################################
 from ..interface.operator import (
-    PrunedOperator,
-    Identity,
-    WaveCoefficient,
     ConstantCoefficient,
+    Identity,
     OperatorAdd,
-    OperatorScalarMul,
     OperatorKron,
     OperatorMul,
+    OperatorScalarMul,
+    PrunedOperator,
+    WaveCoefficient,
 )
 
 ########################################################################################

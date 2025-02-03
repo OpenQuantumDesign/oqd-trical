@@ -12,21 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Callable
 
 import itertools as itr
 
+import autograd as ag
 import numpy as np
+import sympy
 from numpy.polynomial import polynomial as poly
 
-import sympy
-
-import autograd as ag
+from ..misc import constants as cst
 
 ########################################################################################
-
 from .base import Base
-from ..misc import constants as cst
 
 ########################################################################################
 
