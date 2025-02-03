@@ -19,9 +19,6 @@ jobs:
             mkdocs-material-
       - name: Install uv
         uses: astral-sh/setup-uv@v4
-      - name: Create virtual environment
-        run: uv venv --python 3.12
-      - name: Activate virtual environment
-        run: source .venv/bin/activate
-      - run: uv pip install .[docs]
+      # - run: cp -r examples/ docs/examples/
+      - run: uv pip install .[docs] --system
       - run: mkdocs build
