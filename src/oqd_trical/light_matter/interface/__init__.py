@@ -12,5 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# from .emulator import *
-# from .operator import *
+from .emulator import AtomicEmulatorCircuit, AtomicEmulatorGate
+from .operator import (
+    Coefficient,
+    WaveCoefficient,
+    ConstantCoefficient,
+    CoefficientAdd,
+    CoefficientMul,
+    Operator,
+    issubsystem,
+    OperatorLeaf,
+    KetBra,
+    Annihilation,
+    Creation,
+    Displacement,
+    Identity,
+    PrunedOperator,
+    OperatorAdd,
+    OperatorMul,
+    OperatorKron,
+    OperatorScalarMul,
+    OperatorSubTypes,
+    CoefficientSubTypes,
+)
