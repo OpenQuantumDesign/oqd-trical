@@ -21,6 +21,7 @@ nav:
   - Introduction:
       - Welcome to TrICal: index.md
       - Installation: get-started/installation.md
+      - Features in development: get-started/outlook.md
       - Acknowledgement: get-started/acknowledgement.md
   - Examples: examples/examples.md
   - Explanation:
@@ -130,6 +131,9 @@ markdown_extensions:
 
   - pymdownx.arithmatex:
       generic: true
+
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
   - mdx_truly_sane_lists:
       nested_indent: 2

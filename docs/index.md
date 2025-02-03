@@ -1,5 +1,12 @@
 TrICal (Trapped-Ion Calculator) is a python package for simulating trapped-ion physics.
 
+<!-- prettier-ignore -->
+/// admonition | Warning
+    type: warning
+TrICal is still currently in heavy development, breaking changes might be made!
+Refer to [Features in development](/get-started/outlook).
+///
+
 Given a description of a trapped-ion experiment with:
 
 - $N$ ions in a chain
