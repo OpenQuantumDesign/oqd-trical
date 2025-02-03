@@ -1,1 +1,1 @@
-::: trical.classes.trappedions
+::: oqd_trical.mechanical.trappedions

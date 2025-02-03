@@ -1,2 +1,1 @@
-
-::: trical.classes.potential
+::: oqd_trical.mechanical.potential

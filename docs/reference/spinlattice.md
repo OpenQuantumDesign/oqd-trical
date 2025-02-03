@@ -1,1 +1,1 @@
-::: trical.classes.spinlattice
+::: oqd_trical.mechanical.spinlattice
