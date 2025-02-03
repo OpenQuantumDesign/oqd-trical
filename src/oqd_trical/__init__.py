@@ -14,9 +14,4 @@
 
 from . import backend, light_matter, mechanical, misc
 
-__all__ = [
-    "backend",
-    "light_matter",
-    "mechanical",
-    "misc"
-]
+__all__ = ["backend", "light_matter", "mechanical", "misc"]

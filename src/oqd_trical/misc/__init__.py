@@ -14,10 +14,4 @@
 
 from . import constants, linalg, multispecies, optimize, polynomial
 
-__all__ = [
-    "constants",
-    "linalg",
-    "multispecies",
-    "optimize",
-    "polynomial"
-]
+__all__ = ["constants", "linalg", "multispecies", "optimize", "polynomial"]

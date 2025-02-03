@@ -38,7 +38,7 @@ def spherical_to_cartesian(x):
 
 
 def rotation_matrix(n, theta):
-    n = np.einsum("ni,n->ni", n, 1 / norm(n))
+    n = np.einsum("ni,n->ni", n, 1 / np.linalg.norm(n))
     R = np.einsum("ni,nj,n->nij", n, n, 1 - np.cos(theta))
     R += np.einsum("n,ij->nij", np.cos(theta), np.identity(3))
     R[:, np.triu_indices(3, 1)[0], np.triu_indices(3, 1)[1]] += np.einsum(

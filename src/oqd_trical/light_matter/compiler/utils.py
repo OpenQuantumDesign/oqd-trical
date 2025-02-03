@@ -48,7 +48,7 @@ def compute_matrix_element(laser, transition):
     polarization = np.array(laser.polarization).T  # make it a column vector
     wavevector = laser.wavevector
 
-    J1, J2, F1, F2, M1, M2, E1, E2, I, A = (
+    J1, J2, F1, F2, M1, M2, E1, E2, I, A = (  # noqa: E741
         transition.level1.spin_orbital,
         transition.level2.spin_orbital,
         transition.level1.spin_orbital_nuclear,
@@ -160,6 +160,6 @@ def intensity_from_laser(laser):
     """
     matrix_elem = compute_matrix_element(laser, laser.transition)
 
-    I = cst.c * cst.epsilon_0 / 2 * (cst.hbar * laser.rabi / (matrix_elem * cst.e)) ** 2
+    I = cst.c * cst.epsilon_0 / 2 * (cst.hbar * laser.rabi / (matrix_elem * cst.e)) ** 2  # noqa: E741
 
     return I

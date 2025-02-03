@@ -18,7 +18,6 @@ Module containing default optimization function generators for TrICal.
 
 ########################################################################################
 
-
 import numpy as np
 from scipy import optimize as opt
 

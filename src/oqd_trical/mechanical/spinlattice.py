@@ -163,7 +163,7 @@ class SimulatedSpinLattice(SpinLattice):
                 self.b,
                 2 * self.k * np.sqrt(cst.hbar / (2 * np.outer(self.m, self.w))),
             )
-        except:
+        except Exception:
             eta = np.einsum(
                 "in,n->in",
                 self.b,

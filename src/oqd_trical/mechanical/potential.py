@@ -198,7 +198,7 @@ class Potential(Base):
 
         return hess_phi
 
-    def nondimensionalize(self, l):
+    def nondimensionalize(self, l):  # noqa: E741
         """
         Nondimensionalizes a Potential with a length scale.
 
@@ -331,7 +331,7 @@ class CoulombPotential(Potential):
 
         return d2phi_daidbj
 
-    def nondimensionalize(self, l):
+    def nondimensionalize(self, l):  # noqa: E741
         return self / (cst.k_e * cst.e**2)
 
     pass
@@ -402,7 +402,7 @@ class PolynomialPotential(Potential):
 
         return d2phi_daidbj
 
-    def nondimensionalize(self, l):
+    def nondimensionalize(self, l):  # noqa: E741
         alpha = (
             l ** np.indices(self.alpha.shape).sum(0)
             * self.alpha
@@ -452,7 +452,7 @@ class GaussianOpticalPotential(Potential):
         nu_transition = cst.convert_lamb_to_omega(opt_params["transition_wavelength"])
         Delta = nu - nu_transition
         x_R = np.pi * beam_waist**2 * opt_params["refractive_index"] / wavelength
-        I = 2 * power / (np.pi * beam_waist**2)
+        I = 2 * power / (np.pi * beam_waist**2)  # noqa: E741
         Omega = opt_params["Omega_bar"] * np.sqrt(np.abs(I))
         omega_x = np.sqrt(
             np.abs(
@@ -585,7 +585,7 @@ class GaussianOpticalPotential(Potential):
 
         return d2phi_daidbj
 
-    def nondimensionalize(self, l):
+    def nondimensionalize(self, l):  # noqa: E741
         ndgop = (
             GaussianOpticalPotential(
                 self.focal_point / l,
@@ -672,7 +672,7 @@ class SymbolicPotential(Potential):
 
         return d2phi_daidbj
 
-    def nondimensionalize(self, l):
+    def nondimensionalize(self, l):  # noqa: E741
         expr = self.expr.subs({k: k * l for k in self.symbol}) * (
             l / (cst.k_e * cst.e**2)
         )
@@ -747,7 +747,7 @@ class AdvancedSymbolicPotential(Potential):
 
         return d2phi_daidbj
 
-    def nondimensionalize(self, l):
+    def nondimensionalize(self, l):  # noqa: E741
         expr = self.expr.subs({k: k * l for k in self.symbol}) * (
             l / (cst.k_e * cst.e**2)
         )
@@ -863,7 +863,7 @@ class AutoDiffPotential(Potential):
         j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
         return lambda x: self.hessian()(x)[a * self.N + i][b * self.N + j]
 
-    def nondimensionalize(self, l):
+    def nondimensionalize(self, l):  # noqa: E741
         def expr(x):
             return self.expr(x * l) * l / (cst.k_e * cst.e**2)
 

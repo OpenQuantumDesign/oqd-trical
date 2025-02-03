@@ -113,7 +113,7 @@ class ConstructHamiltonian(ConversionRule):
         )
 
     def map_Beam(self, model, operands):
-        I = intensity_from_laser(model)
+        I = intensity_from_laser(model)  # noqa: E741
 
         angular_frequency = (
             abs(model.transition.level2.energy - model.transition.level1.energy)

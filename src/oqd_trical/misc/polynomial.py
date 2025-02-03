@@ -18,7 +18,6 @@ Module containing relevant functions regarding polynomials for TrIcal.
 
 ########################################################################################
 
-
 import numpy as np
 from autograd import numpy as agnp
 from numpy.polynomial import polynomial as poly
@@ -29,7 +28,7 @@ from .optimize import dflt_ls_opt
 ########################################################################################
 
 
-def multivariate_polyfit(x, vals, deg, l=1, opt=dflt_ls_opt):
+def multivariate_polyfit(x, vals, deg, l=1, opt=dflt_ls_opt):  # noqa: E741
     """
     Fits a set of data with a multivariate polynomial.
 
