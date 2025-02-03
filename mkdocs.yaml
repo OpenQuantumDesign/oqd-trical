@@ -24,6 +24,7 @@ nav:
       - Features in development: get-started/outlook.md
       - Acknowledgement: get-started/acknowledgement.md
   - Explanation:
+      - Mechanical Properties: explanation/mechanical_properties.md
       - Hamiltonian Construction:
           - Derivation: explanation/hamiltonian_construction/derivation.md
           - Matrix Elements: explanation/hamiltonian_construction/matrix_elements.md
