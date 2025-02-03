@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Union, List
 
 from oqd_compiler_infrastructure import TypeReflectBaseModel
-from oqd_core.interface.math import CastMathExpr
 
 ########################################################################################
 

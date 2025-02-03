@@ -8,7 +8,6 @@ import numpy as np
 
 from ..interface.operator import (
     Identity,
-    ConstantCoefficient,
     Creation,
     Annihilation,
     WaveCoefficient,
