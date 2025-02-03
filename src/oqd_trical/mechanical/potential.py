@@ -803,10 +803,10 @@ class SymbolicOpticalPotential(SymbolicPotential):
 
 class AutoDiffPotential(Potential):
     """
-        Object representing a functionally defined potential for the system of ions that uses automatic differentiation to calculate derivatives of the potential.
+    Object representing a functionally defined potential for the system of ions that uses automatic differentiation to calculate derivatives of the potential.
 
-        Args:
-            expr (Callable): function of the potential that is defined using the numpy submodule of autograd package.
+    Args:
+        expr (Callable): function of the potential that is defined using the numpy submodule of autograd package.
 
     Keyword Args:
         dim (int): Dimension of system.
