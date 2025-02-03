@@ -13,7 +13,6 @@ import autograd as ag
 
 from .base import Base
 from ..misc import constants as cst
-from ..misc.polynomial import multivariate_polyfit
 
 ########################################################################################
 
@@ -53,11 +52,16 @@ class Potential(Base):
         params = {}
         params.update(self.params)
         params.update(other.params)
-        phi = lambda x: self.phi(x) + other.phi(x)
-        dphi = lambda var: (lambda x: self.dphi(var)(x) + other.dphi(var)(x))
-        d2phi = lambda var1, var2: (
-            lambda x: self.d2phi(var1, var2)(x) + other.d2phi(var1, var2)(x)
-        )
+
+        def phi(x):
+            return self.phi(x) + other.phi(x)
+
+        def dphi(var):
+            return lambda x: self.dphi(var)(x) + other.dphi(var)(x)
+
+        def d2phi(var1, var2):
+            return lambda x: self.d2phi(var1, var2)(x) + other.d2phi(var1, var2)(x)
+
         return Potential(phi, dphi, d2phi, **params)
 
     def __sub__(self, other):
@@ -69,26 +73,43 @@ class Potential(Base):
         params = {}
         params.update(self.params)
         params.update(other.params)
-        phi = lambda x: self.phi(x) - other.phi(x)
-        dphi = lambda var: (lambda x: self.dphi(var)(x) - other.dphi(var)(x))
-        d2phi = lambda var1, var2: (
-            lambda x: self.d2phi(var1, var2)(x) - other.d2phi(var1, var2)(x)
-        )
+
+        def phi(x):
+            return self.phi(x) - other.phi(x)
+
+        def dphi(var):
+            return lambda x: self.dphi(var)(x) - other.dphi(var)(x)
+
+        def d2phi(var1, var2):
+            return lambda x: self.d2phi(var1, var2)(x) - other.d2phi(var1, var2)(x)
+
         return Potential(phi, dphi, d2phi, **params)
 
     def __mul__(self, multiplier):
-        phi = lambda x: self.phi(x) * multiplier
-        dphi = lambda var: (lambda x: self.dphi(var)(x) * multiplier)
-        d2phi = lambda var1, var2: (lambda x: self.d2phi(var1, var2)(x) * multiplier)
+        def phi(x):
+            return self.phi(x) * multiplier
+
+        def dphi(var):
+            return lambda x: self.dphi(var)(x) * multiplier
+
+        def d2phi(var1, var2):
+            return lambda x: self.d2phi(var1, var2)(x) * multiplier
+
         return Potential(phi, dphi, d2phi, **self.params)
 
     def __rmul__(self, multiplier):
         return self * multiplier
 
     def __truediv__(self, divisor):
-        phi = lambda x: self.phi(x) / divisor
-        dphi = lambda var: (lambda x: self.dphi(var)(x) / divisor)
-        d2phi = lambda var1, var2: (lambda x: self.d2phi(var1, var2)(x) / divisor)
+        def phi(x):
+            return self.phi(x) / divisor
+
+        def dphi(var):
+            return lambda x: self.dphi(var)(x) / divisor
+
+        def d2phi(var1, var2):
+            return lambda x: self.d2phi(var1, var2)(x) / divisor
+
         return Potential(phi, dphi, d2phi, **self.params)
 
     def __call__(self, x):
@@ -176,9 +197,16 @@ class Potential(Base):
         Returns:
             (Potential): Potential representing the nondimensionalized coulomb potential.
         """
-        nd_phi = lambda x: self.phi(x * l)
-        nd_dphi = lambda var: (lambda x: self.dphi(var)(x * l))
-        nd_d2phi = lambda var1, var2: (lambda x: self.d2phi(var1, var2)(x * l))
+
+        def nd_phi(x):
+            return self.phi(x * l)
+
+        def nd_dphi(var):
+            return lambda x: self.dphi(var)(x * l)
+
+        def nd_d2phi(var1, var2):
+            return lambda x: self.d2phi(var1, var2)(x * l)
+
         return (
             Potential(nd_phi, nd_dphi, nd_d2phi, **self.params)
             * l
@@ -236,7 +264,7 @@ class CoulombPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:] if type(var) == str else var[1:][0])
+        i = int(var[1:] if isinstance(var, str) else var[1:][0])
         j = np.delete(np.arange(self.N, dtype=int), i)
 
         def dphi_dai(x):
@@ -250,8 +278,8 @@ class CoulombPotential(Potential):
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0])
-        j = int(var2[1:] if type(var2) == str else var2[1:][0])
+        i = int(var1[1:] if isinstance(var1, str) else var1[1:][0])
+        j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
 
         def d2phi_daidbj(x):
             if i == j:
@@ -328,33 +356,38 @@ class PolynomialPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:] if type(var) == str else var[1:][0])
+        i = int(var[1:] if isinstance(var, str) else var[1:][0])
 
         beta = poly.polyder(self.alpha, axis=a)
 
-        dphi_dai = lambda x: {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[
-            self.dim
-        ](*x[i], beta)
+        def dphi_dai(x):
+            return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
+                *x[i], beta
+            )
 
         return dphi_dai
 
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0])
-        j = int(var2[1:] if type(var2) == str else var2[1:][0])
+        i = int(var1[1:] if isinstance(var1, str) else var1[1:][0])
+        j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
 
         beta = poly.polyder(self.alpha, axis=a)
         gamma = poly.polyder(beta, axis=b)
 
         if i == j:
-            d2phi_daidbj = lambda x: {
-                1: poly.polyval,
-                2: poly.polyval2d,
-                3: poly.polyval3d,
-            }[self.dim](*x[i], gamma)
+
+            def d2phi_daidbj(x):
+                return {
+                    1: poly.polyval,
+                    2: poly.polyval2d,
+                    3: poly.polyval3d,
+                }[self.dim](*x[i], gamma)
         else:
-            d2phi_daidbj = lambda x: 0.0
+
+            def d2phi_daidbj(x):
+                return 0.0
 
         return d2phi_daidbj
 
@@ -455,7 +488,7 @@ class GaussianOpticalPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:] if type(var) == str else var[1:][0])
+        i = int(var[1:] if isinstance(var, str) else var[1:][0])
 
         def dphi_dai(x):
             V = self.V
@@ -477,8 +510,8 @@ class GaussianOpticalPotential(Potential):
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0])
-        j = int(var2[1:] if type(var2) == str else var2[1:][0])
+        i = int(var1[1:] if isinstance(var1, str) else var1[1:][0])
+        j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
 
         def d2phi_daidbj(x):
             V = self.V
@@ -600,26 +633,31 @@ class SymbolicPotential(Potential):
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:] if type(var) == str else var[1:][0])
+        i = int(var[1:] if isinstance(var, str) else var[1:][0])
 
-        dphi_dai = lambda x: sympy.utilities.lambdify(
-            self.symbol, sympy.diff(self.expr, self.symbol[a])
-        )(*x[i])
+        def dphi_dai(x):
+            return sympy.utilities.lambdify(
+                self.symbol, sympy.diff(self.expr, self.symbol[a])
+            )(*x[i])
 
         return dphi_dai
 
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0])
-        j = int(var2[1:] if type(var2) == str else var2[1:][0])
+        i = int(var1[1:] if isinstance(var1, str) else var1[1:][0])
+        j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
 
         if i == j:
-            d2phi_daidbj = lambda x: sympy.utilities.lambdify(
-                self.symbol, sympy.diff(self.expr, self.symbol[a], self.symbol[b])
-            )(*x[i])
+
+            def d2phi_daidbj(x):
+                return sympy.utilities.lambdify(
+                    self.symbol, sympy.diff(self.expr, self.symbol[a], self.symbol[b])
+                )(*x[i])
         else:
-            d2phi_daidbj = lambda x: 0
+
+            def d2phi_daidbj(x):
+                return 0
 
         return d2phi_daidbj
 
@@ -674,7 +712,7 @@ class AdvancedSymbolicPotential(Potential):
 
     def first_derivative(self, var):
         a = var[0]
-        i = int(var[1:] if type(var) == str else var[1:][0])
+        i = int(var[1:] if isinstance(var, str) else var[1:][0])
 
         def dphi_dai(x):
             x = np.array(x)
@@ -687,8 +725,8 @@ class AdvancedSymbolicPotential(Potential):
     def second_derivative(self, var1, var2):
         a = var1[0]
         b = var2[0]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0])
-        j = int(var2[1:] if type(var2) == str else var2[1:][0])
+        i = int(var1[1:] if isinstance(var1, str) else var1[1:][0])
+        j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
 
         def d2phi_daidbj(x):
             x = np.array(x)
@@ -791,27 +829,33 @@ class AutoDiffPotential(Potential):
         return self.expr(x)
 
     def gradient(self):
-        flatten_expr = lambda x: self.expr(x.reshape(self.dim, -1).transpose())
+        def flatten_expr(x):
+            return self.expr(x.reshape(self.dim, -1).transpose())
+
         return lambda x: ag.jacobian(flatten_expr, 0)(x.transpose().reshape(-1))
 
     def hessian(self):
-        flatten_expr = lambda x: self.expr(x.reshape(self.dim, -1).transpose())
+        def flatten_expr(x):
+            return self.expr(x.reshape(self.dim, -1).transpose())
+
         return lambda x: ag.hessian(flatten_expr, 0)(x.transpose().reshape(-1))
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
-        i = int(var[1:] if type(var) == str else var[1:][0])
+        i = int(var[1:] if isinstance(var, str) else var[1:][0])
         return lambda x: self.gradient()(x)[a * self.N + i]
 
     def second_derivative(self, var1, var2):
         a = {"x": 0, "y": 1, "z": 2}[var1[0]]
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
-        i = int(var1[1:] if type(var1) == str else var1[1:][0])
-        j = int(var2[1:] if type(var2) == str else var2[1:][0])
+        i = int(var1[1:] if isinstance(var1, str) else var1[1:][0])
+        j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
         return lambda x: self.hessian()(x)[a * self.N + i][b * self.N + j]
 
     def nondimensionalize(self, l):
-        expr = lambda x: self.expr(x * l) * l / (cst.k_e * cst.e**2)
+        def expr(x):
+            return self.expr(x * l) * l / (cst.k_e * cst.e**2)
+
         ndadp = AutoDiffPotential(expr, **self.params)
         ndadp.update_params(**self.params)
         return ndadp
@@ -860,9 +904,13 @@ class OpticalPotential(AutoDiffPotential):
         self.nu_transition = nu_transition
         self.Delta = Delta
 
-        expr = lambda x: (
-            cst.hbar * opt_params["Omega_bar"] ** 2 * intensity_expr(x) / (4 * Delta)
-        )
+        def expr(x):
+            return (
+                cst.hbar
+                * opt_params["Omega_bar"] ** 2
+                * intensity_expr(x)
+                / (4 * Delta)
+            )
 
         super(OpticalPotential, self).__init__(expr, **self.params)
         pass

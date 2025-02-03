@@ -1,5 +1,3 @@
-from typing import Callable
-
 import numpy as np
 
 ########################################################################################
@@ -8,7 +6,7 @@ from .base import Base
 from ..misc import constants as cst
 from ..misc.linalg import orthonormal_subset
 from ..misc.optimize import dflt_opt
-from .potential import Potential, CoulombPotential
+from .potential import CoulombPotential
 
 ########################################################################################
 
@@ -65,7 +63,8 @@ class TrappedIons(Base):
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
         ndfp = ndcp + ndps.sum()
 
-        _ndfp = lambda x: ndfp(x.reshape(self.dim, self.N).transpose())
+        def _ndfp(x):
+            return ndfp(x.reshape(self.dim, self.N).transpose())
 
         self.x_ep = (
             opt(self, **kwargs)(_ndfp).reshape(self.dim, self.N).transpose() * self.l
@@ -86,16 +85,15 @@ class TrappedIons(Base):
         ndcp = self.cp.nondimensionalize(self.l)
         ndps = np.array([p.nondimensionalize(self.l) for p in self.ps])
 
-        hess_phi = lambda x: np.array(
-            [ndp.hessian()(x) for ndp in np.append(ndps, ndcp)]
-        ).sum(0)
+        def hess_phi(x):
+            return np.array([ndp.hessian()(x) for ndp in np.append(ndps, ndcp)]).sum(0)
 
         if "x_ep" not in self.__dict__.keys():
             self.equilibrium_position()
 
         hess_phi_x_ep = hess_phi(self.x_ep / self.l)
 
-        if type(self.m) == float:
+        if isinstance(self.m, float):
             A = hess_phi_x_ep / self.m
             w, b = np.linalg.eigh(A)
         else:
