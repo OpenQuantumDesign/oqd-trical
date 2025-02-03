@@ -4,28 +4,21 @@
     Open Quantum Design: TrICal
 </h2>
 
-[![doc](https://img.shields.io/badge/documentation-lightblue)](https://docs.openquantumdesign.org/open-quantum-design-core)
-[![PyPI Version](https://img.shields.io/pypi/v/oqd-core)](https://pypi.org/project/oqd-core)
-[![CI](https://github.com/OpenQuantumDesign/oqd-core/actions/workflows/pytest.yml/badge.svg)](https://github.com/OpenQuantumDesign/oqd-core/actions/workflows/pytest.yml)![versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
-[![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![CI](https://github.com/OpenQuantumDesign/oqd-trical/actions/workflows/pytest.yml/badge.svg)](https://github.com/OpenQuantumDesign/oqd-trical/actions/workflows/pytest.yml)
+![versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 ## Installation <a name="installation"></a>
 
 ```bash
-pip install oqd-core
-```
-
-or through `git`,
-
-```bash
-pip install git+https://github.com/OpenQuantumDesign/oqd-core.git
+pip install git+https://github.com/OpenQuantumDesign/oqd-trical.git
 ```
 
 To develop, clone the repository locally:
 
 ```bash
-git clone https://github.com/OpenQuantumDesign/oqd-core
+git clone https://github.com/OpenQuantumDesign/oqd-trical
 pip install .
 ```
 
