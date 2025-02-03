@@ -4,7 +4,7 @@
 /// admonition | Goal
     type: goal
 
-Compute the Zeeman shifts with [zeeman_energy_shift][trical.light_matter.utilities.zeeman_energy_shift].
+Compute the Zeeman shift.
 
 ///
 

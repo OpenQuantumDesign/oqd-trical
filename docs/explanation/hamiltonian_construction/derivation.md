@@ -11,7 +11,7 @@ Derive the [general Hamiltonian](#eqn:general_hamiltonian) of the trapped-ion sy
 - $M$ lasers
 - $L$ phonon modes
 
-Implemented with [construct_H_tree][trical.light_matter.compiler.rule.construct_H_tree.construct_H_tree].
+Implemented with [ConstructHamiltonian][oqd_trical.light_matter.compiler.codegen.ConstructHamiltonian]
 
 ///
 

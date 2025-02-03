@@ -23,7 +23,6 @@ nav:
       - Installation: get-started/installation.md
       - Features in development: get-started/outlook.md
       - Acknowledgement: get-started/acknowledgement.md
-  - Examples: examples/examples.md
   - Explanation:
       - Hamiltonian Construction:
           - Derivation: explanation/hamiltonian_construction/derivation.md

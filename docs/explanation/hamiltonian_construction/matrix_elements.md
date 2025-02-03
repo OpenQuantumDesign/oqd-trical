@@ -4,7 +4,7 @@
 /// admonition | Goal
     type: goal
 
-Compute the multipole matrix elements with [compute_matrix_element][trical.light_matter.interface.chamber.Chamber.compute_matrix_element].
+Compute the multipole matrix elements with [compute_matrix_element][oqd_trical.light_matter.compiler.utils.compute_matrix_element].
 
 ///
 
@@ -12,7 +12,7 @@ Multipole matrix elements determine the coupling between transitions. The Rabi f
 
 Let's consider a transition from level 0 to 1 in an ion with nuclear spin $I$ and associated quantum numbers: $M_i, J_i, F_i$; these are the magnetization (a.k.a. $m_F$), spin-orbital, and total angular momentum quantum numbers. Also, let $q = M_2 - M_1$, the change in magnetization quantum number in the transiton.
 
-/// tab | Dipole Transitions
+/// tab | Electric Dipole Transitions
 
 For dipole transitions, $q$ can be $0, \pm 1$, each of which corresponds to a required polarization $\hat{q}$:
 
@@ -44,7 +44,7 @@ where $\{\}$ refers to the Wigner-6j symbol and $()$ refers to the Wigner-3j sym
 
 ///
 
-/// tab | Quadrupole Transitions
+/// tab | Electric Quadrupole Transitions
 
 For quadrupole transitions, the laser's unit wave-vector $\hat{k}$ becomes relevant for coupling (in addition to its polarization). In particular, the coupling strength is now proportional to the overlap between $\hat{k}$ and $\hat{Q}\hat{\epsilon}$; $\hat{Q}$ is a matrix that depends on the value for $q$, which can now be one of $0, \pm 1, \pm 2$:
 
