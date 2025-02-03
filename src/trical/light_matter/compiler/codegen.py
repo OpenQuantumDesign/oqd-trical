@@ -7,9 +7,9 @@ from oqd_compiler_infrastructure import ConversionRule
 
 ########################################################################################
 
-from .interface.atomic import SequentialProtocol
+from ..interface.atomic import SequentialProtocol
 
-from .interface.operator import (
+from ..interface.operator import (
     KetBra,
     Annihilation,
     Creation,
@@ -17,7 +17,7 @@ from .interface.operator import (
     Identity,
     Displacement,
 )
-from .interface.emulator import AtomicEmulatorCircuit, AtomicEmulatorGate
+from ..interface.emulator import AtomicEmulatorCircuit, AtomicEmulatorGate
 
 from .utils import intensity_from_laser, rabi_from_intensity
 

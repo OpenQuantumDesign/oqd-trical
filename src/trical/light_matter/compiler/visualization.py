@@ -3,7 +3,7 @@ from oqd_compiler_infrastructure import ConversionRule, Post, PrettyPrint
 from oqd_core.compiler.math.rules import PrintMathExpr
 from oqd_core.interface.math import MathNum
 
-from .interface.operator import OperatorAdd, CoefficientAdd
+from ..interface.operator import OperatorAdd, CoefficientAdd
 
 ########################################################################################
 

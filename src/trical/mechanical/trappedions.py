@@ -223,13 +223,4 @@ class TrappedIons(Base):
         self.mic = mic
         return self.mic
 
-    def plot_equilibrium_position(self, **kwargs):
-        pass
-
-    def plot_normal_modes(self, **kwargs):
-        pass
-
-    def plot_principle_axis(self, **kwargs):
-        pass
-
     pass

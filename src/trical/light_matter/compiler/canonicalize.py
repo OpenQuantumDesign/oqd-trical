@@ -14,7 +14,7 @@ from typing import Union
 
 ########################################################################################
 
-from .interface.operator import (
+from ..interface.operator import (
     PrunedOperator,
     Identity,
     WaveCoefficient,
@@ -296,6 +296,7 @@ def canonicalization_pass_factory():
             FixedPoint(Post(OperatorDistributivity())),
             FixedPoint(Post(OperatorAssociativity())),
             Post(GatherCoefficient()),
+            FixedPoint(Post(CombineCoefficient())),
         ),
         Pre(ScaleTerms()),
         Post(CombineTerms()),

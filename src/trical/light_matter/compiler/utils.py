@@ -4,7 +4,7 @@ from sympy.physics.wigner import wigner_3j, wigner_6j
 
 ########################################################################################
 
-from ..misc import constants as cst
+from ...misc import constants as cst
 
 ########################################################################################
 
