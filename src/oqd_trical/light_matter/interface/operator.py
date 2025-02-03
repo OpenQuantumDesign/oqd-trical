@@ -12,6 +12,10 @@ from oqd_core.interface.math import CastMathExpr
 
 
 class Coefficient(TypeReflectBaseModel):
+    """
+    Class representing a scalar coefficient for an operator.
+    """
+
     def __neg__(self):
         return CoefficientMul(
             coeff1=WaveCoefficient(amplitude=-1, frequency=0, phase=0),
@@ -50,7 +54,10 @@ class Coefficient(TypeReflectBaseModel):
 
 class WaveCoefficient(Coefficient):
     """
-    A exp(i * (omega t + phi))
+    Class representing a wave coefficient for an operator of the following form:
+    $$
+    A e^{i(\\omega t + \\phi)}.
+    $$
     """
 
     amplitude: CastMathExpr
@@ -59,15 +66,26 @@ class WaveCoefficient(Coefficient):
 
 
 def ConstantCoefficient(value):
+    """
+    Function to create a constant coefficient.
+    """
     return WaveCoefficient(amplitude=value, frequency=0, phase=0)
 
 
 class CoefficientAdd(Coefficient):
+    """
+    Class representing the addition of coefficients
+    """
+
     coeff1: CoefficientSubTypes
     coeff2: CoefficientSubTypes
 
 
 class CoefficientMul(Coefficient):
+    """
+    Class representing the multiplication of coefficients
+    """
+
     coeff1: CoefficientSubTypes
     coeff2: CoefficientSubTypes
 
@@ -76,6 +94,10 @@ class CoefficientMul(Coefficient):
 
 
 class Operator(TypeReflectBaseModel):
+    """
+    Class representing a quantum operator.
+    """
+
     def __neg__(self):
         return OperatorScalarMul(
             op=self, coeff=WaveCoefficient(amplitude=-1, frequency=0, phase=0)
@@ -132,27 +154,77 @@ def issubsystem(value: str):
 
 
 class OperatorLeaf(Operator):
+    """
+    Class representing a leaf operator
+
+    Attributes:
+        subsystem (Annotated[str, AfterValidator(issubsystem)]): Label for the subsystem the operator acts on.
+    """
+
     subsystem: Annotated[str, AfterValidator(issubsystem)]
 
 
 class KetBra(OperatorLeaf):
+    """
+    Class representing a transition operator:
+    $$
+    |i \\rangle \\langle j|
+    $$
+
+    Attributes:
+        ket (int): End state.
+        bra (int): Start state.
+
+    """
+
     ket: int
     bra: int
 
 
 class Annihilation(OperatorLeaf):
+    """
+    Class representing an annihilation operator:
+    $$
+    \\hat{a}
+    $$
+    """
+
     pass
 
 
 class Creation(OperatorLeaf):
+    """
+    Class representing an annihilation operator:
+    $$
+    \\hat{a}^{\\dagger}
+    $$
+    """
+
     pass
 
 
 class Displacement(OperatorLeaf):
+    """
+    Class representing a displacement operator:
+    $$
+    e^{\\alpha \\hat{a}^{\\dagger} - \\alpha^* \\hat{a}}
+    $$
+
+    Attributes:
+        alpha (Coefficient): Displacement angle.
+    """
+
     alpha: CoefficientSubTypes
 
 
 class Identity(OperatorLeaf):
+    """
+    Class representing an identity operator:
+    $$
+    \\hat{\\mathbb{I}}
+    $$
+    """
+
     pass
 
 
@@ -164,21 +236,54 @@ class PrunedOperator(Operator):
 
 
 class OperatorAdd(Operator):
+    """
+    Class representing the addtition of [`Operators`][oqd_trical.light_matter.interface.operator.Operator].
+
+    Attributes:
+        op1 (Operator): Left hand side [`Operator`][oqd_trical.light_matter.interface.operator.Operator]
+        op2 (Operator): Right hand side [`Operator`][oqd_trical.light_matter.interface.operator.Operator]
+    """
+
     op1: OperatorSubTypes
     op2: OperatorSubTypes
 
 
 class OperatorMul(Operator):
+    """
+    Class representing the multiplication of [`Operators`][oqd_trical.light_matter.interface.operator.Operator].
+
+    Attributes:
+        op1 (Operator): Left hand side [`Operator`][oqd_trical.light_matter.interface.operator.Operator]
+        op2 (Operator): Right hand side [`Operator`][oqd_trical.light_matter.interface.operator.Operator]
+    """
+
     op1: OperatorSubTypes
     op2: OperatorSubTypes
 
 
 class OperatorKron(Operator):
+    """
+    Class representing the tensor product of [`Operators`][oqd_trical.light_matter.interface.operator.Operator].
+
+    Attributes:
+        op1 (Operator): Left hand side [`Operator`][oqd_trical.light_matter.interface.operator.Operator]
+        op2 (Operator): Right hand side [`Operator`][oqd_trical.light_matter.interface.operator.Operator]
+    """
+
     op1: OperatorSubTypes
     op2: OperatorSubTypes
 
 
 class OperatorScalarMul(Operator):
+    """
+    Class representing the scalar multiplication of a [`Coefficient`][oqd_trical.light_matter.interface.operator.Coefficient]
+    and an [`Operator`][oqd_trical.light_matter.interface.operator.Operator].
+
+    Attributes:
+        op (Operator): [`Operator`][oqd_trical.light_matter.interface.operator.Operator] to multiply.
+        coeff (Coefficient): [`Coefficient`][oqd_trical.light_matter.interface.operator.Coefficient] to multiply.
+    """
+
     op: OperatorSubTypes
     coeff: CoefficientSubTypes
 
