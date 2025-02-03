@@ -129,7 +129,7 @@ class SimulatedSpinLattice(SpinLattice):
             ).sum()
             != 3
         ):
-            self.ti.principle_axis()
+            self.ti.principal_axes()
 
         a = {"x": 0, "y": 1, "z": 2}[self.direc]
         self.w = self.ti.w_pa[a * self.N : (a + 1) * self.N]

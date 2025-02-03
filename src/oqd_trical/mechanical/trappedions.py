@@ -137,17 +137,17 @@ class TrappedIons(Base):
         )
         return self.w, self.b
 
-    def principle_axis(self, tol=1e-3):
+    def principal_axes(self, tol=1e-3):
         """
         Function that calculates the principle axes of the system.
 
         Args:
-            tol (float): Tolerance for evaluating orthogonality of principle axis.
+            tol (float): Tolerance for evaluating orthogonality of principal axes.
 
         Returns:
             x_pa (np.ndarray[float]): Principle axes of the system.
             w_pa (np.ndarray[float]): Normal mode frequencies of the system.
-            b_pa (np.ndarray[float]): Normal mode eigenvectors of the system in the principle axis coordinate system.
+            b_pa (np.ndarray[float]): Normal mode eigenvectors of the system in the principal axes coordinate system.
         """
         if np.isin(np.array(["w", "b"]), np.array(self.__dict__.keys())).sum() != 2:
             self.normal_modes()
@@ -213,7 +213,7 @@ class TrappedIons(Base):
             ).sum()
             != 3
         ):
-            self.principle_axis()
+            self.principal_axes()
 
         mic = np.zeros((3 * self.N, 3 * self.N, 3 * self.N))
         idcs = np.triu_indices(3 * self.N, k=1)
