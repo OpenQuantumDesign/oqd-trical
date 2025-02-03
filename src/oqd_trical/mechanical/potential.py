@@ -20,7 +20,7 @@ import numpy as np
 import sympy
 from numpy.polynomial import polynomial as poly
 
-from ..misc import constants as cst
+from oqd_trical.misc import constants as cst
 
 ########################################################################################
 from .base import Base

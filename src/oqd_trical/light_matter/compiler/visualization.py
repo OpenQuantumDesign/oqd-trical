@@ -16,7 +16,7 @@ from oqd_compiler_infrastructure import ConversionRule, Post, PrettyPrint
 from oqd_core.compiler.math.rules import PrintMathExpr
 from oqd_core.interface.math import MathNum
 
-from ..interface.operator import CoefficientAdd, OperatorAdd
+from oqd_trical.light_matter.interface.operator import CoefficientAdd, OperatorAdd
 
 ########################################################################################
 

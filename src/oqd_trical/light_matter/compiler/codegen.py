@@ -19,10 +19,13 @@ from oqd_compiler_infrastructure import ConversionRule
 from oqd_core.interface.atomic import SequentialProtocol
 from oqd_core.interface.math import MathFunc, MathVar
 
-from ..interface.emulator import AtomicEmulatorCircuit, AtomicEmulatorGate
+from oqd_trical.light_matter.interface.emulator import (
+    AtomicEmulatorCircuit,
+    AtomicEmulatorGate,
+)
 
 ########################################################################################
-from ..interface.operator import (
+from oqd_trical.light_matter.interface.operator import (
     Annihilation,
     Creation,
     Displacement,
@@ -30,6 +33,7 @@ from ..interface.operator import (
     KetBra,
     WaveCoefficient,
 )
+
 from .utils import intensity_from_laser, rabi_from_intensity
 
 ########################################################################################

@@ -17,7 +17,7 @@ import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import numpy as np
 
-from ..misc import constants as cst
+from oqd_trical.misc import constants as cst
 
 ########################################################################################
 from .base import Base

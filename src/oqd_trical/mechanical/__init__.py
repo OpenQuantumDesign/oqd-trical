@@ -26,3 +26,19 @@ from .potential import (
 )
 from .spinlattice import SimulatedSpinLattice, SpinLattice
 from .trappedions import TrappedIons
+
+__all__ = [
+    "Base",
+    "AdvancedSymbolicPotential",
+    "AutoDiffPotential",
+    "CoulombPotential",
+    "GaussianOpticalPotential",
+    "OpticalPotential",
+    "PolynomialPotential",
+    "Potential",
+    "SymbolicOpticalPotential",
+    "SymbolicPotential",
+    "SimulatedSpinLattice",
+    "SpinLattice",
+    "TrappedIons",
+]

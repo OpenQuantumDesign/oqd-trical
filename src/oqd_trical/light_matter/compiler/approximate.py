@@ -17,7 +17,7 @@ from oqd_compiler_infrastructure import RewriteRule
 from oqd_core.interface.math import MathNum
 
 ########################################################################################
-from ..interface.operator import (
+from oqd_trical.light_matter.interface.operator import (
     Annihilation,
     Creation,
     Identity,

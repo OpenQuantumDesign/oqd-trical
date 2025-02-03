@@ -25,7 +25,7 @@ from oqd_core.compiler.math.rules import (
 from oqd_core.interface.math import MathNum
 
 ########################################################################################
-from ..interface.operator import (
+from oqd_trical.light_matter.interface.operator import (
     ConstantCoefficient,
     Identity,
     OperatorAdd,

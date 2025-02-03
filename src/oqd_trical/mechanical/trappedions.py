@@ -14,9 +14,9 @@
 
 import numpy as np
 
-from ..misc import constants as cst
-from ..misc.linalg import orthonormal_subset
-from ..misc.optimize import dflt_opt
+from oqd_trical.misc import constants as cst
+from oqd_trical.misc.linalg import orthonormal_subset
+from oqd_trical.misc.optimize import dflt_opt
 
 ########################################################################################
 from .base import Base

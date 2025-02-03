@@ -16,9 +16,10 @@ from oqd_compiler_infrastructure import Chain, In, Post, Pre
 from oqd_core.backend.base import BackendBase
 
 ########################################################################################
-from ...light_matter.compiler.analysis import AnalyseHilbertSpace
-from ...light_matter.compiler.canonicalize import canonicalization_pass_factory
-from ...light_matter.compiler.codegen import ConstructHamiltonian
+from oqd_trical.light_matter.compiler.analysis import AnalyseHilbertSpace
+from oqd_trical.light_matter.compiler.canonicalize import canonicalization_pass_factory
+from oqd_trical.light_matter.compiler.codegen import ConstructHamiltonian
+
 from .codegen import QutipCodeGeneration
 from .vm import QutipVM
 
