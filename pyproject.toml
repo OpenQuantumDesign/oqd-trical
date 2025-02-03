@@ -28,10 +28,10 @@ classifiers = [
 
 dependencies = [
     "autograd",
+    "jax",
     "matplotlib",
     "numpy",
     "scipy",
-    "sympy",
     "qutip",
     "oqd_core@git+https://github.com/openquantumdesign/oqd-core",
     "oqd_compiler_infrastructure@git+https://github.com/openquantumdesign/oqd-compiler-infrastructure",
