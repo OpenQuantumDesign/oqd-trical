@@ -93,7 +93,8 @@ class SecondOrderLambDickeApprox(RewriteRule):
                         model.alpha * Creation(subsystem=model.subsystem)
                         - alpha_conj * Annihilation(subsystem=model.subsystem)
                     )
-                    + (
+                    + ConstantCoefficient(value=1 / 2)
+                    * (
                         model.alpha * Creation(subsystem=model.subsystem)
                         - alpha_conj * Annihilation(subsystem=model.subsystem)
                     )
@@ -115,18 +116,17 @@ class RotatingWaveApprox(RewriteRule):
         Currently not implmented!
     """
 
-    def __init__(self):
+    def __init__(self, cutoff):
         super().__init__()
 
-        raise NotImplementedError
+        self.cutoff = cutoff
 
     def map_WaveCoefficient(self, model):
-        return (
-            WaveCoefficient(
-                amplitude=1, frequency=self.frame_specs[model.subsystem], phase=0
-            )
-            * model
-        )
+        if (
+            isinstance(model.frequency, MathNum)
+            and np.abs(model.frequency.value) > self.cutoff
+        ):
+            return ConstantCoefficient(value=0)
 
 
 ########################################################################################

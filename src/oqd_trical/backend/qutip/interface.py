@@ -14,11 +14,15 @@
 
 from __future__ import annotations
 
-from typing import Callable, List, Union
+from typing import Callable, List, Union, Optional
 
 from oqd_compiler_infrastructure import TypeReflectBaseModel
 from pydantic import ConfigDict
 from qutip import Qobj
+
+########################################################################################
+
+from oqd_trical.light_matter.interface.operator import PrunedOperator
 
 ########################################################################################
 
@@ -35,7 +39,7 @@ class QutipExperiment(TypeReflectBaseModel):
 
     model_config = ConfigDict(validate_assignments=True, arbitrary_types_allowed=True)
 
-    base: Union[Qobj, Callable[[float], Qobj]]
+    base: Optional[Union[Qobj, Callable[[float], Qobj]]]
     sequence: List[QutipGate]
 
 
@@ -50,5 +54,5 @@ class QutipGate(TypeReflectBaseModel):
 
     model_config = ConfigDict(validate_assignments=True, arbitrary_types_allowed=True)
 
-    hamiltonian: Union[Qobj, Callable[[float], Qobj]]
+    hamiltonian: Optional[Union[Qobj, Callable[[float], Qobj]]]
     duration: float

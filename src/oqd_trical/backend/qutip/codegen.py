@@ -20,7 +20,9 @@ import qutip as qt
 from oqd_compiler_infrastructure import ConversionRule
 
 ########################################################################################
-from .interface import QutipExperiment, QutipGate
+
+from oqd_trical.backend.qutip.interface import QutipExperiment, QutipGate
+from oqd_trical.light_matter.interface.operator import PrunedOperator
 
 ########################################################################################
 
@@ -40,9 +42,15 @@ class QutipCodeGeneration(ConversionRule):
         self.hilbert_space = hilbert_space
 
     def map_AtomicEmulatorCircuit(self, model, operands):
+        if isinstance(operands["base"], PrunedOperator):
+            return QutipExperiment(base=None, sequence=operands["sequence"])
+
         return QutipExperiment(base=operands["base"], sequence=operands["sequence"])
 
     def map_AtomicEmulatorGate(self, model, operands):
+        if isinstance(operands["hamiltonian"], PrunedOperator):
+            return QutipGate(hamiltonian=None, duration=operands["duration"])
+
         return QutipGate(
             hamiltonian=operands["hamiltonian"], duration=operands["duration"]
         )

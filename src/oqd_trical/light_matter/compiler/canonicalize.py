@@ -207,6 +207,19 @@ class CombineCoefficient(RewriteRule):
                 phase=model.coeff1.phase + model.coeff2.phase,
             )
 
+    def map_CoefficientAdd(self, model):
+        if (
+            isinstance(model.coeff1, WaveCoefficient)
+            and isinstance(model.coeff2, WaveCoefficient)
+            and model.coeff1.frequency == MathNum(value=0)
+            and model.coeff1.phase == MathNum(value=0)
+            and model.coeff2.frequency == MathNum(value=0)
+            and model.coeff2.phase == MathNum(value=0)
+        ):
+            return ConstantCoefficient(
+                value=model.coeff1.amplitude + model.coeff2.amplitude
+            )
+
 
 class ScaleTerms(RewriteRule):
     """Adds a scalar multiplication for each term if it does not exist"""
@@ -320,4 +333,5 @@ def canonicalization_pass_factory():
             FixedPoint(Post(PruneZeroPowers())),
         ),
         simplify_math_expr,
+        FixedPoint(Post(Prune())),
     )

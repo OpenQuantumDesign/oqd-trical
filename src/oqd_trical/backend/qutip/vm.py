@@ -15,6 +15,11 @@
 import numpy as np
 from oqd_compiler_infrastructure import RewriteRule
 from qutip import MESolver, QobjEvo, SESolver, basis, tensor
+from functools import partial
+
+########################################################################################
+
+from oqd_trical.light_matter.interface.operator import PrunedOperator
 
 ########################################################################################
 
@@ -63,7 +68,21 @@ class QutipVM(RewriteRule):
     def map_QutipGate(self, model):
         tspan = np.arange(0, model.duration, self.timestep)
 
-        H = QobjEvo(lambda t: model.hamiltonian(t) + self.base(t))
+        empty_base = self.base is None
+        empty_hamiltonian = model.hamiltonian is None
+
+        if empty_base and empty_hamiltonian:
+            self.tspan.extend(list(tspan[1:] + self.tspan[-1]))
+            self.states.extend([self.current_state] * (len(tspan) - 1))
+            return
+
+        if empty_hamiltonian:
+            H = QobjEvo(self.base)
+        elif empty_base:
+            H = QobjEvo(model.hamiltonian)
+        else:
+            H = QobjEvo(lambda t: model.hamiltonian(t) + self.base(t))
+
         solver = self.solver(H, options=self.solver_options)
 
         res = solver.run(
@@ -73,5 +92,5 @@ class QutipVM(RewriteRule):
 
         self.current_state = res.final_state
 
-        self.states.extend(list(res.states[1:]))
         self.tspan.extend(list(tspan[1:] + self.tspan[-1]))
+        self.states.extend(list(res.states[1:]))
