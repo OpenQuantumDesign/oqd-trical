@@ -13,6 +13,9 @@
 # limitations under the License.
 
 import numpy as np
+
+from functools import cached_property, reduce
+
 from oqd_compiler_infrastructure import RewriteRule
 from oqd_core.interface.math import MathNum
 
@@ -21,7 +24,9 @@ from oqd_trical.light_matter.interface.operator import (
     Annihilation,
     Creation,
     Identity,
+    ConstantCoefficient,
     WaveCoefficient,
+    KetBra,
 )
 
 ########################################################################################
@@ -116,7 +121,15 @@ class RotatingWaveApprox(RewriteRule):
         raise NotImplementedError
 
     def map_WaveCoefficient(self, model):
-        pass
+        return (
+            WaveCoefficient(
+                amplitude=1, frequency=self.frame_specs[model.subsystem], phase=0
+            )
+            * model
+        )
+
+
+########################################################################################
 
 
 class RotatingReferenceFrame(RewriteRule):
@@ -130,21 +143,86 @@ class RotatingReferenceFrame(RewriteRule):
         Currently not implmented!
     """
 
-    def __init__(self, frame):
+    def __init__(self, frame_specs):
         super().__init__()
 
-        self.frame = frame
+        self.frame_specs = frame_specs
 
-        raise NotImplementedError
+    @cached_property
+    def system(self):
+        return list(self.frame_specs.keys())
+
+    def _complete_operator(self, op, subsystem):
+        return reduce(
+            lambda x, y: x @ y,
+            [op if subsystem == s else Identity(subsystem=s) for s in self.system],
+        )
+
+    @cached_property
+    def frame(self):
+        ops = []
+        for subsystem, energy in self.frame_specs.items():
+            if subsystem[0] == "E":
+                ops.extend(
+                    [
+                        ConstantCoefficient(value=e)
+                        * self._complete_operator(
+                            KetBra(ket=n, bra=n, subsystem=subsystem), subsystem
+                        )
+                        for n, e in enumerate(energy)
+                    ]
+                )
+            else:
+                ops.append(
+                    ConstantCoefficient(value=energy)
+                    * self._complete_operator(
+                        Creation(subsystem=subsystem)
+                        * Annihilation(subsystem=subsystem),
+                        subsystem,
+                    )
+                )
+
+        return reduce(lambda x, y: x + y, ops)
+
+    def map_AtomicEmulatorCircuit(self, model):
+        return model.__class__(
+            frame=self.frame, base=model.base - self.frame, sequence=model.sequence
+        )
 
     def map_KetBra(self, model):
-        pass
+        return (
+            WaveCoefficient(
+                amplitude=1,
+                frequency=self.frame_specs[model.subsystem][model.ket]
+                - self.frame_specs[model.subsystem][model.bra],
+                phase=0,
+            )
+            * model
+        )
 
-    def map_Wave(self, model):
-        pass
+    def map_Displacement(self, model):
+        alpha = model.alpha
+        return model.__class__(
+            alpha=alpha.__class__(
+                amplitude=alpha.amplitude,
+                frequency=alpha.frequency + self.frame_specs[model.subsystem],
+                phase=alpha.phase,
+            ),
+            subsystem=model.subsystem,
+        )
 
     def map_Annihilation(self, model):
-        pass
+        return (
+            WaveCoefficient(
+                amplitude=1, frequency=self.frame_specs[model.subsystem], phase=0
+            )
+            * model
+        )
 
     def map_Creation(self, model):
-        pass
+        return (
+            WaveCoefficient(
+                amplitude=1, frequency=-self.frame_specs[model.subsystem], phase=0
+            )
+            * model
+        )

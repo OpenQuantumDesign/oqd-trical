@@ -280,7 +280,9 @@ class CombineTerms(RewriteRule):
         combiner = _CombineTerms()
         Pre(combiner)(model.base)
 
-        return model.__class__(base=combiner.emit(), sequence=model.sequence)
+        return model.__class__(
+            frame=model.frame, base=combiner.emit(), sequence=model.sequence
+        )
 
     def map_AtomicEmulatorGate(self, model):
         combiner = _CombineTerms()
