@@ -216,7 +216,7 @@
           ],
           "target": 0
         },
-        "duration": 4000.0
+        "duration": 6000.0
       },
       {
         "class_": "Pulse",
@@ -276,7 +276,7 @@
           ],
           "target": 0
         },
-        "duration": 4000.0
+        "duration": 6000.0
       },
       {
         "class_": "Pulse",
@@ -336,7 +336,7 @@
           ],
           "target": 1
         },
-        "duration": 4000.0
+        "duration": 6000.0
       },
       {
         "class_": "Pulse",
@@ -396,7 +396,7 @@
           ],
           "target": 1
         },
-        "duration": 4000.0
+        "duration": 6000.0
       }
     ]
   }
