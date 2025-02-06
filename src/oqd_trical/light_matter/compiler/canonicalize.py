@@ -14,6 +14,7 @@
 
 from functools import reduce
 from typing import Union
+import numpy as np
 
 from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRule
 from oqd_core.compiler.math.passes import simplify_math_expr
@@ -22,7 +23,9 @@ from oqd_core.compiler.math.rules import (
     PartitionMathExpr,
     ProperOrderMathExpr,
 )
-from oqd_core.interface.math import MathNum
+from oqd_core.interface.math import MathNum, MathVar, MathFunc, MathExpr
+from oqd_core.interface.atomic.protocol import SequentialProtocol
+from oqd_trical.light_matter.interface.emulator import AtomicEmulatorGate
 
 ########################################################################################
 from oqd_trical.light_matter.interface.operator import (
@@ -319,3 +322,73 @@ def canonicalization_pass_factory():
         ),
         simplify_math_expr,
     )
+
+########################################################################################
+
+class VariableSubstitution(RewriteRule):
+    def __init__(self, t_offset):
+        """
+        Parameters:
+            t_offset (str or numeric): The name or value of the time offset
+                (for example, "t1") to subtract from the global time variable
+        """
+        self.t_offset = t_offset
+
+    def map_MathVar(self, math_var):
+        """
+        If the math var is the time var 't', return an expression
+        representing (t - t_offset); otherwise, return the var unchanged
+        """
+        if math_var.name == "t":
+            # Do we use MathExpr or MathStr here to properly wrap the string?
+            return MathExpr(f"t - {self.t_offset}")
+        return math_var
+
+class UnfoldSequential(RewriteRule):
+    def map_SequentialProtocol(self, model, operands):
+        """
+        Given a sequential protocol method 'unfolds' into a single parallel (time‐dependent) operator.
+        
+        First it must have no nested SequentialProtocol within the sequence.
+        Then it computes the maximum duration (assumed to be the total protocol duration)
+        and “gates” each pulse operator with a Heaviside function if its duration is shorter.
+        
+        Returns:
+            An AtomicEmulatorGate with a combined Hamiltonian and overall duration.
+        """
+        # Checking for unsupported nested sequential protocols?
+        for p in model.sequence:
+            if isinstance(p, SequentialProtocol):
+                raise NotImplementedError(
+                    "SequentialProtocol within ParallelProtocol currently unsupported"
+                )
+
+        # Maximum duration among the pulses
+        duration_max = np.max([p.duration for p in operands["sequence"]])
+
+        ops = []
+        for p in operands["sequence"]:
+            if p.duration != duration_max:
+                # Multiply the Hamiltonian by a Heaviside function that “gates” the pulse.
+                # Making the Heaviside function based on:
+                #     heaviside( p.duration - t )
+                # which will be 1 when t < p.duration and 0 otherwise.
+                ops.append(
+                    p.hamiltonian * WaveCoefficient(
+                        amplitude=MathFunc(
+                            func="heaviside",
+                            expr=p.duration - MathVar(name="t")
+                        ),
+                        frequency=0,
+                        phase=0,
+                    )
+                )
+            else:
+                ops.append(p.hamiltonian)
+
+        # Combining pulse operators into one overall operator
+        combined_operator = reduce(lambda x, y: x + y, ops)
+        return AtomicEmulatorGate(hamiltonian=combined_operator, duration=duration_max)
+
+
+
