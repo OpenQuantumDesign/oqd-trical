@@ -23,6 +23,45 @@ from oqd_trical.light_matter.interface import ConstantCoefficient, WaveCoefficie
 ########################################################################################
 
 
+def test_simplify_sum_of_constants():
+    a = ConstantCoefficient(value=1)
+    b = ConstantCoefficient(value=2)
+
+    simplify = Chain(canonicalize_coefficient_factory(), canonicalize_math_factory())
+    c = simplify(a + b)
+    assert c == ConstantCoefficient(value=3)
+
+
+def test_simplify_product_of_constants():
+    a = ConstantCoefficient(value=1)
+    b = ConstantCoefficient(value=2)
+
+    simplify = Chain(canonicalize_coefficient_factory(), canonicalize_math_factory())
+    c = simplify(a * b)
+    assert c == ConstantCoefficient(value=2)
+
+
+def test_simplify_sum_of_waves():
+    a = WaveCoefficient(amplitude=1, frequency=10, phase=100)
+    b = WaveCoefficient(amplitude=2, frequency=20, phase=200)
+
+    simplify = Chain(canonicalize_coefficient_factory(), canonicalize_math_factory())
+    c = simplify(a + b)
+    assert c == a + b
+
+
+def test_simplify_product_of_waves():
+    a = WaveCoefficient(amplitude=1, frequency=10, phase=100)
+    b = WaveCoefficient(amplitude=2, frequency=20, phase=200)
+
+    simplify = Chain(canonicalize_coefficient_factory(), canonicalize_math_factory())
+    c = simplify(a * b)
+    assert c == WaveCoefficient(amplitude=2, frequency=30, phase=300)
+
+
+########################################################################################
+
+
 def test_division_constants():
     a = ConstantCoefficient(value=1)
     b = ConstantCoefficient(value=2)
