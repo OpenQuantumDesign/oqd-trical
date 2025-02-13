@@ -26,6 +26,8 @@ from oqd_core.interface.math import MathNum
 
 ########################################################################################
 from oqd_trical.light_matter.interface.operator import (
+    CoefficientAdd,
+    CoefficientMul,
     ConstantCoefficient,
     Identity,
     OperatorAdd,
@@ -196,6 +198,40 @@ class GatherCoefficient(RewriteRule):
             return model.op2.coeff * model.__class__(op1=model.op1, op2=model.op2.op)
 
 
+class CoefficientDistributivity(RewriteRule):
+    """Implements distributivity of addition over multiplication on coefficient"""
+
+    def map_CoefficientMul(self, model):
+        if isinstance(model.coeff1, (CoefficientAdd)):
+            return model.coeff1.__class__(
+                coeff1=CoefficientMul(coeff1=model.coeff1.coeff1, coeff2=model.coeff2),
+                coeff2=CoefficientMul(coeff1=model.coeff1.coeff2, coeff2=model.coeff2),
+            )
+        if isinstance(model.coeff2, (CoefficientAdd)):
+            return model.coeff2.__class__(
+                coeff1=CoefficientMul(coeff1=model.coeff1, coeff2=model.coeff2.coeff1),
+                coeff2=CoefficientMul(coeff1=model.coeff1, coeff2=model.coeff2.coeff2),
+            )
+
+
+class CoefficientAssociativity(RewriteRule):
+    """Implements associativity of addition, multiplication on coefficient"""
+
+    def map_CoefficientAdd(self, model):
+        return self._map_addmul(model=model)
+
+    def map_CoefficientMul(self, model):
+        return self._map_addmul(model=model)
+
+    def _map_addmul(self, model):
+        if isinstance(model.coeff2, model.__class__):
+            return model.__class__(
+                coeff1=model.__class__(coeff1=model.coeff1, coeff2=model.coeff2.coeff1),
+                coeff2=model.coeff2.coeff2,
+            )
+        return model.__class__(coeff1=model.coeff1, coeff2=model.coeff2)
+
+
 class CombineCoefficient(RewriteRule):
     def map_CoefficientMul(self, model):
         if isinstance(model.coeff1, WaveCoefficient) and isinstance(
@@ -350,10 +386,14 @@ def canonicalization_pass_factory():
             FixedPoint(Post(OperatorDistributivity())),
             FixedPoint(Post(OperatorAssociativity())),
             Post(GatherCoefficient()),
-            FixedPoint(Post(CombineCoefficient())),
         ),
         Pre(ScaleTerms()),
         Post(CombineTerms()),
+        Chain(
+            FixedPoint(Post(CoefficientDistributivity())),
+            FixedPoint(Post(CoefficientAssociativity())),
+            FixedPoint(Post(CombineCoefficient())),
+        ),
         Chain(
             FixedPoint(Pre(DistributeMathExpr())),
             FixedPoint(Post(ProperOrderMathExpr())),
