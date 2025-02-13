@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .analysis import AnalyseHilbertSpace
+from .analysis import GetHilbertSpace
 from .approximate import FirstOrderLambDickeApprox, SecondOrderLambDickeApprox
 from .canonicalize import canonicalization_pass_factory
 from .codegen import ConstructHamiltonian
@@ -24,7 +24,7 @@ from .visualization import (
 )
 
 __all__ = [
-    "AnalyseHilbertSpace",
+    "GetHilbertSpace",
     "FirstOrderLambDickeApprox",
     "SecondOrderLambDickeApprox",
     "canonicalization_pass_factory",

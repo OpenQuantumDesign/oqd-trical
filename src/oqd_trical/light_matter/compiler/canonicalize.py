@@ -304,6 +304,17 @@ class CombineTerms(RewriteRule):
         return model.__class__(hamiltonian=combiner.emit(), duration=model.duration)
 
 
+class RelabelStates(RewriteRule):
+    def __init__(self, relabel_rules):
+        self._relabel_rules = relabel_rules
+
+    def map_KetBra(self, model):
+        new_ket = self._relabel_rules[model.subsystem][model.ket]
+        new_bra = self._relabel_rules[model.subsystem][model.bra]
+
+        return model.__class__(ket=new_ket, bra=new_bra, subsystem=model.subsystem)
+
+
 ########################################################################################
 
 

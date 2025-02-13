@@ -15,11 +15,6 @@
 import numpy as np
 from oqd_compiler_infrastructure import RewriteRule
 from qutip import MESolver, QobjEvo, SESolver, basis, tensor
-from functools import partial
-
-########################################################################################
-
-from oqd_trical.light_matter.interface.operator import PrunedOperator
 
 ########################################################################################
 
@@ -47,7 +42,6 @@ class QutipVM(RewriteRule):
             "MESolver": MESolver,
         }[solver]
         self.solver_options = solver_options
-        pass
 
     @property
     def result(self):
@@ -59,7 +53,10 @@ class QutipVM(RewriteRule):
         self.base = model.base
 
         self.current_state = tensor(
-            [basis(self.hilbert_space[k], 0) for k in self.hilbert_space.keys()]
+            [
+                basis(self.hilbert_space.size[k], 0)
+                for k in self.hilbert_space.size.keys()
+            ]
         )
 
         self.states.append(self.current_state)
