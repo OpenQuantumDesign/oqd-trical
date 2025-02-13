@@ -288,9 +288,11 @@ class AdiabaticElimination(RewriteRule):
 
     @property
     def diagonal(self):
-        return list(
+        diagonal = list(
             filter(lambda x: x[0] == self.eliminated_state, self.matrix_elements)
         )
+        assert diagonal, "Failed to apply adiabatic elimination"
+        return diagonal
 
     @property
     def nondiagonal(self):
