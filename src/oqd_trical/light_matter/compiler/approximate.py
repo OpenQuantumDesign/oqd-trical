@@ -16,7 +16,7 @@ import numpy as np
 
 from functools import cached_property, reduce
 
-from oqd_compiler_infrastructure import RewriteRule
+from oqd_compiler_infrastructure import RewriteRule, ConversionRule, Post
 from oqd_core.interface.math import MathNum
 
 ########################################################################################
@@ -226,3 +226,109 @@ class RotatingReferenceFrame(RewriteRule):
             )
             * model
         )
+
+
+########################################################################################
+
+
+class _AdiabaticElimination(ConversionRule):
+    def __init__(self, eliminated_specs):
+        super().__init__()
+
+        self.eliminated_specs = eliminated_specs
+
+        self.matrix_elements = []
+
+    @cached_property
+    def eliminated_state(self):
+        return self.eliminated_specs[0]
+
+    @cached_property
+    def eliminated_subsystem(self):
+        return self.eliminated_specs[1]
+
+    def map_OperatorScalarMul(self, model, operands):
+        if isinstance(operands["op"], int):
+            self.matrix_elements.append((operands["op"], operands["coeff"]))
+
+    def map_OperatorKron(self, model, operands):
+        return list(filter(lambda x: isinstance(x, int), operands))[0]
+
+    def map_KetBra(self, model, operands):
+        if (
+            model.subsystem == self.eliminated_subsystem
+            and model.ket == self.eliminated_state
+        ):
+            return model.bra
+
+
+class AdiabaticElimination(RewriteRule):
+    def __init__(self, eliminated_specs):
+        super().__init__()
+
+        self.eliminated_specs = eliminated_specs
+
+        self.matrix_elements = []
+
+    @cached_property
+    def eliminated_state(self):
+        return self.eliminated_specs[0]
+
+    @cached_property
+    def eliminated_subsystem(self):
+        return self.eliminated_specs[1]
+
+    @cached_property
+    def diagonal(self):
+        return list(
+            filter(lambda x: x[0] == self.eliminated_state, self.matrix_elements)
+        )
+
+    @cached_property
+    def nondiagonal(self):
+        return list(
+            filter(lambda x: x[0] != self.eliminated_state, self.matrix_elements)
+        )
+
+    def map_AtomicEmulatorGate(self, model):
+        adiabatic_elimination_helper = _AdiabaticElimination(self.eliminated_specs)
+        Post(adiabatic_elimination_helper)(model.hamiltonian)
+        self.matrix_elements = adiabatic_elimination_helper.matrix_elements
+
+    def map_KetBra(self, model):
+        if model.subsystem != self.eliminated_subsystem:
+            return
+
+        if model.ket == self.eliminated_specs and model.bra == self.eliminated_specs:
+            return ConstantCoefficient(value=0) * model
+
+        if model.ket == self.eliminated_state:
+            return reduce(
+                lambda x, y: x + y,
+                [
+                    (c / self.diagonal[0][1])
+                    * KetBra(ket=i, bra=model.bra, subsystem=model.subsystem)
+                    for (i, c) in self.nondiagonal
+                ],
+            )
+
+        if model.bra == self.eliminated_state:
+            return reduce(
+                lambda x, y: x + y,
+                [
+                    (
+                        WaveCoefficient(
+                            amplitude=c.amplitude,
+                            frequency=-c.frequency,
+                            phase=-c.phase,
+                        )
+                        / WaveCoefficient(
+                            amplitude=self.diagonal[0][1].amplitude,
+                            frequency=self.diagonal[0][1].frequency,
+                            phase=self.diagonal[0][1].phase,
+                        )
+                    )
+                    * KetBra(ket=model.ket, bra=i, subsystem=model.subsystem)
+                    for (i, c) in self.nondiagonal
+                ],
+            )
