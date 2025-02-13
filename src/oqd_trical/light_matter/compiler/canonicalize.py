@@ -370,36 +370,45 @@ class PushBaseHamiltonian(RewriteRule):
 ########################################################################################
 
 
-def canonicalization_pass_factory():
-    """Creates a new instance of the canonicalization pass"""
+def canonicalize_math_factory():
+    """Creates a new instance of the canonicalization pass for math expressions"""
     return Chain(
-        Chain(
-            FixedPoint(Post(DistributeMathExpr())),
-            FixedPoint(Post(ProperOrderMathExpr())),
-            FixedPoint(Post(PartitionMathExpr())),
-            FixedPoint(Post(PruneZeroPowers())),
-        ),
+        FixedPoint(Post(DistributeMathExpr())),
+        FixedPoint(Post(ProperOrderMathExpr())),
+        FixedPoint(Post(PartitionMathExpr())),
+        FixedPoint(Post(PruneZeroPowers())),
         simplify_math_expr,
+    )
+
+
+def canonicalize_coefficient_factory():
+    """Creates a new instance of the canonicalization pass for coefficients"""
+    return Chain(
+        FixedPoint(Post(CoefficientDistributivity())),
+        FixedPoint(Post(CoefficientAssociativity())),
+        FixedPoint(Post(CombineCoefficient())),
+    )
+
+
+def canonicalize_operator_factory():
+    """Creates a new instance of the canonicalization pass for operators"""
+    return Chain(
+        FixedPoint(Post(OperatorDistributivity())),
+        FixedPoint(Post(OperatorAssociativity())),
+        Post(GatherCoefficient()),
+    )
+
+
+def canonicalization_pass_factory():
+    """Creates a new instance of the canonicalization pass for AtomicEmulatorCircuit"""
+    return Chain(
+        canonicalize_math_factory(),
         FixedPoint(Post(Prune())),
         Pre(PushBaseHamiltonian()),
-        Chain(
-            FixedPoint(Post(OperatorDistributivity())),
-            FixedPoint(Post(OperatorAssociativity())),
-            Post(GatherCoefficient()),
-        ),
+        canonicalize_operator_factory(),
         Pre(ScaleTerms()),
         Post(CombineTerms()),
-        Chain(
-            FixedPoint(Post(CoefficientDistributivity())),
-            FixedPoint(Post(CoefficientAssociativity())),
-            FixedPoint(Post(CombineCoefficient())),
-        ),
-        Chain(
-            FixedPoint(Pre(DistributeMathExpr())),
-            FixedPoint(Post(ProperOrderMathExpr())),
-            FixedPoint(Post(PartitionMathExpr())),
-            FixedPoint(Post(PruneZeroPowers())),
-        ),
-        simplify_math_expr,
+        canonicalize_coefficient_factory(),
+        canonicalize_math_factory(),
         FixedPoint(Post(Prune())),
     )
