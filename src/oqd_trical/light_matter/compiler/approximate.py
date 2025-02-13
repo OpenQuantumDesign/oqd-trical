@@ -235,9 +235,13 @@ class _AdiabaticElimination(ConversionRule):
     def __init__(self, eliminated_specs):
         super().__init__()
 
-        self.eliminated_specs = eliminated_specs
+        self._eliminated_specs = eliminated_specs
 
         self.matrix_elements = []
+
+    @cached_property
+    def eliminated_specs(self):
+        return self._eliminated_specs
 
     @cached_property
     def eliminated_state(self):
@@ -266,9 +270,13 @@ class AdiabaticElimination(RewriteRule):
     def __init__(self, eliminated_specs):
         super().__init__()
 
-        self.eliminated_specs = eliminated_specs
+        self._eliminated_specs = eliminated_specs
 
         self.matrix_elements = []
+
+    @cached_property
+    def eliminated_specs(self):
+        return self._eliminated_specs
 
     @cached_property
     def eliminated_state(self):
@@ -278,13 +286,13 @@ class AdiabaticElimination(RewriteRule):
     def eliminated_subsystem(self):
         return self.eliminated_specs[1]
 
-    @cached_property
+    @property
     def diagonal(self):
         return list(
             filter(lambda x: x[0] == self.eliminated_state, self.matrix_elements)
         )
 
-    @cached_property
+    @property
     def nondiagonal(self):
         return list(
             filter(lambda x: x[0] != self.eliminated_state, self.matrix_elements)
