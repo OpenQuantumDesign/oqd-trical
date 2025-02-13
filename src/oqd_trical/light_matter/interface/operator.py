@@ -58,6 +58,17 @@ class Coefficient(TypeReflectBaseModel):
     def __rmul__(self, other):
         return self * other
 
+    def __truediv__(self, other):
+        if isinstance(self, WaveCoefficient) and isinstance(other, WaveCoefficient):
+            return CoefficientMul(
+                coeff1=self,
+                coeff2=WaveCoefficient(
+                    amplitude=1 / other.amplitude,
+                    frequency=-other.frequency,
+                    phase=-other.phase,
+                ),
+            )
+
     pass
 
 
