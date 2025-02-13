@@ -44,7 +44,13 @@ class GetHilbertSpace(RewriteRule):
 
     @property
     def hilbert_space(self):
-        return HilbertSpace(hilbert_space=self._hilbert_space)
+        hilbert_space = {}
+        for k, v in self._hilbert_space.items():
+            if k[0] == "E" and v is None:
+                hilbert_space[k] = {0}
+            else:
+                hilbert_space[k] = v
+        return HilbertSpace(hilbert_space=hilbert_space)
 
     def map_System(self, model):
         for n, ion in enumerate(model.ions):
@@ -54,7 +60,10 @@ class GetHilbertSpace(RewriteRule):
             self._hilbert_space[f"P{m}"] = None
 
     def map_KetBra(self, model):
-        if model.subsystem not in self._hilbert_space.keys():
+        if (
+            model.subsystem not in self._hilbert_space.keys()
+            or self._hilbert_space[model.subsystem] is None
+        ):
             self._hilbert_space[model.subsystem] = set()
 
         self._hilbert_space[model.subsystem].update((model.ket, model.bra))
@@ -81,10 +90,4 @@ class GetHilbertSpace(RewriteRule):
         if model.subsystem in self._hilbert_space.keys():
             return
 
-        if model.subsystem[0] == "E":
-            self._hilbert_space[model.subsystem] = set()
-            return
-
-        if model.subsystem[0] == "P":
-            self._hilbert_space[model.subsystem] = None
-            return
+        self._hilbert_space[model.subsystem] = None
