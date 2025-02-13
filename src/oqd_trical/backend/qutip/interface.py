@@ -14,15 +14,11 @@
 
 from __future__ import annotations
 
-from typing import Callable, List, Union, Optional
+from typing import Callable, List, Optional, Union
 
 from oqd_compiler_infrastructure import TypeReflectBaseModel
 from pydantic import ConfigDict
 from qutip import Qobj
-
-########################################################################################
-
-from oqd_trical.light_matter.interface.operator import PrunedOperator
 
 ########################################################################################
 

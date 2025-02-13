@@ -12,21 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
-
 from functools import cached_property, reduce
 
-from oqd_compiler_infrastructure import RewriteRule, ConversionRule, Post
+import numpy as np
+from oqd_compiler_infrastructure import ConversionRule, Post, RewriteRule
 from oqd_core.interface.math import MathNum
 
 ########################################################################################
 from oqd_trical.light_matter.interface.operator import (
     Annihilation,
+    ConstantCoefficient,
     Creation,
     Identity,
-    ConstantCoefficient,
-    WaveCoefficient,
     KetBra,
+    WaveCoefficient,
 )
 
 ########################################################################################

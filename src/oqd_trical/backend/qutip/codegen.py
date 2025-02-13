@@ -19,10 +19,9 @@ import qutip as qt
 from oqd_compiler_infrastructure import ConversionRule
 
 ########################################################################################
-
 from oqd_trical.backend.qutip.interface import QutipExperiment, QutipGate
-from oqd_trical.light_matter.interface.operator import PrunedOperator
 from oqd_trical.light_matter.compiler.analysis import HilbertSpace
+from oqd_trical.light_matter.interface.operator import PrunedOperator
 
 ########################################################################################
 
