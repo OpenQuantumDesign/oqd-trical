@@ -256,7 +256,17 @@ class _AdiabaticEliminationHelper(ConversionRule):
             self.matrix_elements.append((operands["op"], operands["coeff"]))
 
     def map_OperatorKron(self, model, operands):
-        return list(filter(lambda x: isinstance(x, int), operands))[0]
+        bra = list(filter(lambda x: isinstance(x, int), operands.values()))
+
+        if bra == []:
+            return
+
+        if len(bra) == 1:
+            return bra[0]
+
+        raise ValueError(
+            "Failed to apply adiabatic elimination: Tensor product between operators belonging to eliminated subsystem."
+        )
 
     def map_KetBra(self, model, operands):
         if (
@@ -291,8 +301,13 @@ class AdiabaticElimination(RewriteRule):
         diagonal = list(
             filter(lambda x: x[0] == self.eliminated_state, self.matrix_elements)
         )
-        assert diagonal, "Failed to apply adiabatic elimination"
-        return diagonal
+
+        if diagonal:
+            return diagonal
+
+        raise ValueError(
+            "Failed to apply adiabatic elimination: Diagonal matrix element of eliminated state is zero."
+        )
 
     @property
     def nondiagonal(self):
