@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oqd_compiler_infrastructure import RewriteRule, TypeReflectBaseModel
 from typing import Dict, Optional, Set
+
+from oqd_compiler_infrastructure import RewriteRule, TypeReflectBaseModel
 from pydantic import ConfigDict
 
 ########################################################################################
@@ -54,7 +55,7 @@ class GetHilbertSpace(RewriteRule):
 
     def map_System(self, model):
         for n, ion in enumerate(model.ions):
-            self._hilbert_space[f"E{n}"] = set(range(ion.levels))
+            self._hilbert_space[f"E{n}"] = set(range(len(ion.levels)))
 
         for m, mode in enumerate(model.modes):
             self._hilbert_space[f"P{m}"] = None
