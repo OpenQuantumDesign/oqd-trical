@@ -12,21 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oqd_compiler_infrastructure import Chain, In, Post, Pre
+from oqd_compiler_infrastructure import Chain, Post, Pre
 from oqd_core.backend.base import BackendBase
 from oqd_core.interface.atomic import AtomicCircuit
 
+from oqd_trical.backend.qutip.codegen import QutipCodeGeneration
+from oqd_trical.backend.qutip.vm import QutipVM
+
 ########################################################################################
-from oqd_trical.light_matter.interface.emulator import AtomicEmulatorCircuit
 from oqd_trical.light_matter.compiler.analysis import GetHilbertSpace, HilbertSpace
 from oqd_trical.light_matter.compiler.canonicalize import (
-    canonicalization_pass_factory,
     RelabelStates,
+    canonicalization_pass_factory,
 )
 from oqd_trical.light_matter.compiler.codegen import ConstructHamiltonian
-
-from .codegen import QutipCodeGeneration
-from .vm import QutipVM
+from oqd_trical.light_matter.interface.emulator import AtomicEmulatorCircuit
 
 ########################################################################################
 
@@ -77,7 +77,7 @@ class QutipBackend(BackendBase):
         else:
             intermediate = circuit
 
-        intermediate = canonicalization_pass_factory()(circuit)
+        intermediate = canonicalization_pass_factory()(intermediate)
 
         if self.approx_pass:
             intermediate = Chain(self.approx_pass, canonicalization_pass_factory())(
@@ -92,7 +92,7 @@ class QutipBackend(BackendBase):
         _hilbert_space = hilbert_space.hilbert_space
         for k in _hilbert_space.keys():
             if k[0] == "P":
-                hilbert_space[k] = set(range(fock_cutoff))
+                _hilbert_space[k] = set(range(fock_cutoff))
         hilbert_space = HilbertSpace(hilbert_space=_hilbert_space)
 
         relabeller = Post(RelabelStates(hilbert_space.get_relabel_rules()))
