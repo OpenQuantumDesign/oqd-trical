@@ -63,6 +63,9 @@ class QutipCodeGeneration(ConversionRule):
         ket = qt.basis(self.hilbert_space.size[model.subsystem], model.ket)
         bra = qt.basis(self.hilbert_space.size[model.subsystem], model.bra).dag()
         op = ket * bra
+
+        if not isinstance(op, qt.Qobj):
+            op = qt.Qobj(op)
         return lambda t: op
 
     def map_Annihilation(self, model, operands):
