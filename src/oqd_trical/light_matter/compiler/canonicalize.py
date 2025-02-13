@@ -316,6 +316,20 @@ class RelabelStates(RewriteRule):
 
 
 ########################################################################################
+class PushBaseHamiltonian(RewriteRule):
+    def map_AtomicEmulatorCircuit(self, model):
+        self.base = model.base
+        return model.__class__(
+            frame=model.frame, base=PrunedOperator(), sequence=model.sequence
+        )
+
+    def map_AtomicEmulatorGate(self, model):
+        return model.__class__(
+            hamiltonian=model.hamiltonian + self.base, duration=model.duration
+        )
+
+
+########################################################################################
 
 
 def canonicalization_pass_factory():
@@ -329,6 +343,7 @@ def canonicalization_pass_factory():
         ),
         simplify_math_expr,
         FixedPoint(Post(Prune())),
+        Pre(PushBaseHamiltonian()),
         Chain(
             FixedPoint(Post(OperatorDistributivity())),
             FixedPoint(Post(OperatorAssociativity())),
