@@ -329,7 +329,7 @@ class AdiabaticElimination(RewriteRule):
 
         if model.ket == self.eliminated_state:
             return reduce(
-                lambda x, y: x + y,
+                lambda x, y: x - y,
                 [
                     (c / self.diagonal[0][1])
                     * KetBra(ket=i, bra=model.bra, subsystem=model.subsystem)
@@ -339,7 +339,7 @@ class AdiabaticElimination(RewriteRule):
 
         if model.bra == self.eliminated_state:
             return reduce(
-                lambda x, y: x + y,
+                lambda x, y: x - y,
                 [
                     (c / self.diagonal[0][1]).conj()
                     * KetBra(ket=model.ket, bra=i, subsystem=model.subsystem)
