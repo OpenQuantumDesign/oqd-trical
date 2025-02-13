@@ -16,8 +16,8 @@ from __future__ import annotations
 
 from typing import Annotated, Union
 
-from oqd_compiler_infrastructure import TypeReflectBaseModel
-from oqd_core.interface.math import CastMathExpr
+from oqd_compiler_infrastructure import Post, RewriteRule, TypeReflectBaseModel
+from oqd_core.interface.math import CastMathExpr, MathFunc
 from pydantic import AfterValidator
 
 ########################################################################################
@@ -68,6 +68,17 @@ class Coefficient(TypeReflectBaseModel):
                     phase=-other.phase,
                 ),
             )
+        if isinstance(self, CoefficientAdd) and isinstance(other, WaveCoefficient):
+            return CoefficientAdd(
+                coeff1=self.coeff1 / other, coeff2=self.coeff2 / other
+            )
+        if isinstance(self, CoefficientMul) and isinstance(other, WaveCoefficient):
+            return CoefficientMul(coeff1=self.coeff1, coeff2=self.coeff2 / other)
+        else:
+            raise TypeError("Division only supported for WaveCoefficients denominator")
+
+    def conj(self):
+        return Post(ConjugateCoefficient())(self)
 
     pass
 
@@ -111,6 +122,18 @@ class CoefficientMul(Coefficient):
 
     coeff1: CoefficientSubTypes
     coeff2: CoefficientSubTypes
+
+
+########################################################################################
+
+
+class ConjugateCoefficient(RewriteRule):
+    def map_WaveCoefficient(self, model):
+        return model.__class__(
+            amplitude=MathFunc(func="conj", expr=model.amplitude),
+            frequency=-MathFunc(func="conj", expr=model.frequency),
+            phase=-MathFunc(func="conj", expr=model.phase),
+        )
 
 
 ########################################################################################

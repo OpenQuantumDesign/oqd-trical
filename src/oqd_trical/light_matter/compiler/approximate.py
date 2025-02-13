@@ -18,7 +18,6 @@ import numpy as np
 from oqd_compiler_infrastructure import ConversionRule, Post, RewriteRule
 from oqd_core.interface.math import MathNum
 
-########################################################################################
 from oqd_trical.light_matter.interface.operator import (
     Annihilation,
     ConstantCoefficient,
@@ -342,18 +341,7 @@ class AdiabaticElimination(RewriteRule):
             return reduce(
                 lambda x, y: x + y,
                 [
-                    (
-                        WaveCoefficient(
-                            amplitude=c.amplitude,
-                            frequency=-c.frequency,
-                            phase=-c.phase,
-                        )
-                        / WaveCoefficient(
-                            amplitude=self.diagonal[0][1].amplitude,
-                            frequency=self.diagonal[0][1].frequency,
-                            phase=self.diagonal[0][1].phase,
-                        )
-                    )
+                    (c / self.diagonal[0][1]).conj()
                     * KetBra(ket=model.ket, bra=i, subsystem=model.subsystem)
                     for (i, c) in self.nondiagonal
                 ],
