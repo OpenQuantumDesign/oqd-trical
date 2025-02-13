@@ -256,7 +256,7 @@ class ScaleTerms(RewriteRule):
 ########################################################################################
 
 
-class _CombineTerms(RewriteRule):
+class _CombineTermsHelper(RewriteRule):
     """Helper for combining terms of the same operator by combining their coefficients"""
 
     def __init__(self):
@@ -273,6 +273,8 @@ class _CombineTerms(RewriteRule):
         return [o[1] for o in self.operators]
 
     def emit(self):
+        if self.operators == []:
+            return PrunedOperator()
         return reduce(
             lambda op1, op2: op1 + op2,
             [o[0] * o[1] for o in self.operators],
@@ -290,7 +292,7 @@ class CombineTerms(RewriteRule):
     """Combines terms of the same operator by combining their coefficients"""
 
     def map_AtomicEmulatorCircuit(self, model):
-        combiner = _CombineTerms()
+        combiner = _CombineTermsHelper()
         Pre(combiner)(model.base)
 
         return model.__class__(
@@ -298,7 +300,7 @@ class CombineTerms(RewriteRule):
         )
 
     def map_AtomicEmulatorGate(self, model):
-        combiner = _CombineTerms()
+        combiner = _CombineTermsHelper()
         Pre(combiner)(model)
 
         return model.__class__(hamiltonian=combiner.emit(), duration=model.duration)
