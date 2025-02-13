@@ -231,7 +231,7 @@ class RotatingReferenceFrame(RewriteRule):
 ########################################################################################
 
 
-class _AdiabaticElimination(ConversionRule):
+class _AdiabaticEliminationHelper(ConversionRule):
     def __init__(self, eliminated_specs):
         super().__init__()
 
@@ -301,7 +301,9 @@ class AdiabaticElimination(RewriteRule):
         )
 
     def map_AtomicEmulatorGate(self, model):
-        adiabatic_elimination_helper = _AdiabaticElimination(self.eliminated_specs)
+        adiabatic_elimination_helper = _AdiabaticEliminationHelper(
+            self.eliminated_specs
+        )
         Post(adiabatic_elimination_helper)(model.hamiltonian)
         self.matrix_elements = adiabatic_elimination_helper.matrix_elements
 
