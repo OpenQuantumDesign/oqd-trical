@@ -55,6 +55,9 @@ include = ["oqd_trical*"]
 select = ["E4", "E7", "E9", "F", "I"]
 fixable = ["ALL"]
 
+[dependency-groups]
+dev = ["jupyter>=1.1.1", "pre-commit>=4.1.0", "ruff>=0.9.6"]
+
 
 [project.urls]
 Homepage = "https://github.com/OpenQuantumDesign/oqd-trical"
