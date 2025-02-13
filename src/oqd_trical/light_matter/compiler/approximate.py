@@ -12,21 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
-
 from functools import cached_property, reduce
 
-from oqd_compiler_infrastructure import RewriteRule
+import numpy as np
+from oqd_compiler_infrastructure import ConversionRule, Post, RewriteRule
 from oqd_core.interface.math import MathNum
 
-########################################################################################
 from oqd_trical.light_matter.interface.operator import (
     Annihilation,
+    ConstantCoefficient,
     Creation,
     Identity,
-    ConstantCoefficient,
-    WaveCoefficient,
     KetBra,
+    WaveCoefficient,
 )
 
 ########################################################################################
@@ -226,3 +224,125 @@ class RotatingReferenceFrame(RewriteRule):
             )
             * model
         )
+
+
+########################################################################################
+
+
+class _AdiabaticEliminationHelper(ConversionRule):
+    def __init__(self, eliminated_specs):
+        super().__init__()
+
+        self._eliminated_specs = eliminated_specs
+
+        self.matrix_elements = []
+
+    @cached_property
+    def eliminated_specs(self):
+        return self._eliminated_specs
+
+    @cached_property
+    def eliminated_state(self):
+        return self.eliminated_specs[0]
+
+    @cached_property
+    def eliminated_subsystem(self):
+        return self.eliminated_specs[1]
+
+    def map_OperatorScalarMul(self, model, operands):
+        if isinstance(operands["op"], int):
+            self.matrix_elements.append((operands["op"], operands["coeff"]))
+
+    def map_OperatorKron(self, model, operands):
+        bra = list(filter(lambda x: isinstance(x, int), operands.values()))
+
+        if bra == []:
+            return
+
+        if len(bra) == 1:
+            return bra[0]
+
+        raise ValueError(
+            "Failed to apply adiabatic elimination: Tensor product between operators belonging to eliminated subsystem."
+        )
+
+    def map_KetBra(self, model, operands):
+        if (
+            model.subsystem == self.eliminated_subsystem
+            and model.ket == self.eliminated_state
+        ):
+            return model.bra
+
+
+class AdiabaticElimination(RewriteRule):
+    def __init__(self, eliminated_specs):
+        super().__init__()
+
+        self._eliminated_specs = eliminated_specs
+
+        self.matrix_elements = []
+
+    @cached_property
+    def eliminated_specs(self):
+        return self._eliminated_specs
+
+    @cached_property
+    def eliminated_state(self):
+        return self.eliminated_specs[0]
+
+    @cached_property
+    def eliminated_subsystem(self):
+        return self.eliminated_specs[1]
+
+    @property
+    def diagonal(self):
+        diagonal = list(
+            filter(lambda x: x[0] == self.eliminated_state, self.matrix_elements)
+        )
+
+        if diagonal:
+            return diagonal
+
+        raise ValueError(
+            "Failed to apply adiabatic elimination: Diagonal matrix element of eliminated state is zero."
+        )
+
+    @property
+    def nondiagonal(self):
+        return list(
+            filter(lambda x: x[0] != self.eliminated_state, self.matrix_elements)
+        )
+
+    def map_AtomicEmulatorGate(self, model):
+        adiabatic_elimination_helper = _AdiabaticEliminationHelper(
+            self.eliminated_specs
+        )
+        Post(adiabatic_elimination_helper)(model.hamiltonian)
+        self.matrix_elements = adiabatic_elimination_helper.matrix_elements
+
+    def map_KetBra(self, model):
+        if model.subsystem != self.eliminated_subsystem:
+            return
+
+        if model.ket == self.eliminated_specs and model.bra == self.eliminated_specs:
+            return ConstantCoefficient(value=0) * model
+
+        if model.ket == self.eliminated_state:
+            return reduce(
+                lambda x, y: x - y,
+                [
+                    (c / self.diagonal[0][1])
+                    * KetBra(ket=i, bra=model.bra, subsystem=model.subsystem)
+                    for (i, c) in self.nondiagonal
+                ],
+            )
+
+        if model.bra == self.eliminated_state:
+            return reduce(
+                lambda x, y: x - y,
+                [
+                    (c / self.diagonal[0][1]).conj()
+                    * KetBra(ket=model.ket, bra=i, subsystem=model.subsystem)
+                    for (i, c) in self.nondiagonal
+                ],
+            )

@@ -12,16 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oqd_compiler_infrastructure import Chain, In, Post, Pre
+from oqd_compiler_infrastructure import Chain, Post, Pre
 from oqd_core.backend.base import BackendBase
+from oqd_core.interface.atomic import AtomicCircuit
+
+from oqd_trical.backend.qutip.codegen import QutipCodeGeneration
+from oqd_trical.backend.qutip.vm import QutipVM
 
 ########################################################################################
-from oqd_trical.light_matter.compiler.analysis import AnalyseHilbertSpace
-from oqd_trical.light_matter.compiler.canonicalize import canonicalization_pass_factory
+from oqd_trical.light_matter.compiler.analysis import GetHilbertSpace, HilbertSpace
+from oqd_trical.light_matter.compiler.canonicalize import (
+    RelabelStates,
+    canonicalization_pass_factory,
+)
 from oqd_trical.light_matter.compiler.codegen import ConstructHamiltonian
-
-from .codegen import QutipCodeGeneration
-from .vm import QutipVM
+from oqd_trical.light_matter.interface.emulator import AtomicEmulatorCircuit
 
 ########################################################################################
 
@@ -54,44 +59,50 @@ class QutipBackend(BackendBase):
 
     def compile(self, circuit, fock_cutoff):
         """
-        Compiles a AtomicCircuit to a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+        Compiles a AtomicCircuit or AtomicEmulatorCircuit to a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
 
         Args:
-            circuit (AtomicCircuit): AtomicCircuit to be compiled.
+            circuit (Union[AtomicCircuit,AtomicEmulatorCircuit]): circuit to be compiled.
             fock_cutoff (int): Truncation for fock spaces.
 
         Returns:
             experiment (QutipExperiment): Compiled [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
             hilbert_space (Dict[str, int]): Hilbert space of the system.
         """
-        analysis = In(AnalyseHilbertSpace())
+        assert isinstance(circuit, (AtomicCircuit, AtomicEmulatorCircuit))
 
-        analysis(circuit)
+        if isinstance(circuit, AtomicCircuit):
+            conversion = Post(ConstructHamiltonian())
+            intermediate = conversion(circuit)
+        else:
+            intermediate = circuit
 
-        hilbert_space = analysis.children[0].hilbert_space
-
-        for k in hilbert_space.keys():
-            if k[0] == "P":
-                hilbert_space[k] = fock_cutoff
-
-        compiler_p1 = Chain(
-            Post(ConstructHamiltonian()),
-            canonicalization_pass_factory(),
-        )
-
-        intermediate = compiler_p1(circuit)
+        intermediate = canonicalization_pass_factory()(intermediate)
 
         if self.approx_pass:
             intermediate = Chain(self.approx_pass, canonicalization_pass_factory())(
                 intermediate
             )
 
+        get_hilbert_space = GetHilbertSpace()
+        analysis = Post(get_hilbert_space)
+        analysis(intermediate)
+
+        hilbert_space = get_hilbert_space.hilbert_space
+        _hilbert_space = hilbert_space.hilbert_space
+        for k in _hilbert_space.keys():
+            if k[0] == "P":
+                _hilbert_space[k] = set(range(fock_cutoff))
+        hilbert_space = HilbertSpace(hilbert_space=_hilbert_space)
+
+        relabeller = Post(RelabelStates(hilbert_space.get_relabel_rules()))
+        intermediate = relabeller(intermediate)
+
         if self.save_intermediate:
             self.intermediate = intermediate
 
-        compiler_p2 = Post(QutipCodeGeneration(hilbert_space=hilbert_space))
-
-        experiment = compiler_p2(intermediate)
+        compiler_p3 = Post(QutipCodeGeneration(hilbert_space=hilbert_space))
+        experiment = compiler_p3(intermediate)
 
         return experiment, hilbert_space
 

@@ -14,5 +14,4 @@
 
 from . import qutip
 
-
 __all__ = ["qutip"]
