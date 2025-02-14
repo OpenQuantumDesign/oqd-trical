@@ -41,7 +41,7 @@ from oqd_trical.light_matter.interface.operator import (
 ########################################################################################
 
 
-class Prune(RewriteRule):
+class PruneOperator(RewriteRule):
     """Prunes an Operator AST by removing zeros"""
 
     def map_OperatorAdd(self, model):
@@ -70,6 +70,14 @@ class Prune(RewriteRule):
         ):
             return PrunedOperator()
 
+    def map_Displacement(self, model):
+        if isinstance(
+            model.alpha, WaveCoefficient
+        ) and model.alpha.amplitude == MathNum(value=0):
+            return Identity(subsystem=model.subsystem)
+
+
+class PruneCoefficient(RewriteRule):
     def map_CoefficientAdd(self, model):
         if isinstance(
             model.coeff1, WaveCoefficient
@@ -80,14 +88,15 @@ class Prune(RewriteRule):
         ) and model.coeff2.amplitude == MathNum(value=0):
             return model.coeff1
 
-    def map_Displacement(self, model):
-        if isinstance(
-            model.alpha, WaveCoefficient
-        ) and model.alpha.amplitude == MathNum(value=0):
-            return Identity(subsystem=model.subsystem)
-
-
-########################################################################################
+    def map_CoefficientMul(self, model):
+        if (
+            isinstance(model.coeff1, WaveCoefficient)
+            and model.coeff1.amplitude == MathNum(value=0)
+        ) or (
+            isinstance(model.coeff2, WaveCoefficient)
+            and model.coeff2.amplitude == MathNum(value=0)
+        ):
+            return ConstantCoefficient(value=0)
 
 
 class PruneZeroPowers(RewriteRule):
@@ -387,6 +396,7 @@ def canonicalize_coefficient_factory():
         FixedPoint(Post(CoefficientDistributivity())),
         FixedPoint(Post(CoefficientAssociativity())),
         FixedPoint(Post(CombineCoefficient())),
+        FixedPoint(Post(PruneCoefficient())),
     )
 
 
@@ -402,13 +412,14 @@ def canonicalize_operator_factory():
 def canonicalization_pass_factory():
     """Creates a new instance of the canonicalization pass for AtomicEmulatorCircuit"""
     return Chain(
-        canonicalize_math_factory(),
-        FixedPoint(Post(Prune())),
         Pre(PushBaseHamiltonian()),
         canonicalize_operator_factory(),
+        canonicalize_coefficient_factory(),
+        canonicalize_math_factory(),
+        FixedPoint(Post(PruneOperator())),
         Pre(ScaleTerms()),
         Post(CombineTerms()),
         canonicalize_coefficient_factory(),
         canonicalize_math_factory(),
-        FixedPoint(Post(Prune())),
+        FixedPoint(Post(PruneOperator())),
     )
