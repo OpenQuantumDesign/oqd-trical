@@ -24,6 +24,7 @@ from oqd_trical.light_matter.interface.operator import (
     Creation,
     Identity,
     KetBra,
+    PrunedOperator,
     WaveCoefficient,
 )
 
@@ -324,24 +325,24 @@ class AdiabaticElimination(RewriteRule):
         if model.subsystem != self.eliminated_subsystem:
             return
 
-        if model.ket == self.eliminated_specs and model.bra == self.eliminated_specs:
-            return ConstantCoefficient(value=0) * model
+        if model.ket == self.eliminated_state and model.bra == self.eliminated_state:
+            return PrunedOperator()
 
         if model.ket == self.eliminated_state:
-            return reduce(
-                lambda x, y: x - y,
+            return -reduce(
+                lambda x, y: x + y,
                 [
-                    (c / self.diagonal[0][1])
+                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1])
                     * KetBra(ket=i, bra=model.bra, subsystem=model.subsystem)
                     for (i, c) in self.nondiagonal
                 ],
             )
 
         if model.bra == self.eliminated_state:
-            return reduce(
-                lambda x, y: x - y,
+            return -reduce(
+                lambda x, y: x + y,
                 [
-                    (c / self.diagonal[0][1]).conj()
+                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1]).conj()
                     * KetBra(ket=model.ket, bra=i, subsystem=model.subsystem)
                     for (i, c) in self.nondiagonal
                 ],
