@@ -65,50 +65,10 @@ def compute_matrix_element(laser, transition):
 
     omega = E2 - E1
 
-    # --- M1 transition multipole ---
+    # TODO M1 transition multipole
     if transition.multipole == "M1":
-    
-        # The Einstein A coefficient for an M1 transition is given by:
-        #   A(M1) = (16 * pi^3)/(3 * hbar) * (omega^3/c^3) * (|<J2||μ||J1>|^2/(2J2+1))
-    
-        # Solving for the reduced matrix element (expressed in units of the Bohr magneton, μ_B) :
-        #   |<J2||μ||J1>|/μ_B = sqrt((3 * hbar * c^3 * A * (2J2+1))/(16 * pi^3 * omega^3)) / μ_B
-        
-        # Reference: I. I. Sobelman, "Atomic Spectra and Radiative Transitions", 2nd ed., Springer (1992).
+        raise NotImplementedError
 
-        # A unit term is definied so that when multiplied by standard angular momentum factors,  the full matrix is reproduced
-
-        units_term = np.sqrt(
-            (3 * cst.hbar * cst.c**3 * A) / (16 * np.pi**3 * omega**3)
-        ) / cst.physical_constants["Bohr magneton"][0]
-
-        hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * wigner_6j(
-            J1, J2, 1, F2, F1, I
-        )
-
-        # For M1 transitions the operator is a vector operator coupling to the magnetic field
-        # Plane wave: magnetic field is proportional to cross product of wavevector and electric field polarization
-        E_field = polarization.flatten()  
-        B_field = np.cross(wavevector, E_field)
-
-        # Define a spherical basis for a vector (identical to the one used for E1):
-        magnetic_polarization_map = {
-            -1: 1 / np.sqrt(2) * np.array([1, 1j, 0]),
-             0: np.array([0, 0, 1]),
-             1: 1 / np.sqrt(2) * np.array([1, -1j, 0]),
-        }
-
-        geometry_term = (
-            np.sqrt(2 * J2 + 1)
-            * magnetic_polarization_map[q].dot(B_field)
-            * wigner_3j(F2, 1, F1, M2, -q, -M1)
-        )
-
-        return float(
-            (abs(units_term) * abs(geometry_term) * abs(hyperfine_term)).evalf()
-        )
-
-    # --- E1 transition multipole ---
     if transition.multipole == "E1":
         units_term = np.sqrt(
             (3 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3 * A)
@@ -135,7 +95,6 @@ def compute_matrix_element(laser, transition):
             (abs(units_term) * abs(geometry_term) * abs(hyperfine_term)).evalf()
         )
 
-    # --- E2 transition multipole ---
     elif transition.multipole == "E2":
         units_term = np.sqrt(
             (15 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3) / (omega * A)
