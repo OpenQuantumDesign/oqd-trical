@@ -77,9 +77,8 @@ def compute_matrix_element(laser, transition):
 
         # A unit term is definied so that when multiplied by standard angular momentum factors,  the full matrix is reproduced
 
-        units_term = (
-            np.sqrt((3 * cst.hbar * cst.c**3 * A) / (16 * np.pi**3 * omega**3))
-            / cst.physical_constants["Bohr magneton"][0]
+        units_term = np.sqrt(
+            (3 * cst.hbar * cst.epsilon_0 * cst.c**5 * A) / (16 * np.pi**3 * omega**3)
         )
 
         hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * wigner_6j(
@@ -88,11 +87,10 @@ def compute_matrix_element(laser, transition):
 
         # For M1 transitions the operator is a vector operator coupling to the magnetic field
         # Plane wave: magnetic field is proportional to cross product of wavevector and electric field polarization
-        E_field = polarization.flatten()
-        B_field = np.cross(wavevector, E_field)
+        B_field = np.cross(wavevector, polarization)
 
         # Define a spherical basis for a vector (identical to the one used for E1):
-        magnetic_polarization_map = {
+        polarization_map = {
             -1: 1 / np.sqrt(2) * np.array([1, 1j, 0]),
             0: np.array([0, 0, 1]),
             1: 1 / np.sqrt(2) * np.array([1, -1j, 0]),
@@ -100,7 +98,7 @@ def compute_matrix_element(laser, transition):
 
         geometry_term = (
             np.sqrt(2 * J2 + 1)
-            * magnetic_polarization_map[q].dot(B_field)
+            * polarization_map[q].dot(B_field)
             * wigner_3j(F2, 1, F1, M2, -q, -M1)
         )
 
@@ -138,8 +136,9 @@ def compute_matrix_element(laser, transition):
     # --- E2 transition multipole ---
     elif transition.multipole == "E2":
         units_term = np.sqrt(
-            (15 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3) / (omega * A)
-        ) / (omega * cst.e)  # <- anomalous constants I needed to add... hmm
+            (15 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3 * A)
+            / (omega**3 * cst.e**2)
+        )  # <- anomalous constants I needed to add... hmm
         hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * wigner_6j(
             J1, J2, 2, F2, F1, I
         )
@@ -185,9 +184,13 @@ def rabi_from_intensity(laser, transition, intensity):
     """
 
     matrix_elem = compute_matrix_element(laser, transition)
-    E = (2 * intensity / (cst.epsilon_0 * cst.c)) ** 0.5
 
-    return matrix_elem * E * cst.e / cst.hbar
+    if transition.multipole[0] == "E":
+        E = (2 * intensity / (cst.epsilon_0 * cst.c)) ** 0.5
+        return matrix_elem * E * cst.e / cst.hbar
+    if transition.multipole[0] == "M":
+        B = (2 * intensity / (cst.epsilon_0 * cst.c**3)) ** 0.5
+        return matrix_elem * B / cst.hbar
 
 
 def intensity_from_laser(laser):
