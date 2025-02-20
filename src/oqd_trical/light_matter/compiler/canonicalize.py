@@ -23,7 +23,7 @@ from oqd_core.compiler.math.rules import (
     PartitionMathExpr,
     ProperOrderMathExpr,
 )
-from oqd_core.interface.math import MathNum, MathVar, MathFunc, MathExpr
+from oqd_core.interface.math import MathNum, MathVar, MathFunc, MathExpr, MathSub, MathMul
 from oqd_core.interface.atomic.protocol import SequentialProtocol
 from oqd_trical.light_matter.interface.emulator import AtomicEmulatorGate
 
@@ -340,9 +340,43 @@ class VariableSubstitution(RewriteRule):
         representing (t - t_offset); otherwise, return the var unchanged
         """
         if math_var.name == "t":
-            # Do we use MathExpr or MathStr here to properly wrap the string?
-            return MathExpr(f"t - {self.t_offset}")
+            return MathSub(
+                expr1=MathVar(name="t"),
+                # If t_offset is also a string:
+                expr2=MathVar(name=self.t_offset)  
+                # If t_offset is numeric change to: MathNum(value=self.t_offset)
+            )
         return math_var
+    
+    def map_WaveCoefficient(self, wave_coeff):
+        """
+        Apply time-shift inside amplitude, frequency, and phase.
+        Also add a constant phase offset if the frequency is a constant
+        """
+        # 1) Recursively rewrite the amplitude, frequency, and phase to shift 't'.
+        wave_coeff.amplitude = self.apply(wave_coeff.amplitude)
+        wave_coeff.frequency = self.apply(wave_coeff.frequency)
+        wave_coeff.phase     = self.apply(wave_coeff.phase)
+
+        # 2) If the frequency is a constant: add phase offset = freq * t_offset.
+        #   approximate fix so that e^{i*freq*t} becomes
+        #   e^{i*freq*(t - t_offset)} * e^{i*freq*t_offset} => 
+        #   the second factor is the new phase offset. 
+        #   If wave_coeff.frequency is a simple MathNum(...) or an integer/float 
+        #   (after 'apply') we can do:
+        if isinstance(wave_coeff.frequency, MathNum):
+            freq_val = wave_coeff.frequency.value
+            if isinstance(self.t_offset, (int, float)):
+                # numeric offset => add freq_val * t_offset to the phase
+                wave_coeff.phase = wave_coeff.phase + MathNum(value=freq_val * self.t_offset)
+            elif isinstance(self.t_offset, str):
+                # offset is symbolic => build an expression freq_val * (symbol)
+                wave_coeff.phase = wave_coeff.phase + MathMul(
+                    expr1=wave_coeff.frequency, 
+                    expr2=MathVar(name=self.t_offset)
+                )
+            # else: is t_offset is more complicated than this?
+        return wave_coeff
 
 class UnfoldSequential(RewriteRule):
     def map_SequentialProtocol(self, model, operands):
