@@ -63,7 +63,7 @@ class QutipVM(RewriteRule):
         self.tspan.append(0)
 
     def map_QutipGate(self, model):
-        tspan = np.arange(0, model.duration, self.timestep)
+        tspan = np.arange(0, model.duration, self.timestep) + self.tspan[-1]
 
         empty_base = self.base is None
         empty_hamiltonian = model.hamiltonian is None
@@ -89,5 +89,5 @@ class QutipVM(RewriteRule):
 
         self.current_state = res.final_state
 
-        self.tspan.extend(list(tspan[1:] + self.tspan[-1]))
+        self.tspan.extend(list(tspan[1:]))
         self.states.extend(list(res.states[1:]))
