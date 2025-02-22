@@ -231,6 +231,7 @@ class RotatingReferenceFrame(RewriteRule):
 
 
 class _AdiabaticEliminationHelper(ConversionRule):
+    # TODO currently non universal formulation for AdiabaticElimination
     def __init__(self, eliminated_specs):
         super().__init__()
 
@@ -276,6 +277,7 @@ class _AdiabaticEliminationHelper(ConversionRule):
 
 
 class AdiabaticElimination(RewriteRule):
+    # TODO currently non universal formulation for AdiabaticElimination
     def __init__(self, eliminated_specs):
         super().__init__()
 
