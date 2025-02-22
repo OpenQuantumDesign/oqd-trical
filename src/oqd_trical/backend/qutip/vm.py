@@ -42,7 +42,6 @@ class QutipVM(RewriteRule):
             "MESolver": MESolver,
         }[solver]
         self.solver_options = solver_options
-        pass
 
     @property
     def result(self):
@@ -54,16 +53,33 @@ class QutipVM(RewriteRule):
         self.base = model.base
 
         self.current_state = tensor(
-            [basis(self.hilbert_space[k], 0) for k in self.hilbert_space.keys()]
+            [
+                basis(self.hilbert_space.size[k], 0)
+                for k in self.hilbert_space.size.keys()
+            ]
         )
 
         self.states.append(self.current_state)
         self.tspan.append(0)
 
     def map_QutipGate(self, model):
-        tspan = np.arange(0, model.duration, self.timestep)
+        tspan = np.arange(0, model.duration, self.timestep) + self.tspan[-1]
 
-        H = QobjEvo(lambda t: model.hamiltonian(t) + self.base(t))
+        empty_base = self.base is None
+        empty_hamiltonian = model.hamiltonian is None
+
+        if empty_base and empty_hamiltonian:
+            self.tspan.extend(list(tspan[1:] + self.tspan[-1]))
+            self.states.extend([self.current_state] * (len(tspan) - 1))
+            return
+
+        if empty_hamiltonian:
+            H = QobjEvo(self.base)
+        elif empty_base:
+            H = QobjEvo(model.hamiltonian)
+        else:
+            H = QobjEvo(lambda t: model.hamiltonian(t) + self.base(t))
+
         solver = self.solver(H, options=self.solver_options)
 
         res = solver.run(
@@ -73,5 +89,5 @@ class QutipVM(RewriteRule):
 
         self.current_state = res.final_state
 
+        self.tspan.extend(list(tspan[1:]))
         self.states.extend(list(res.states[1:]))
-        self.tspan.extend(list(tspan[1:] + self.tspan[-1]))

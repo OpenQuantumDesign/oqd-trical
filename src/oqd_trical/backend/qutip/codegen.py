@@ -13,14 +13,15 @@
 # limitations under the License.
 
 import math
-from typing import Dict
 
 import numpy as np
 import qutip as qt
 from oqd_compiler_infrastructure import ConversionRule
 
 ########################################################################################
-from .interface import QutipExperiment, QutipGate
+from oqd_trical.backend.qutip.interface import QutipExperiment, QutipGate
+from oqd_trical.light_matter.compiler.analysis import HilbertSpace
+from oqd_trical.light_matter.interface.operator import PrunedOperator
 
 ########################################################################################
 
@@ -34,40 +35,49 @@ class QutipCodeGeneration(ConversionRule):
         hilbert_space (Dict[str, int]): Hilbert space of the system.
     """
 
-    def __init__(self, hilbert_space: Dict[str, int]):
+    def __init__(self, hilbert_space: HilbertSpace):
         super().__init__()
 
         self.hilbert_space = hilbert_space
 
     def map_AtomicEmulatorCircuit(self, model, operands):
+        if isinstance(operands["base"], PrunedOperator):
+            return QutipExperiment(base=None, sequence=operands["sequence"])
+
         return QutipExperiment(base=operands["base"], sequence=operands["sequence"])
 
     def map_AtomicEmulatorGate(self, model, operands):
+        if isinstance(operands["hamiltonian"], PrunedOperator):
+            return QutipGate(hamiltonian=None, duration=operands["duration"])
+
         return QutipGate(
             hamiltonian=operands["hamiltonian"], duration=operands["duration"]
         )
 
     def map_Identity(self, model, operands):
-        op = qt.identity(self.hilbert_space[model.subsystem])
+        op = qt.identity(self.hilbert_space.size[model.subsystem])
         return lambda t: op
 
     def map_KetBra(self, model, operands):
-        ket = qt.basis(self.hilbert_space[model.subsystem], model.ket)
-        bra = qt.basis(self.hilbert_space[model.subsystem], model.bra).dag()
+        ket = qt.basis(self.hilbert_space.size[model.subsystem], model.ket)
+        bra = qt.basis(self.hilbert_space.size[model.subsystem], model.bra).dag()
         op = ket * bra
+
+        if not isinstance(op, qt.Qobj):
+            op = qt.Qobj(op)
         return lambda t: op
 
     def map_Annihilation(self, model, operands):
-        op = qt.destroy(self.hilbert_space[model.subsystem])
+        op = qt.destroy(self.hilbert_space.size[model.subsystem])
         return lambda t: op
 
     def map_Creation(self, model, operands):
-        op = qt.create(self.hilbert_space[model.subsystem])
+        op = qt.create(self.hilbert_space.size[model.subsystem])
         return lambda t: op
 
     def map_Displacement(self, model, operands):
         return lambda t: qt.displace(
-            self.hilbert_space[model.subsystem], operands["alpha"](t)
+            self.hilbert_space.size[model.subsystem], operands["alpha"](t)
         )
 
     def map_OperatorMul(self, model, operands):

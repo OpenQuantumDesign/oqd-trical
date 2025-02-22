@@ -101,5 +101,3 @@ The matrix elements are not computed until the abstract syntax tree representati
 ///
 
 It's at this point that the Lamb-Dicke approximation, and the order we've determined we must expand to, takes effect: if $|m-n| >$ Lamb-Dicke order, set the matrix element to 0.
-
-Until then, information needed to compute both the Lamb-Dicke and rotating-wave approximations is stored in a [ApproxDisplacementMatrix][trical.light_matter.interface.operator.ApproxDisplacementMatrix].

@@ -30,7 +30,7 @@
             "spin_orbital": 0.5,
             "spin_orbital_nuclear": 1.0,
             "spin_orbital_nuclear_magnetization": -1.0,
-            "energy": 62.83185307179586
+            "energy": 628.3185307179587
           }
         ],
         "transitions": [
@@ -59,7 +59,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": -1.0,
-              "energy": 62.83185307179586
+              "energy": 628.3185307179587
             },
             "einsteinA": 1.0,
             "multipole": "E1"
@@ -98,7 +98,7 @@
             "spin_orbital": 0.5,
             "spin_orbital_nuclear": 1.0,
             "spin_orbital_nuclear_magnetization": -1.0,
-            "energy": 62.83185307179586
+            "energy": 628.3185307179587
           }
         ],
         "transitions": [
@@ -127,7 +127,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": -1.0,
-              "energy": 62.83185307179586
+              "energy": 628.3185307179587
             },
             "einsteinA": 1.0,
             "multipole": "E1"
@@ -187,7 +187,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": -1.0,
-              "energy": 62.83185307179586
+              "energy": 628.3185307179587
             },
             "einsteinA": 1.0,
             "multipole": "E1"
@@ -216,7 +216,7 @@
           ],
           "target": 0
         },
-        "duration": 4000.0
+        "duration": 6000.0
       },
       {
         "class_": "Pulse",
@@ -247,7 +247,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": -1.0,
-              "energy": 62.83185307179586
+              "energy": 628.3185307179587
             },
             "einsteinA": 1.0,
             "multipole": "E1"
@@ -276,7 +276,7 @@
           ],
           "target": 0
         },
-        "duration": 4000.0
+        "duration": 6000.0
       },
       {
         "class_": "Pulse",
@@ -307,7 +307,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": -1.0,
-              "energy": 62.83185307179586
+              "energy": 628.3185307179587
             },
             "einsteinA": 1.0,
             "multipole": "E1"
@@ -336,7 +336,7 @@
           ],
           "target": 1
         },
-        "duration": 4000.0
+        "duration": 6000.0
       },
       {
         "class_": "Pulse",
@@ -367,7 +367,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": -1.0,
-              "energy": 62.83185307179586
+              "energy": 628.3185307179587
             },
             "einsteinA": 1.0,
             "multipole": "E1"
@@ -396,7 +396,7 @@
           ],
           "target": 1
         },
-        "duration": 4000.0
+        "duration": 6000.0
       }
     ]
   }
