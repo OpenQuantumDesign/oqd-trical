@@ -41,13 +41,7 @@ class Coefficient(TypeReflectBaseModel):
         return CoefficientAdd(coeff1=self, coeff2=other)
 
     def __sub__(self, other):
-        return OperatorAdd(
-            op1=self,
-            op2=CoefficientMul(
-                coeff1=WaveCoefficient(amplitude=-1, frequency=0, phase=0),
-                coeff2=other,
-            ),
-        )
+        return self + (-other)
 
     def __mul__(self, other):
         if isinstance(other, Coefficient):
