@@ -35,6 +35,7 @@ class QutipExperiment(TypeReflectBaseModel):
 
     model_config = ConfigDict(validate_assignments=True, arbitrary_types_allowed=True)
 
+    frame: Optional[Union[Qobj, Callable[[float], Qobj]]]
     base: Optional[Union[Qobj, Callable[[float], Qobj]]]
     sequence: List[QutipGate]
 

@@ -46,7 +46,10 @@ class QutipVM(RewriteRule):
     @property
     def result(self):
         return dict(
-            final_state=self.current_state, states=self.states, tspan=self.tspan
+            final_state=self.current_state,
+            states=self.states,
+            tspan=self.tspan,
+            frame=self.frame,
         )
 
     def map_QutipExperiment(self, model):
@@ -61,6 +64,8 @@ class QutipVM(RewriteRule):
 
         self.states.append(self.current_state)
         self.tspan.append(0)
+
+        self.frame = QobjEvo(model.frame)
 
     def map_QutipGate(self, model):
         tspan = np.arange(0, model.duration, self.timestep)
