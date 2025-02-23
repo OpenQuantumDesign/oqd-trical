@@ -59,14 +59,14 @@ class DynamiqsBackend(BackendBase):
 
     def compile(self, circuit, fock_cutoff):
         """
-        Compiles a AtomicCircuit or AtomicEmulatorCircuit to a [`DynamiqsExperiment`][oqd_trical.backend.Dynamiqs.interface.DynamiqsExperiment].
+        Compiles a AtomicCircuit or AtomicEmulatorCircuit to a [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
 
         Args:
             circuit (Union[AtomicCircuit,AtomicEmulatorCircuit]): circuit to be compiled.
             fock_cutoff (int): Truncation for fock spaces.
 
         Returns:
-            experiment (DynamiqsExperiment): Compiled [`DynamiqsExperiment`][oqd_trical.backend.Dynamiqs.interface.DynamiqsExperiment].
+            experiment (DynamiqsExperiment): Compiled [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
             hilbert_space (Dict[str, int]): Hilbert space of the system.
         """
         assert isinstance(circuit, (AtomicCircuit, AtomicEmulatorCircuit))
@@ -108,15 +108,15 @@ class DynamiqsBackend(BackendBase):
 
     def run(self, experiment, hilbert_space, timestep):
         """
-        Runs a [`DynamiqsExperiment`][oqd_trical.backend.Dynamiqs.interface.DynamiqsExperiment].
+        Runs a [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
 
         Args:
-            experiment (DynamiqsExperiment): [`DynamiqsExperiment`][oqd_trical.backend.Dynamiqs.interface.DynamiqsExperiment] to be executed.
+            experiment (DynamiqsExperiment): [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment] to be executed.
             hilbert_space (Dict[str, int]): Hilbert space of the system.
             timestep (float): Timestep between tracked states of the evolution.
 
         Returns:
-            result (Dict[str,Any]): Result of execution of [`DynamiqsExperiment`][oqd_trical.backend.Dynamiqs.interface.DynamiqsExperiment].
+            result (Dict[str,Any]): Result of execution of [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
         """
         vm = Pre(
             DynamiqsVM(

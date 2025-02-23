@@ -22,7 +22,7 @@ from oqd_compiler_infrastructure import RewriteRule
 
 class DynamiqsVM(RewriteRule):
     """
-    Rule that executes a [`DynamiqsExperiment`][oqd_trical.backend.Dynamiqs.interface.DynamiqsExperiment].
+    Rule that executes a [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
 
     Attributes:
         hilbert_space (Dict[str, int]): Hilbert space of the system.

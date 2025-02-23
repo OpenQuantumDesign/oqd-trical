@@ -45,6 +45,7 @@ nav:
           - Compiler: reference/compiler.md
       - Backend:
           - QuTiP: reference/qutip.md
+          - Dynamiqs: reference/dynamiqs.md
       - Miscellaneous: reference/misc.md
 
 theme:
