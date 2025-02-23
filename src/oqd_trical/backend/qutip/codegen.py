@@ -56,7 +56,7 @@ class QutipCodeGeneration(ConversionRule):
 
     def map_Identity(self, model, operands):
         op = qt.identity(self.hilbert_space.size[model.subsystem])
-        return qt.QobjEvo(op)
+        return lambda t: op
 
     def map_KetBra(self, model, operands):
         ket = qt.basis(self.hilbert_space.size[model.subsystem], model.ket)
@@ -65,34 +65,32 @@ class QutipCodeGeneration(ConversionRule):
 
         if not isinstance(op, qt.Qobj):
             op = qt.Qobj(op)
-        return qt.QobjEvo(op)
+        return lambda t: op
 
     def map_Annihilation(self, model, operands):
         op = qt.destroy(self.hilbert_space.size[model.subsystem])
-        return qt.QobjEvo(op)
+        return lambda t: op
 
     def map_Creation(self, model, operands):
         op = qt.create(self.hilbert_space.size[model.subsystem])
-        return qt.QobjEvo(op)
+        return lambda t: op
 
     def map_Displacement(self, model, operands):
-        return qt.QobjEvo(
-            lambda t: qt.displace(
-                self.hilbert_space.size[model.subsystem], operands["alpha"](t)
-            )
+        return lambda t: qt.displace(
+            self.hilbert_space.size[model.subsystem], operands["alpha"](t)
         )
 
     def map_OperatorMul(self, model, operands):
-        return operands["op1"] * operands["op2"]
+        return lambda t: operands["op1"](t) * operands["op2"](t)
 
     def map_OperatorKron(self, model, operands):
-        return qt.tensor(operands["op1"], operands["op2"])
+        return lambda t: qt.tensor(operands["op1"](t), operands["op2"](t))
 
     def map_OperatorAdd(self, model, operands):
-        return operands["op1"] + operands["op2"]
+        return lambda t: operands["op1"](t) + operands["op2"](t)
 
     def map_OperatorScalarMul(self, model, operands):
-        return qt.QobjEvo(lambda t: operands["coeff"](t) * operands["op"](t))
+        return lambda t: operands["coeff"](t) * operands["op"](t)
 
     def map_WaveCoefficient(self, model, operands):
         return lambda t: operands["amplitude"](t) * np.exp(
