@@ -47,7 +47,7 @@ class QutipBackend(BackendBase):
         save_intermediate=True,
         approx_pass=None,
         solver="SESolver",
-        solver_options={},
+        solver_options={"progress_bar": True},
     ):
         super().__init__()
 
