@@ -14,7 +14,7 @@
 
 import numpy as np
 from oqd_compiler_infrastructure import RewriteRule
-from qutip import MESolver, QobjEvo, SESolver, basis, tensor
+from qutip import MESolver, SESolver, basis, tensor
 
 ########################################################################################
 
@@ -74,11 +74,11 @@ class QutipVM(RewriteRule):
             return
 
         if empty_hamiltonian:
-            H = QobjEvo(self.base)
+            H = self.base
         elif empty_base:
-            H = QobjEvo(model.hamiltonian)
+            H = model.hamiltonian
         else:
-            H = QobjEvo(lambda t: model.hamiltonian(t) + self.base(t))
+            H = model.hamiltonian + self.base
 
         solver = self.solver(H, options=self.solver_options)
 
