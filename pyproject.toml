@@ -35,6 +35,7 @@ dependencies = [
     "qutip",
     "oqd_core@git+https://github.com/openquantumdesign/oqd-core@atomic",
     "oqd_compiler_infrastructure@git+https://github.com/openquantumdesign/oqd-compiler-infrastructure",
+    "dynamiqs>=0.3.1",
 ]
 
 [project.optional-dependencies]
