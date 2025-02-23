@@ -44,20 +44,22 @@ class DynamiqsCodeGeneration(ConversionRule):
         if isinstance(operands["base"], PrunedOperator):
             return DynamiqsExperiment(base=None, sequence=operands["sequence"])
 
-        return DynamiqsExperiment(base=operands["base"], sequence=operands["sequence"])
+        return DynamiqsExperiment(
+            base=dq.timecallable(operands["base"]), sequence=operands["sequence"]
+        )
 
     def map_AtomicEmulatorGate(self, model, operands):
         if isinstance(operands["hamiltonian"], PrunedOperator):
             return DynamiqsGate(hamiltonian=None, duration=operands["duration"])
 
         return DynamiqsGate(
-            hamiltonian=operands["hamiltonian"],
+            hamiltonian=dq.timecallable(operands["hamiltonian"]),
             duration=operands["duration"],
         )
 
     def map_Identity(self, model, operands):
         op = dq.eye(self.hilbert_space.size[model.subsystem])
-        return dq.timecallable(lambda t: op)
+        return lambda t: op
 
     def map_KetBra(self, model, operands):
         ket = dq.basis(self.hilbert_space.size[model.subsystem], model.ket)
@@ -66,36 +68,32 @@ class DynamiqsCodeGeneration(ConversionRule):
 
         if not isinstance(op, dq.QArray):
             op = dq.asqarray(op)
-        return dq.timecallable(lambda t: op)
+        return lambda t: op
 
     def map_Annihilation(self, model, operands):
         op = dq.destroy(self.hilbert_space.size[model.subsystem])
-        return dq.timecallable(lambda t: op)
+        return lambda t: op
 
     def map_Creation(self, model, operands):
         op = dq.create(self.hilbert_space.size[model.subsystem])
-        return dq.timecallable(lambda t: op)
+        return lambda t: op
 
     def map_Displacement(self, model, operands):
-        return dq.timecallable(
-            lambda t: dq.displace(
-                self.hilbert_space.size[model.subsystem], operands["alpha"](t)
-            )
+        return lambda t: dq.displace(
+            self.hilbert_space.size[model.subsystem], operands["alpha"](t)
         )
 
     def map_OperatorMul(self, model, operands):
-        return dq.timecallable(lambda t: operands["op1"](t) @ operands["op2"](t))
+        return lambda t: operands["op1"](t) @ operands["op2"](t)
 
     def map_OperatorKron(self, model, operands):
-        return dq.timecallable(
-            lambda t: dq.tensor(operands["op1"](t), operands["op2"](t))
-        )
+        return lambda t: dq.tensor(operands["op1"](t), operands["op2"](t))
 
     def map_OperatorAdd(self, model, operands):
-        return dq.timecallable(lambda t: operands["op1"](t) + operands["op2"](t))
+        return lambda t: operands["op1"](t) + operands["op2"](t)
 
     def map_OperatorScalarMul(self, model, operands):
-        return dq.timecallable(lambda t: operands["coeff"](t) * operands["op"](t))
+        return lambda t: operands["coeff"](t) * operands["op"](t)
 
     def map_WaveCoefficient(self, model, operands):
         return lambda t: operands["amplitude"](t) * jnp.exp(
