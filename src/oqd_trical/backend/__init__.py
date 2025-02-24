@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import qutip
+from . import dynamiqs, qutip
+from .dynamiqs import DynamiqsBackend
+from .qutip import QutipBackend
 
-__all__ = ["qutip"]
+__all__ = [
+    "qutip",
+    "dynamiqs",
+    "DynamiqsBackend",
+    "QutipBackend",
+]

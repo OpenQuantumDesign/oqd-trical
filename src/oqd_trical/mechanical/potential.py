@@ -56,9 +56,9 @@ class Potential(Base):
 
     def __add__(self, other):
         for i in np.intersect1d(list(self.params.keys()), list(other.params.keys())):
-            assert self.params[i] == other.params[i], (
-                "Potentials with incompatible dimensions"
-            )
+            assert (
+                self.params[i] == other.params[i]
+            ), "Potentials with incompatible dimensions"
 
         params = {}
         params.update(self.params)
@@ -77,9 +77,9 @@ class Potential(Base):
 
     def __sub__(self, other):
         for i in np.intersect1d(list(self.params.keys()), list(other.params.keys())):
-            assert self.params[i] == other.params[i], (
-                "Potentials with incompatible dimensions"
-            )
+            assert (
+                self.params[i] == other.params[i]
+            ), "Potentials with incompatible dimensions"
 
         params = {}
         params.update(self.params)

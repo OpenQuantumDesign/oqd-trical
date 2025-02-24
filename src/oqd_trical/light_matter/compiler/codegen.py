@@ -43,14 +43,15 @@ class ConstructHamiltonian(ConversionRule):
     """Maps an AtomicCircuit to an AtomicEmulatorCircuit replaces laser descriptions of operations with Hamiltonian description of operations"""
 
     def map_AtomicCircuit(self, model, operands):
-        return AtomicEmulatorCircuit(
-            base=operands["system"],
-            sequence=(
-                [operands["protocol"]]
-                if isinstance(operands["protocol"], AtomicEmulatorGate)
-                else operands["protocol"]
-            ),
+        gates = (
+            [operands["protocol"]]
+            if isinstance(operands["protocol"], AtomicEmulatorGate)
+            else operands["protocol"]
         )
+        for gate in gates:
+            gate.hamiltonian = gate.hamiltonian + operands["system"]
+
+        return AtomicEmulatorCircuit(sequence=gates)
 
     def map_System(self, model, operands):
         self.N = len(model.ions)

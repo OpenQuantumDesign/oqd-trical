@@ -12,22 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
+import dynamiqs as dq
+from dynamiqs import mesolve, sesolve
+from jax import numpy as jnp
 from oqd_compiler_infrastructure import RewriteRule
-from qutip import MESolver, SESolver, basis, tensor
 
 ########################################################################################
 
 
-class QutipVM(RewriteRule):
+class DynamiqsVM(RewriteRule):
     """
-    Rule that executes a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+    Rule that executes a [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
 
     Attributes:
         hilbert_space (Dict[str, int]): Hilbert space of the system.
         timestep (float): Timestep between tracked states of the evolution.
-        solver (Literal["SESolver","MESolver"]): QuTiP solver to use.
-        solver_options (Dict[str,Any]): Qutip solver options
+        solver (Literal["SESolver","MESolver"]): Dynamiqs solver to use.
+        solver_options (Dict[str,Any]): Dynamiqs solver options
     """
 
     def __init__(self, hilbert_space, timestep, solver="SESolver", solver_options={}):
@@ -38,24 +39,21 @@ class QutipVM(RewriteRule):
         self.tspan = []
 
         self.solver = {
-            "SESolver": SESolver,
-            "MESolver": MESolver,
+            "SESolver": sesolve,
+            "MESolver": mesolve,
         }[solver]
         self.solver_options = solver_options
 
     @property
     def result(self):
         return dict(
-            final_state=self.current_state,
-            states=self.states,
-            tspan=self.tspan,
-            frame=self.frame,
+            final_state=self.current_state, states=self.states, tspan=self.tspan
         )
 
-    def map_QutipExperiment(self, model):
-        self.current_state = tensor(
-            [
-                basis(self.hilbert_space.size[k], 0)
+    def map_DynamiqsExperiment(self, model):
+        self.current_state = dq.tensor(
+            *[
+                dq.basis(self.hilbert_space.size[k], 0)
                 for k in self.hilbert_space.size.keys()
             ]
         )
@@ -63,15 +61,8 @@ class QutipVM(RewriteRule):
         self.states.append(self.current_state)
         self.tspan.append(0)
 
-        self.frame = model.frame
-
-    def map_QutipGate(self, model):
-        tspan = np.arange(0, model.duration, self.timestep)
-
-        if tspan[-1] != model.duration:
-            tspan = np.append(tspan, model.duration)
-
-        tspan = tspan + self.tspan[-1]
+    def map_DynamiqsGate(self, model):
+        tspan = jnp.arange(0, model.duration, self.timestep) + self.tspan[-1]
 
         empty_hamiltonian = model.hamiltonian is None
 
@@ -80,11 +71,13 @@ class QutipVM(RewriteRule):
             self.states.extend([self.current_state] * (len(tspan) - 1))
             return
 
-        solver = self.solver(model.hamiltonian, options=self.solver_options)
-
-        res = solver.run(
+        res = self.solver(
+            model.hamiltonian,
             self.current_state,
             tspan,
+            solver=self.solver_options["solver"]
+            if "solver" in self.solver_options.keys()
+            else dq.solver.Tsit5(),
         )
 
         self.current_state = res.final_state
