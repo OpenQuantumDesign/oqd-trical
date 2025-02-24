@@ -36,7 +36,6 @@ class AtomicEmulatorCircuit(TypeReflectBaseModel):
     """
 
     frame: Optional[OperatorSubTypes] = None
-    base: OperatorSubTypes
     sequence: List[AtomicEmulatorGate]
 
 

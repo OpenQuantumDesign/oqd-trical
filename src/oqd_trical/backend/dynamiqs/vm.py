@@ -51,8 +51,6 @@ class DynamiqsVM(RewriteRule):
         )
 
     def map_DynamiqsExperiment(self, model):
-        self.base = model.base
-
         self.current_state = dq.tensor(
             *[
                 dq.basis(self.hilbert_space.size[k], 0)
@@ -66,23 +64,15 @@ class DynamiqsVM(RewriteRule):
     def map_DynamiqsGate(self, model):
         tspan = jnp.arange(0, model.duration, self.timestep) + self.tspan[-1]
 
-        empty_base = self.base is None
         empty_hamiltonian = model.hamiltonian is None
 
-        if empty_base and empty_hamiltonian:
+        if empty_hamiltonian:
             self.tspan.extend(list(tspan[1:] + self.tspan[-1]))
             self.states.extend([self.current_state] * (len(tspan) - 1))
             return
 
-        if empty_hamiltonian:
-            H = self.base
-        elif empty_base:
-            H = model.hamiltonian
-        else:
-            H = dq.timecallable(lambda t: model.hamiltonian(t) + self.base(t))
-
         res = self.solver(
-            H,
+            model.hamiltonian,
             self.current_state,
             tspan,
             solver=self.solver_options["solver"]

@@ -41,10 +41,7 @@ class QutipCodeGeneration(ConversionRule):
         self.hilbert_space = hilbert_space
 
     def map_AtomicEmulatorCircuit(self, model, operands):
-        if isinstance(operands["base"], PrunedOperator):
-            return QutipExperiment(base=None, sequence=operands["sequence"])
-
-        return QutipExperiment(base=operands["base"], sequence=operands["sequence"])
+        return QutipExperiment(sequence=operands["sequence"])
 
     def map_AtomicEmulatorGate(self, model, operands):
         if isinstance(operands["hamiltonian"], PrunedOperator):
