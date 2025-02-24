@@ -26,6 +26,8 @@ from oqd_core.interface.math import MathNum
 
 ########################################################################################
 from oqd_trical.light_matter.interface.operator import (
+    CoefficientAdd,
+    CoefficientMul,
     ConstantCoefficient,
     Identity,
     OperatorAdd,
@@ -39,7 +41,7 @@ from oqd_trical.light_matter.interface.operator import (
 ########################################################################################
 
 
-class Prune(RewriteRule):
+class PruneOperator(RewriteRule):
     """Prunes an Operator AST by removing zeros"""
 
     def map_OperatorAdd(self, model):
@@ -68,6 +70,14 @@ class Prune(RewriteRule):
         ):
             return PrunedOperator()
 
+    def map_Displacement(self, model):
+        if isinstance(
+            model.alpha, WaveCoefficient
+        ) and model.alpha.amplitude == MathNum(value=0):
+            return Identity(subsystem=model.subsystem)
+
+
+class PruneCoefficient(RewriteRule):
     def map_CoefficientAdd(self, model):
         if isinstance(
             model.coeff1, WaveCoefficient
@@ -78,14 +88,15 @@ class Prune(RewriteRule):
         ) and model.coeff2.amplitude == MathNum(value=0):
             return model.coeff1
 
-    def map_Displacement(self, model):
-        if isinstance(
-            model.alpha, WaveCoefficient
-        ) and model.alpha.amplitude == MathNum(value=0):
-            return Identity(subsystem=model.subsystem)
-
-
-########################################################################################
+    def map_CoefficientMul(self, model):
+        if (
+            isinstance(model.coeff1, WaveCoefficient)
+            and model.coeff1.amplitude == MathNum(value=0)
+        ) or (
+            isinstance(model.coeff2, WaveCoefficient)
+            and model.coeff2.amplitude == MathNum(value=0)
+        ):
+            return ConstantCoefficient(value=0)
 
 
 class PruneZeroPowers(RewriteRule):
@@ -196,6 +207,40 @@ class GatherCoefficient(RewriteRule):
             return model.op2.coeff * model.__class__(op1=model.op1, op2=model.op2.op)
 
 
+class CoefficientDistributivity(RewriteRule):
+    """Implements distributivity of addition over multiplication on coefficient"""
+
+    def map_CoefficientMul(self, model):
+        if isinstance(model.coeff1, (CoefficientAdd)):
+            return model.coeff1.__class__(
+                coeff1=CoefficientMul(coeff1=model.coeff1.coeff1, coeff2=model.coeff2),
+                coeff2=CoefficientMul(coeff1=model.coeff1.coeff2, coeff2=model.coeff2),
+            )
+        if isinstance(model.coeff2, (CoefficientAdd)):
+            return model.coeff2.__class__(
+                coeff1=CoefficientMul(coeff1=model.coeff1, coeff2=model.coeff2.coeff1),
+                coeff2=CoefficientMul(coeff1=model.coeff1, coeff2=model.coeff2.coeff2),
+            )
+
+
+class CoefficientAssociativity(RewriteRule):
+    """Implements associativity of addition, multiplication on coefficient"""
+
+    def map_CoefficientAdd(self, model):
+        return self._map_addmul(model=model)
+
+    def map_CoefficientMul(self, model):
+        return self._map_addmul(model=model)
+
+    def _map_addmul(self, model):
+        if isinstance(model.coeff2, model.__class__):
+            return model.__class__(
+                coeff1=model.__class__(coeff1=model.coeff1, coeff2=model.coeff2.coeff1),
+                coeff2=model.coeff2.coeff2,
+            )
+        return model.__class__(coeff1=model.coeff1, coeff2=model.coeff2)
+
+
 class CombineCoefficient(RewriteRule):
     def map_CoefficientMul(self, model):
         if isinstance(model.coeff1, WaveCoefficient) and isinstance(
@@ -205,6 +250,19 @@ class CombineCoefficient(RewriteRule):
                 amplitude=model.coeff1.amplitude * model.coeff2.amplitude,
                 frequency=model.coeff1.frequency + model.coeff2.frequency,
                 phase=model.coeff1.phase + model.coeff2.phase,
+            )
+
+    def map_CoefficientAdd(self, model):
+        if (
+            isinstance(model.coeff1, WaveCoefficient)
+            and isinstance(model.coeff2, WaveCoefficient)
+            and model.coeff1.frequency == MathNum(value=0)
+            and model.coeff1.phase == MathNum(value=0)
+            and model.coeff2.frequency == MathNum(value=0)
+            and model.coeff2.phase == MathNum(value=0)
+        ):
+            return ConstantCoefficient(
+                value=model.coeff1.amplitude + model.coeff2.amplitude
             )
 
 
@@ -243,7 +301,7 @@ class ScaleTerms(RewriteRule):
 ########################################################################################
 
 
-class _CombineTerms(RewriteRule):
+class _CombineTermsHelper(RewriteRule):
     """Helper for combining terms of the same operator by combining their coefficients"""
 
     def __init__(self):
@@ -260,6 +318,8 @@ class _CombineTerms(RewriteRule):
         return [o[1] for o in self.operators]
 
     def emit(self):
+        if self.operators == []:
+            return PrunedOperator()
         return reduce(
             lambda op1, op2: op1 + op2,
             [o[0] * o[1] for o in self.operators],
@@ -277,45 +337,69 @@ class CombineTerms(RewriteRule):
     """Combines terms of the same operator by combining their coefficients"""
 
     def map_AtomicEmulatorCircuit(self, model):
-        combiner = _CombineTerms()
-        Pre(combiner)(model.base)
-
-        return model.__class__(base=combiner.emit(), sequence=model.sequence)
+        return model.__class__(frame=model.frame, sequence=model.sequence)
 
     def map_AtomicEmulatorGate(self, model):
-        combiner = _CombineTerms()
+        combiner = _CombineTermsHelper()
         Pre(combiner)(model)
 
         return model.__class__(hamiltonian=combiner.emit(), duration=model.duration)
 
 
+class RelabelStates(RewriteRule):
+    def __init__(self, relabel_rules):
+        self._relabel_rules = relabel_rules
+
+    def map_KetBra(self, model):
+        new_ket = self._relabel_rules[model.subsystem][model.ket]
+        new_bra = self._relabel_rules[model.subsystem][model.bra]
+
+        return model.__class__(ket=new_ket, bra=new_bra, subsystem=model.subsystem)
+
+
 ########################################################################################
 
 
-def canonicalization_pass_factory():
-    """Creates a new instance of the canonicalization pass"""
+def canonicalize_math_factory():
+    """Creates a new instance of the canonicalization pass for math expressions"""
     return Chain(
-        Chain(
-            FixedPoint(Post(DistributeMathExpr())),
-            FixedPoint(Post(ProperOrderMathExpr())),
-            FixedPoint(Post(PartitionMathExpr())),
-            FixedPoint(Post(PruneZeroPowers())),
-        ),
+        FixedPoint(Post(DistributeMathExpr())),
+        FixedPoint(Post(ProperOrderMathExpr())),
+        FixedPoint(Post(PartitionMathExpr())),
+        FixedPoint(Post(PruneZeroPowers())),
         simplify_math_expr,
-        FixedPoint(Post(Prune())),
-        Chain(
-            FixedPoint(Post(OperatorDistributivity())),
-            FixedPoint(Post(OperatorAssociativity())),
-            Post(GatherCoefficient()),
-            FixedPoint(Post(CombineCoefficient())),
-        ),
+    )
+
+
+def canonicalize_coefficient_factory():
+    """Creates a new instance of the canonicalization pass for coefficients"""
+    return Chain(
+        FixedPoint(Post(CoefficientDistributivity())),
+        FixedPoint(Post(CoefficientAssociativity())),
+        FixedPoint(Post(CombineCoefficient())),
+        FixedPoint(Post(PruneCoefficient())),
+    )
+
+
+def canonicalize_operator_factory():
+    """Creates a new instance of the canonicalization pass for operators"""
+    return Chain(
+        FixedPoint(Post(OperatorDistributivity())),
+        FixedPoint(Post(OperatorAssociativity())),
+        Post(GatherCoefficient()),
+    )
+
+
+def canonicalize_emulator_circuit_factory():
+    """Creates a new instance of the canonicalization pass for AtomicEmulatorCircuit"""
+    return Chain(
+        canonicalize_operator_factory(),
+        canonicalize_coefficient_factory(),
+        canonicalize_math_factory(),
+        FixedPoint(Post(PruneOperator())),
         Pre(ScaleTerms()),
         Post(CombineTerms()),
-        Chain(
-            FixedPoint(Pre(DistributeMathExpr())),
-            FixedPoint(Post(ProperOrderMathExpr())),
-            FixedPoint(Post(PartitionMathExpr())),
-            FixedPoint(Post(PruneZeroPowers())),
-        ),
-        simplify_math_expr,
+        canonicalize_coefficient_factory(),
+        canonicalize_math_factory(),
+        FixedPoint(Post(PruneOperator())),
     )

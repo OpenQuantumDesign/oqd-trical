@@ -16,37 +16,39 @@ from __future__ import annotations
 
 from typing import List, Optional
 
+import dynamiqs as dq
 from oqd_compiler_infrastructure import TypeReflectBaseModel
+from pydantic import ConfigDict
 
 ########################################################################################
-from .operator import OperatorSubTypes
-
-########################################################################################
 
 
-class AtomicEmulatorCircuit(TypeReflectBaseModel):
+class DynamiqsExperiment(TypeReflectBaseModel):
     """
-    Class representing a quantum information experiment represented in terms of atomic operations expressed in terms of their Hamiltonians.
+    Class representing a Dynamiqs experiment represented in terms of atomic operations expressed in terms of their Hamiltonians.
 
     Attributes:
-        frame (Optional[Operator]): [`Operator`][oqd_trical.light_matter.interface.operator.Operator] that defines the rotating frame of reference.
         base (Operator): Free Hamiltonian.
         sequence (List[AtomicEmulatorGate]): List of gates to apply.
 
     """
 
-    frame: Optional[OperatorSubTypes] = None
-    sequence: List[AtomicEmulatorGate]
+    model_config = ConfigDict(validate_assignments=True, arbitrary_types_allowed=True)
+
+    frame: Optional[dq.TimeQArray]
+    sequence: List[DynamiqsGate]
 
 
-class AtomicEmulatorGate(TypeReflectBaseModel):
+class DynamiqsGate(TypeReflectBaseModel):
     """
-    Class representing a gate represented in terms of atomic operations expressed in terms of their Hamiltonians.
+    Class representing a Dynamiqs gate represented in terms of atomic operations expressed in terms of their Hamiltonians.
 
     Attributes:
         hamiltonian (Operator): Hamiltonian to evolve by.
         duration (float): Time to evolve for.
     """
 
-    hamiltonian: OperatorSubTypes
+    model_config = ConfigDict(validate_assignments=True, arbitrary_types_allowed=True)
+
+    hamiltonian: Optional[dq.TimeQArray]
     duration: float

@@ -7,3 +7,5 @@
 - [ ] Rule for moving into interaction picture for a rotating frame of reference.
 - [ ] Rule for performing adiabatic elimination.
 - [ ] Unit test for `oqd_trical`
+- [ ] [`ConstructHamiltonian`][oqd_trical.light_matter.compiler.codegen] support for sequential within parallel protocol
+- [ ] Sort out units

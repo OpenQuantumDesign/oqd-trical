@@ -54,7 +54,7 @@
             "spin_orbital": 0.5,
             "spin_orbital_nuclear": 1.0,
             "spin_orbital_nuclear_magnetization": 1.0,
-            "energy": 1256.6370614359173
+            "energy": 691.1503837897545
           }
         ],
         "transitions": [
@@ -113,7 +113,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": 1.0,
-              "energy": 1256.6370614359173
+              "energy": 691.1503837897545
             },
             "einsteinA": 1.0,
             "multipole": "E1"
@@ -173,7 +173,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": 1.0,
-              "energy": 1256.6370614359173
+              "energy": 691.1503837897545
             },
             "einsteinA": 1.0,
             "multipole": "E1"
@@ -290,7 +290,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": 1.0,
-              "energy": 1256.6370614359173
+              "energy": 691.1503837897545
             },
             "einsteinA": 1.0,
             "multipole": "E1"

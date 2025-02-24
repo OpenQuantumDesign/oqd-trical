@@ -33,8 +33,9 @@ dependencies = [
     "scipy",
     "sympy",
     "qutip",
-    "oqd_core@git+https://github.com/openquantumdesign/oqd-core@atomic",
+    "oqd_core@git+https://github.com/openquantumdesign/oqd-core",
     "oqd_compiler_infrastructure@git+https://github.com/openquantumdesign/oqd-compiler-infrastructure",
+    "dynamiqs>=0.3.1",
 ]
 
 [project.optional-dependencies]
@@ -54,6 +55,9 @@ include = ["oqd_trical*"]
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I"]
 fixable = ["ALL"]
+
+[dependency-groups]
+dev = ["jupyter>=1.1.1", "pre-commit>=4.1.0", "ruff>=0.9.6"]
 
 
 [project.urls]
