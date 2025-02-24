@@ -337,12 +337,7 @@ class CombineTerms(RewriteRule):
     """Combines terms of the same operator by combining their coefficients"""
 
     def map_AtomicEmulatorCircuit(self, model):
-        combiner = _CombineTermsHelper()
-        Pre(combiner)(model.base)
-
-        return model.__class__(
-            frame=model.frame, base=combiner.emit(), sequence=model.sequence
-        )
+        return model.__class__(frame=model.frame, sequence=model.sequence)
 
     def map_AtomicEmulatorGate(self, model):
         combiner = _CombineTermsHelper()
@@ -360,20 +355,6 @@ class RelabelStates(RewriteRule):
         new_bra = self._relabel_rules[model.subsystem][model.bra]
 
         return model.__class__(ket=new_ket, bra=new_bra, subsystem=model.subsystem)
-
-
-########################################################################################
-class PushBaseHamiltonian(RewriteRule):
-    def map_AtomicEmulatorCircuit(self, model):
-        self.base = model.base
-        return model.__class__(
-            frame=model.frame, base=PrunedOperator(), sequence=model.sequence
-        )
-
-    def map_AtomicEmulatorGate(self, model):
-        return model.__class__(
-            hamiltonian=model.hamiltonian + self.base, duration=model.duration
-        )
 
 
 ########################################################################################
@@ -409,10 +390,9 @@ def canonicalize_operator_factory():
     )
 
 
-def canonicalization_pass_factory():
+def canonicalize_emulator_circuit_factory():
     """Creates a new instance of the canonicalization pass for AtomicEmulatorCircuit"""
     return Chain(
-        Pre(PushBaseHamiltonian()),
         canonicalize_operator_factory(),
         canonicalize_coefficient_factory(),
         canonicalize_math_factory(),

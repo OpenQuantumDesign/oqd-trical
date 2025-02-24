@@ -184,8 +184,11 @@ class RotatingReferenceFrame(RewriteRule):
         return reduce(lambda x, y: x + y, ops)
 
     def map_AtomicEmulatorCircuit(self, model):
+        return model.__class__(frame=self.frame, sequence=model.sequence)
+
+    def map_AtomicEmulatorGate(self, model):
         return model.__class__(
-            frame=self.frame, base=model.base - self.frame, sequence=model.sequence
+            hamiltonian=model.hamiltonian - self.frame, duration=model.duration
         )
 
     def map_KetBra(self, model):

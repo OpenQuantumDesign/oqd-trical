@@ -14,22 +14,22 @@
 
 import math
 
-import numpy as np
-import qutip as qt
+import dynamiqs as dq
+from jax import numpy as jnp
 from oqd_compiler_infrastructure import ConversionRule
 
 ########################################################################################
-from oqd_trical.backend.qutip.interface import QutipExperiment, QutipGate
+from oqd_trical.backend.dynamiqs.interface import DynamiqsExperiment, DynamiqsGate
 from oqd_trical.light_matter.compiler.analysis import HilbertSpace
 from oqd_trical.light_matter.interface.operator import PrunedOperator
 
 ########################################################################################
 
 
-class QutipCodeGeneration(ConversionRule):
+class DynamiqsCodeGeneration(ConversionRule):
     """
     Rule that converts an [`AtomicEmulatorCircuit`][oqd_trical.light_matter.interface.emulator.AtomicEmulatorCircuit]
-    to a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment]
+    to a [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment]
 
     Attributes:
         hilbert_space (Dict[str, int]): Hilbert space of the system.
@@ -41,7 +41,7 @@ class QutipCodeGeneration(ConversionRule):
         self.hilbert_space = hilbert_space
 
     def map_AtomicEmulatorCircuit(self, model, operands):
-        return QutipExperiment(
+        return DynamiqsExperiment(
             frame=None
             if isinstance(operands["frame"], PrunedOperator)
             else operands["frame"],
@@ -50,54 +50,53 @@ class QutipCodeGeneration(ConversionRule):
 
     def map_AtomicEmulatorGate(self, model, operands):
         if isinstance(operands["hamiltonian"], PrunedOperator):
-            return QutipGate(hamiltonian=None, duration=operands["duration"])
+            return DynamiqsGate(hamiltonian=None, duration=operands["duration"])
 
-        return QutipGate(
-            hamiltonian=operands["hamiltonian"], duration=operands["duration"]
+        return DynamiqsGate(
+            hamiltonian=dq.timecallable(operands["hamiltonian"]),
+            duration=operands["duration"],
         )
 
     def map_Identity(self, model, operands):
-        op = qt.identity(self.hilbert_space.size[model.subsystem])
-        return qt.QobjEvo(op)
+        op = dq.eye(self.hilbert_space.size[model.subsystem])
+        return lambda t: op
 
     def map_KetBra(self, model, operands):
-        ket = qt.basis(self.hilbert_space.size[model.subsystem], model.ket)
-        bra = qt.basis(self.hilbert_space.size[model.subsystem], model.bra).dag()
-        op = ket * bra
+        ket = dq.basis(self.hilbert_space.size[model.subsystem], model.ket)
+        bra = dq.basis(self.hilbert_space.size[model.subsystem], model.bra).dag()
+        op = ket @ bra
 
-        if not isinstance(op, qt.Qobj):
-            op = qt.Qobj(op)
-        return qt.QobjEvo(op)
+        if not isinstance(op, dq.QArray):
+            op = dq.asqarray(op)
+        return lambda t: op
 
     def map_Annihilation(self, model, operands):
-        op = qt.destroy(self.hilbert_space.size[model.subsystem])
-        return qt.QobjEvo(op)
+        op = dq.destroy(self.hilbert_space.size[model.subsystem])
+        return lambda t: op
 
     def map_Creation(self, model, operands):
-        op = qt.create(self.hilbert_space.size[model.subsystem])
-        return qt.QobjEvo(op)
+        op = dq.create(self.hilbert_space.size[model.subsystem])
+        return lambda t: op
 
     def map_Displacement(self, model, operands):
-        return qt.QobjEvo(
-            lambda t: qt.displace(
-                self.hilbert_space.size[model.subsystem], operands["alpha"](t)
-            )
+        return lambda t: dq.displace(
+            self.hilbert_space.size[model.subsystem], operands["alpha"](t)
         )
 
     def map_OperatorMul(self, model, operands):
-        return operands["op1"] * operands["op2"]
+        return lambda t: operands["op1"](t) @ operands["op2"](t)
 
     def map_OperatorKron(self, model, operands):
-        return qt.tensor(operands["op1"], operands["op2"])
+        return lambda t: dq.tensor(operands["op1"](t), operands["op2"](t))
 
     def map_OperatorAdd(self, model, operands):
-        return operands["op1"] + operands["op2"]
+        return lambda t: operands["op1"](t) + operands["op2"](t)
 
     def map_OperatorScalarMul(self, model, operands):
-        return qt.QobjEvo(lambda t: operands["coeff"](t) * operands["op"](t))
+        return lambda t: operands["coeff"](t) * operands["op"](t)
 
     def map_WaveCoefficient(self, model, operands):
-        return lambda t: operands["amplitude"](t) * np.exp(
+        return lambda t: operands["amplitude"](t) * jnp.exp(
             1j * (operands["frequency"](t) * t + operands["phase"](t))
         )
 
@@ -123,13 +122,13 @@ class QutipCodeGeneration(ConversionRule):
 
     def map_MathFunc(self, model, operands):
         if getattr(math, model.func, None):
-            return lambda t: getattr(math, model.func)(operands["expr"](t))
+            return lambda t: getattr(jnp, model.func)(operands["expr"](t))
 
         if model.func == "heaviside":
-            return lambda t: np.heaviside(operands["expr"](t), 1)
+            return lambda t: jnp.heaviside(operands["expr"](t), 1)
 
         if model.func == "conj":
-            return lambda t: np.conj(operands["expr"](t))
+            return lambda t: jnp.conj(operands["expr"](t))
 
         raise ValueError(f"Unsupported function {model.func}")
 

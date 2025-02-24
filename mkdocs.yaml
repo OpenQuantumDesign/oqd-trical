@@ -34,6 +34,7 @@ nav:
           - Adiabatic Elimination: explanation/approximations/adiabatic_elimination.md
           - Lamb-Dicke Approximation: explanation/approximations/lamb_dicke.md
           - Rotating Wave Approximation: explanation/approximations/rotating_wave.md
+      - Backends: explanation/backends.md
       - Reference: explanation/reference.md
   - API Reference:
       - Mechanical:
@@ -45,6 +46,7 @@ nav:
           - Compiler: reference/compiler.md
       - Backend:
           - QuTiP: reference/qutip.md
+          - Dynamiqs: reference/dynamiqs.md
       - Miscellaneous: reference/misc.md
 
 theme:
