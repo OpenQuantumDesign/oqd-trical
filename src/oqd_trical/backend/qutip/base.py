@@ -23,7 +23,7 @@ from oqd_trical.backend.qutip.vm import QutipVM
 from oqd_trical.light_matter.compiler.analysis import GetHilbertSpace, HilbertSpace
 from oqd_trical.light_matter.compiler.canonicalize import (
     RelabelStates,
-    canonicalization_pass_factory,
+    canonicalize_emulator_circuit_factory,
 )
 from oqd_trical.light_matter.compiler.codegen import ConstructHamiltonian
 from oqd_trical.light_matter.interface.emulator import AtomicEmulatorCircuit
@@ -77,12 +77,12 @@ class QutipBackend(BackendBase):
         else:
             intermediate = circuit
 
-        intermediate = canonicalization_pass_factory()(intermediate)
+        intermediate = canonicalize_emulator_circuit_factory()(intermediate)
 
         if self.approx_pass:
-            intermediate = Chain(self.approx_pass, canonicalization_pass_factory())(
-                intermediate
-            )
+            intermediate = Chain(
+                self.approx_pass, canonicalize_emulator_circuit_factory()
+            )(intermediate)
 
         get_hilbert_space = GetHilbertSpace()
         analysis = Post(get_hilbert_space)
