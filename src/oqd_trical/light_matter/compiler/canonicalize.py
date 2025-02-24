@@ -360,6 +360,14 @@ class RelabelStates(RewriteRule):
 ########################################################################################
 
 
+class ResolveRelativeTime(RewriteRule):
+    # TODO: implement relative time to absolute time transform
+    pass
+
+
+########################################################################################
+
+
 def canonicalize_math_factory():
     """Creates a new instance of the canonicalization pass for math expressions"""
     return Chain(

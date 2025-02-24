@@ -47,10 +47,15 @@ class DynamiqsVM(RewriteRule):
     @property
     def result(self):
         return dict(
-            final_state=self.current_state, states=self.states, tspan=self.tspan
+            final_state=self.current_state,
+            states=self.states,
+            tspan=self.tspan,
+            frame=self.frame,
         )
 
     def map_DynamiqsExperiment(self, model):
+        self.frame = model.frame
+
         self.current_state = dq.tensor(
             *[
                 dq.basis(self.hilbert_space.size[k], 0)

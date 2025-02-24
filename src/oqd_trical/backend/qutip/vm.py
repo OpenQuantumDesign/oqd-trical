@@ -46,10 +46,15 @@ class QutipVM(RewriteRule):
     @property
     def result(self):
         return dict(
-            final_state=self.current_state, states=self.states, tspan=self.tspan
+            final_state=self.current_state,
+            states=self.states,
+            tspan=self.tspan,
+            frame=self.frame,
         )
 
     def map_QutipExperiment(self, model):
+        self.frame = model.frame
+
         self.current_state = tensor(
             [
                 basis(self.hilbert_space.size[k], 0)
@@ -61,7 +66,12 @@ class QutipVM(RewriteRule):
         self.tspan.append(0)
 
     def map_QutipGate(self, model):
-        tspan = np.arange(0, model.duration, self.timestep) + self.tspan[-1]
+        tspan = np.arange(0, model.duration, self.timestep)
+
+        if tspan[-1] != model.duration:
+            tspan = np.append(tspan, model.duration)
+
+        tspan = tspan + self.tspan[-1]
 
         empty_hamiltonian = model.hamiltonian is None
 
