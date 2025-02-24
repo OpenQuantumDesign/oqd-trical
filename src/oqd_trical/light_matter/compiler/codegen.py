@@ -1,22 +1,38 @@
+# Copyright 2024-2025 Open Quantum Design
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from functools import reduce
 
 import numpy as np
-
-from oqd_core.interface.math import MathFunc, MathVar
-from oqd_core.interface.atomic import SequentialProtocol
 from oqd_compiler_infrastructure import ConversionRule
+from oqd_core.interface.atomic import SequentialProtocol
+from oqd_core.interface.math import MathFunc, MathVar
+
+from oqd_trical.light_matter.interface.emulator import (
+    AtomicEmulatorCircuit,
+    AtomicEmulatorGate,
+)
 
 ########################################################################################
-
-from ..interface.operator import (
-    KetBra,
+from oqd_trical.light_matter.interface.operator import (
     Annihilation,
     Creation,
-    WaveCoefficient,
-    Identity,
     Displacement,
+    Identity,
+    KetBra,
+    WaveCoefficient,
 )
-from ..interface.emulator import AtomicEmulatorCircuit, AtomicEmulatorGate
 
 from .utils import intensity_from_laser, rabi_from_intensity
 
@@ -27,14 +43,15 @@ class ConstructHamiltonian(ConversionRule):
     """Maps an AtomicCircuit to an AtomicEmulatorCircuit replaces laser descriptions of operations with Hamiltonian description of operations"""
 
     def map_AtomicCircuit(self, model, operands):
-        return AtomicEmulatorCircuit(
-            base=operands["system"],
-            sequence=(
-                [operands["protocol"]]
-                if isinstance(operands["protocol"], AtomicEmulatorGate)
-                else operands["protocol"]
-            ),
+        gates = (
+            [operands["protocol"]]
+            if isinstance(operands["protocol"], AtomicEmulatorGate)
+            else operands["protocol"]
         )
+        for gate in gates:
+            gate.hamiltonian = gate.hamiltonian + operands["system"]
+
+        return AtomicEmulatorCircuit(sequence=gates)
 
     def map_System(self, model, operands):
         self.N = len(model.ions)
@@ -97,7 +114,7 @@ class ConstructHamiltonian(ConversionRule):
         )
 
     def map_Beam(self, model, operands):
-        I = intensity_from_laser(model)
+        I = intensity_from_laser(model)  # noqa: E741
 
         angular_frequency = (
             abs(model.transition.level2.energy - model.transition.level1.energy)

@@ -1,13 +1,8 @@
-import jax
-from jax import numpy as jnp
-
 from functools import partial
-
 from numbers import Number
 
-########################################################################################
-
-from ..misc import constants as cst
+import jax
+from jax import numpy as jnp
 
 ########################################################################################
 

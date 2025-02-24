@@ -3,7 +3,7 @@
 These formulas are often computed using helper functions as part of the Hamiltonian construction process. When this is the case, the name and location of the helper function is specified.
 
 <!-- prettier-ignore -->
-/// admonition | 
+/// admonition |
     type: card
 
 $$
@@ -16,7 +16,7 @@ $$
 ///
 
 <!-- prettier-ignore -->
-/// admonition | 
+/// admonition |
     type: card
 
 $$
@@ -29,7 +29,7 @@ Used in [intensity_from_laser][oqd_trical.light_matter.compiler.utils.intensity_
 ///
 
 <!-- prettier-ignore -->
-/// admonition | 
+/// admonition |
     type: card
 
 $$
@@ -43,7 +43,7 @@ Used in [rabi_from_intensity][oqd_trical.light_matter.compiler.utils.rabi_from_i
 ///
 
 <!-- prettier-ignore -->
-/// admonition | 
+/// admonition |
     type: card
 
 $$

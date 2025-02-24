@@ -166,3 +166,5 @@ cython_debug/
 .github/workflows/_*.yml
 _scripts
 _docs
+
+.pre-commit-config.yaml

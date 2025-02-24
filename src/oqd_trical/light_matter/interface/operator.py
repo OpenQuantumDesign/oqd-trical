@@ -1,12 +1,24 @@
+# Copyright 2024-2025 Open Quantum Design
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from __future__ import annotations
 
-from typing import Union, Annotated
+from typing import Annotated, Union
 
+from oqd_compiler_infrastructure import Post, RewriteRule, TypeReflectBaseModel
+from oqd_core.interface.math import CastMathExpr, MathFunc
 from pydantic import AfterValidator
-
-from oqd_compiler_infrastructure import TypeReflectBaseModel
-from oqd_core.interface.math import CastMathExpr
-
 
 ########################################################################################
 
@@ -29,13 +41,7 @@ class Coefficient(TypeReflectBaseModel):
         return CoefficientAdd(coeff1=self, coeff2=other)
 
     def __sub__(self, other):
-        return OperatorAdd(
-            op1=self,
-            op2=CoefficientMul(
-                coeff1=WaveCoefficient(amplitude=-1, frequency=0, phase=0),
-                coeff2=other,
-            ),
-        )
+        return self + (-other)
 
     def __mul__(self, other):
         if isinstance(other, Coefficient):
@@ -45,6 +51,28 @@ class Coefficient(TypeReflectBaseModel):
 
     def __rmul__(self, other):
         return self * other
+
+    def __truediv__(self, other):
+        if isinstance(self, WaveCoefficient) and isinstance(other, WaveCoefficient):
+            return CoefficientMul(
+                coeff1=self,
+                coeff2=WaveCoefficient(
+                    amplitude=1 / other.amplitude,
+                    frequency=-other.frequency,
+                    phase=-other.phase,
+                ),
+            )
+        if isinstance(self, CoefficientAdd) and isinstance(other, WaveCoefficient):
+            return CoefficientAdd(
+                coeff1=self.coeff1 / other, coeff2=self.coeff2 / other
+            )
+        if isinstance(self, CoefficientMul) and isinstance(other, WaveCoefficient):
+            return CoefficientMul(coeff1=self.coeff1, coeff2=self.coeff2 / other)
+        else:
+            raise TypeError("Division only supported for WaveCoefficients denominator")
+
+    def conj(self):
+        return Post(ConjugateCoefficient())(self)
 
     pass
 
@@ -88,6 +116,18 @@ class CoefficientMul(Coefficient):
 
     coeff1: CoefficientSubTypes
     coeff2: CoefficientSubTypes
+
+
+########################################################################################
+
+
+class ConjugateCoefficient(RewriteRule):
+    def map_WaveCoefficient(self, model):
+        return model.__class__(
+            amplitude=MathFunc(func="conj", expr=model.amplitude),
+            frequency=-MathFunc(func="conj", expr=model.frequency),
+            phase=-MathFunc(func="conj", expr=model.phase),
+        )
 
 
 ########################################################################################
