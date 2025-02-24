@@ -44,7 +44,7 @@ class DynamiqsCodeGeneration(ConversionRule):
         return DynamiqsExperiment(
             frame=None
             if isinstance(operands["frame"], PrunedOperator)
-            else operands["frame"],
+            else dq.timecallable(operands["frame"]),
             sequence=operands["sequence"],
         )
 
