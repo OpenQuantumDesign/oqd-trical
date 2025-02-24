@@ -35,6 +35,7 @@ class DynamiqsExperiment(TypeReflectBaseModel):
 
     model_config = ConfigDict(validate_assignments=True, arbitrary_types_allowed=True)
 
+    frame: Optional[dq.TimeQArray]
     sequence: List[DynamiqsGate]
 
 

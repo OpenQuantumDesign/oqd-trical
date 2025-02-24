@@ -41,7 +41,12 @@ class DynamiqsCodeGeneration(ConversionRule):
         self.hilbert_space = hilbert_space
 
     def map_AtomicEmulatorCircuit(self, model, operands):
-        return DynamiqsExperiment(sequence=operands["sequence"])
+        return DynamiqsExperiment(
+            frame=None
+            if isinstance(operands["frame"], PrunedOperator)
+            else operands["frame"],
+            sequence=operands["sequence"],
+        )
 
     def map_AtomicEmulatorGate(self, model, operands):
         if isinstance(operands["hamiltonian"], PrunedOperator):
