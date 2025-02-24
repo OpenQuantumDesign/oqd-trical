@@ -16,8 +16,8 @@ from oqd_compiler_infrastructure import Chain, Post, Pre
 from oqd_core.backend.base import BackendBase
 from oqd_core.interface.atomic import AtomicCircuit
 
-from oqd_trical.backend.qutip.codegen import QutipCodeGeneration
-from oqd_trical.backend.qutip.vm import QutipVM
+from oqd_trical.backend.dynamiqs.codegen import DynamiqsCodeGeneration
+from oqd_trical.backend.dynamiqs.vm import DynamiqsVM
 
 ########################################################################################
 from oqd_trical.light_matter.compiler.analysis import GetHilbertSpace, HilbertSpace
@@ -31,14 +31,14 @@ from oqd_trical.light_matter.interface.emulator import AtomicEmulatorCircuit
 ########################################################################################
 
 
-class QutipBackend(BackendBase):
-    """Backend for running simulation of AtomicCircuit with QuTiP
+class DynamiqsBackend(BackendBase):
+    """Backend for running simulation of AtomicCircuit with Dynamiqs
 
     Attributes:
         save_intermediate (bool): Whether compiler saves the intermediate representation of the atomic circuit
         approx_pass (PassBase): Pass of approximations to apply to the system.
-        solver (Literal["SESolver","MESolver"]): QuTiP solver to use.
-        solver_options (Dict[str,Any]): Qutip solver options
+        solver (Literal["SESolver","MESolver"]): Dynamiqs solver to use.
+        solver_options (Dict[str,Any]): Dynamiqs solver options
         intermediate (AtomicEmulatorCircuit): Intermediate representation of the atomic circuit during compilation
     """
 
@@ -47,7 +47,7 @@ class QutipBackend(BackendBase):
         save_intermediate=True,
         approx_pass=None,
         solver="SESolver",
-        solver_options={"progress_bar": True},
+        solver_options={},
     ):
         super().__init__()
 
@@ -59,14 +59,14 @@ class QutipBackend(BackendBase):
 
     def compile(self, circuit, fock_cutoff):
         """
-        Compiles a AtomicCircuit or AtomicEmulatorCircuit to a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+        Compiles a AtomicCircuit or AtomicEmulatorCircuit to a [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
 
         Args:
             circuit (Union[AtomicCircuit,AtomicEmulatorCircuit]): circuit to be compiled.
             fock_cutoff (int): Truncation for fock spaces.
 
         Returns:
-            experiment (QutipExperiment): Compiled [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+            experiment (DynamiqsExperiment): Compiled [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
             hilbert_space (Dict[str, int]): Hilbert space of the system.
         """
         assert isinstance(circuit, (AtomicCircuit, AtomicEmulatorCircuit))
@@ -101,25 +101,25 @@ class QutipBackend(BackendBase):
         if self.save_intermediate:
             self.intermediate = intermediate
 
-        compiler_p3 = Post(QutipCodeGeneration(hilbert_space=hilbert_space))
+        compiler_p3 = Post(DynamiqsCodeGeneration(hilbert_space=hilbert_space))
         experiment = compiler_p3(intermediate)
 
         return experiment, hilbert_space
 
     def run(self, experiment, hilbert_space, timestep):
         """
-        Runs a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+        Runs a [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
 
         Args:
-            experiment (QutipExperiment): [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment] to be executed.
+            experiment (DynamiqsExperiment): [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment] to be executed.
             hilbert_space (Dict[str, int]): Hilbert space of the system.
             timestep (float): Timestep between tracked states of the evolution.
 
         Returns:
-            result (Dict[str,Any]): Result of execution of [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+            result (Dict[str,Any]): Result of execution of [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
         """
         vm = Pre(
-            QutipVM(
+            DynamiqsVM(
                 hilbert_space=hilbert_space,
                 timestep=timestep,
                 solver=self.solver,
