@@ -376,7 +376,12 @@ def canonicalize_coefficient_factory():
     return Chain(
         FixedPoint(Post(CoefficientDistributivity())),
         FixedPoint(Post(CoefficientAssociativity())),
-        FixedPoint(Post(CombineCoefficient())),
+        FixedPoint(
+            Chain(
+                FixedPoint(Post(CombineCoefficient())),
+                canonicalize_math_factory(),
+            )
+        ),
         FixedPoint(Post(PruneCoefficient())),
     )
 
@@ -395,11 +400,9 @@ def canonicalize_emulator_circuit_factory():
     return Chain(
         canonicalize_operator_factory(),
         canonicalize_coefficient_factory(),
-        canonicalize_math_factory(),
         FixedPoint(Post(PruneOperator())),
         Pre(ScaleTerms()),
         Post(CombineTerms()),
         canonicalize_coefficient_factory(),
-        canonicalize_math_factory(),
         FixedPoint(Post(PruneOperator())),
     )
