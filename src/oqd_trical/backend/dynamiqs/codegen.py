@@ -43,7 +43,10 @@ class DynamiqsCodeGeneration(ConversionRule):
     def map_AtomicEmulatorCircuit(self, model, operands):
         return DynamiqsExperiment(
             frame=None
-            if isinstance(operands["frame"], PrunedOperator)
+            if (
+                isinstance(operands["frame"], PrunedOperator)
+                or operands["frame"] is None
+            )
             else dq.timecallable(operands["frame"]),
             sequence=operands["sequence"],
         )
