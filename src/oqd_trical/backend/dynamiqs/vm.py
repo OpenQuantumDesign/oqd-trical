@@ -44,6 +44,8 @@ class DynamiqsVM(RewriteRule):
         self.timestep = timestep
 
         if initial_state:
+            if initial_state.dims != tuple(self.hilbert_space.size.values()):
+                raise ValueError("Initial state incompatible with Hilbert space")
             self.current_state = initial_state
         else:
             self.current_state = dq.tensor(
