@@ -12,22 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-
 import numpy as np
-
+import pytest
 from oqd_core.interface.atomic import (
-    Level,
-    Transition,
-    Ion,
-    Phonon,
-    System,
-    Beam,
-    Pulse,
-    ParallelProtocol,
-    SequentialProtocol,
     AtomicCircuit,
+    Beam,
+    Ion,
+    Level,
+    Phonon,
+    Pulse,
+    SequentialProtocol,
+    System,
+    Transition,
 )
+
 from oqd_trical.backend.qutip import QutipBackend
 
 ########################################################################################
@@ -139,7 +137,7 @@ def test_stationary(system):
 
     experiment, hilbert_space = backend.compile(circuit=circuit, fock_cutoff=3)
 
-    res = backend.run(experiment=experiment, hilbert_space=hilbert_space, timestep=1)
+    backend.run(experiment=experiment, hilbert_space=hilbert_space, timestep=1)
 
 
 def test_direct_transition(system):
@@ -161,4 +159,4 @@ def test_direct_transition(system):
 
     experiment, hilbert_space = backend.compile(circuit=circuit, fock_cutoff=3)
 
-    res = backend.run(experiment=experiment, hilbert_space=hilbert_space, timestep=1)
+    backend.run(experiment=experiment, hilbert_space=hilbert_space, timestep=1)
