@@ -46,7 +46,7 @@ docs = [
     "mkdocstrings-python",
     "mdx_truly_sane_lists",
 ]
-test = ["pytest"]
+tests = ["pytest"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
