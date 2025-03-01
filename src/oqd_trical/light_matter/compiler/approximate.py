@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import warnings
 from functools import cached_property, reduce
 
 import numpy as np
@@ -50,11 +51,7 @@ class FirstOrderLambDickeApprox(RewriteRule):
             if np.abs(model.alpha.amplitude.value) < self.cutoff:
                 self.approximated_operators.append(model)
 
-                alpha_conj = WaveCoefficient(
-                    amplitude=model.alpha.amplitude,
-                    frequency=-model.alpha.frequency,
-                    phase=-model.alpha.phase,
-                )
+                alpha_conj = model.alpha.conj()
                 return Identity(subsystem=model.subsystem) + (
                     model.alpha * Creation(subsystem=model.subsystem)
                     - alpha_conj * Annihilation(subsystem=model.subsystem)
@@ -81,11 +78,7 @@ class SecondOrderLambDickeApprox(RewriteRule):
             if np.abs(model.alpha.amplitude.value) < self.cutoff:
                 self.approximated_operators.append(model)
 
-                alpha_conj = WaveCoefficient(
-                    amplitude=model.alpha.amplitude,
-                    frequency=-model.alpha.frequency,
-                    phase=-model.alpha.phase,
-                )
+                alpha_conj = model.alpha.conj()
                 return (
                     Identity(subsystem=model.subsystem)
                     + (
@@ -286,6 +279,10 @@ class AdiabaticElimination(RewriteRule):
     # TODO currently non universal formulation for AdiabaticElimination
     def __init__(self, eliminated_specs):
         super().__init__()
+
+        warnings.warn(
+            "Caution required when using adiabatic elimination, system needs to be put in the appropriate rotating reference frame."
+        )
 
         self._eliminated_specs = eliminated_specs
 
