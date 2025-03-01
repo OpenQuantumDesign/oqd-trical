@@ -106,7 +106,7 @@ class DynamiqsBackend(BackendBase):
 
         return experiment, hilbert_space
 
-    def run(self, experiment, hilbert_space, timestep):
+    def run(self, experiment, hilbert_space, timestep, *, initial_state=None):
         """
         Runs a [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
 
@@ -124,6 +124,7 @@ class DynamiqsBackend(BackendBase):
                 timestep=timestep,
                 solver=self.solver,
                 solver_options=self.solver_options,
+                initial_state=initial_state,
             )
         )
 

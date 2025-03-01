@@ -106,7 +106,7 @@ class QutipBackend(BackendBase):
 
         return experiment, hilbert_space
 
-    def run(self, experiment, hilbert_space, timestep):
+    def run(self, experiment, hilbert_space, timestep, *, initial_state=None):
         """
         Runs a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
 
@@ -124,6 +124,7 @@ class QutipBackend(BackendBase):
                 timestep=timestep,
                 solver=self.solver,
                 solver_options=self.solver_options,
+                initial_state=initial_state,
             )
         )
 

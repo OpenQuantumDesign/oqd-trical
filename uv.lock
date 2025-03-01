@@ -1748,7 +1748,7 @@ dependencies = [
 [[package]]
 name = "oqd-core"
 version = "0.1.0"
-source = { git = "https://github.com/openquantumdesign/oqd-core?rev=atomic#7854b5c0c55d9da0ab396ccb9f8a31e7262537bc" }
+source = { git = "https://github.com/openquantumdesign/oqd-core#4a67fb90de4ee65adf91b4cfb226d558418cca2b" }
 dependencies = [
     { name = "oqd-compiler-infrastructure" },
     { name = "pydantic" },
@@ -1801,7 +1801,7 @@ requires-dist = [
     { name = "mkdocstrings-python", marker = "extra == 'docs'" },
     { name = "numpy" },
     { name = "oqd-compiler-infrastructure", git = "https://github.com/openquantumdesign/oqd-compiler-infrastructure" },
-    { name = "oqd-core", git = "https://github.com/openquantumdesign/oqd-core?rev=atomic" },
+    { name = "oqd-core", git = "https://github.com/openquantumdesign/oqd-core" },
     { name = "pymdown-extensions", marker = "extra == 'docs'" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "qutip" },
