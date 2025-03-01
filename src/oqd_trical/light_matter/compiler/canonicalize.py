@@ -16,11 +16,10 @@ from functools import reduce
 from typing import Union
 
 from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRule
-from oqd_core.compiler.math.passes import simplify_math_expr
 from oqd_core.compiler.math.rules import (
     DistributeMathExpr,
-    PartitionMathExpr,
     ProperOrderMathExpr,
+    SimplifyMathExpr,
 )
 from oqd_core.interface.math import MathNum
 
@@ -362,31 +361,42 @@ class RelabelStates(RewriteRule):
 
 def canonicalize_math_factory():
     """Creates a new instance of the canonicalization pass for math expressions"""
-    return Chain(
-        FixedPoint(Post(DistributeMathExpr())),
-        FixedPoint(Post(ProperOrderMathExpr())),
-        FixedPoint(Post(PartitionMathExpr())),
-        FixedPoint(Post(PruneZeroPowers())),
-        simplify_math_expr,
+    return FixedPoint(
+        Post(
+            Chain(
+                PruneZeroPowers(),
+                SimplifyMathExpr(),
+                DistributeMathExpr(),
+                ProperOrderMathExpr(),
+            )
+        )
     )
 
 
 def canonicalize_coefficient_factory():
     """Creates a new instance of the canonicalization pass for coefficients"""
-    return Chain(
-        FixedPoint(Post(CoefficientDistributivity())),
-        FixedPoint(Post(CoefficientAssociativity())),
-        FixedPoint(Post(CombineCoefficient())),
-        FixedPoint(Post(PruneCoefficient())),
+    return FixedPoint(
+        Post(
+            Chain(
+                PruneCoefficient(),
+                CoefficientDistributivity(),
+                CombineCoefficient(),
+                CoefficientAssociativity(),
+            )
+        )
     )
 
 
 def canonicalize_operator_factory():
     """Creates a new instance of the canonicalization pass for operators"""
-    return Chain(
-        FixedPoint(Post(OperatorDistributivity())),
-        FixedPoint(Post(OperatorAssociativity())),
-        Post(GatherCoefficient()),
+    return FixedPoint(
+        Post(
+            Chain(
+                OperatorDistributivity(),
+                GatherCoefficient(),
+                OperatorAssociativity(),
+            )
+        )
     )
 
 
@@ -396,10 +406,10 @@ def canonicalize_emulator_circuit_factory():
         canonicalize_operator_factory(),
         canonicalize_coefficient_factory(),
         canonicalize_math_factory(),
-        FixedPoint(Post(PruneOperator())),
+        Post(PruneOperator()),
         Pre(ScaleTerms()),
         Post(CombineTerms()),
         canonicalize_coefficient_factory(),
         canonicalize_math_factory(),
-        FixedPoint(Post(PruneOperator())),
+        Post(PruneOperator()),
     )
