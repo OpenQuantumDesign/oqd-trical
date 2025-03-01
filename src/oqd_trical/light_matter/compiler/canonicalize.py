@@ -21,7 +21,7 @@ from oqd_core.compiler.math.rules import (
     ProperOrderMathExpr,
     SimplifyMathExpr,
 )
-from oqd_core.interface.math import MathNum
+from oqd_core.interface.math import MathExpr, MathNum, MathVar
 
 ########################################################################################
 from oqd_trical.light_matter.interface.operator import (
@@ -359,6 +359,45 @@ class RelabelStates(RewriteRule):
 ########################################################################################
 
 
+class SubstituteMathVar(RewriteRule):
+    def __init__(self, variable, substitution):
+        super().__init__()
+
+        if not isinstance(variable, MathVar):
+            raise TypeError("Variable must be a MathVar")
+
+        if not isinstance(variable, MathExpr):
+            raise TypeError("Substituted value must be a MathExpr")
+
+        self.variable = variable
+        self.substitution = substitution
+
+    def map_MathVar(self, model):
+        if model == self.variable:
+            return self.substitution
+
+
+class ResolveRelativeTime(RewriteRule):
+    def __init__(self):
+        super().__init__()
+
+        self.current_t = 0
+
+    def map_AtomicEmulatorGate(self, model):
+        hamiltonian = Post(
+            SubstituteMathVar(
+                variable=MathVar(name="s"),
+                substitution=MathVar(name="t") - self.current_t,
+            )
+        )(model.hamiltonian)
+
+        self.current_t += model.duration
+        return model.__class__(hamiltonian=hamiltonian, duration=model.duration)
+
+
+########################################################################################
+
+
 def canonicalize_math_factory():
     """Creates a new instance of the canonicalization pass for math expressions"""
     return FixedPoint(
@@ -412,4 +451,5 @@ def canonicalize_emulator_circuit_factory():
         canonicalize_coefficient_factory(),
         canonicalize_math_factory(),
         Post(PruneOperator()),
+        Post(ResolveRelativeTime()),
     )
