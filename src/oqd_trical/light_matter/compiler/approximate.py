@@ -337,7 +337,7 @@ class AdiabaticElimination(RewriteRule):
             return -reduce(
                 lambda x, y: x + y,
                 [
-                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1])
+                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1]).conj()
                     * KetBra(ket=i, bra=model.bra, subsystem=model.subsystem)
                     for (i, c) in self.nondiagonal
                 ],
@@ -347,7 +347,7 @@ class AdiabaticElimination(RewriteRule):
             return -reduce(
                 lambda x, y: x + y,
                 [
-                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1]).conj()
+                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1])
                     * KetBra(ket=model.ket, bra=i, subsystem=model.subsystem)
                     for (i, c) in self.nondiagonal
                 ],
