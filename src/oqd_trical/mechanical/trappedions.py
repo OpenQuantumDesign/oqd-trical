@@ -47,7 +47,7 @@ class TrappedIons(Base):
         params = {
             "dim": ps[0].dim if "dim" in ps[0].__dict__.keys() else 3,
             "l": 1e-6,
-            "m": cst.convert_m_a(171),
+            "m": 171 * cst.m_u,
             "q": cst.e,
         }
         params.update(kwargs)

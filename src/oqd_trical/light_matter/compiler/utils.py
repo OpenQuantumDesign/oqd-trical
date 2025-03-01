@@ -204,6 +204,13 @@ def intensity_from_laser(laser):
     """
     matrix_elem = compute_matrix_element(laser, laser.transition)
 
-    I = cst.c * cst.epsilon_0 / 2 * (cst.hbar * laser.rabi / (matrix_elem * cst.e)) ** 2  # noqa: E741
+    if laser.transition.multipole[0] == "E":
+        return (
+            cst.c
+            * cst.epsilon_0
+            / 2
+            * (cst.hbar * laser.rabi / (matrix_elem * cst.e)) ** 2
+        )  # noqa: E741
 
-    return I
+    if laser.transition.multipole[0] == "M":
+        return cst.c**3 * cst.epsilon_0 / 2 * (cst.hbar * laser.rabi / matrix_elem) ** 2  # noqa: E741

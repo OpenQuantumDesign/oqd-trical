@@ -19,12 +19,14 @@ from oqd_compiler_infrastructure import ConversionRule
 from oqd_core.interface.atomic import SequentialProtocol
 from oqd_core.interface.math import MathFunc, MathVar
 
+from oqd_trical.light_matter.compiler.utils import (
+    intensity_from_laser,
+    rabi_from_intensity,
+)
 from oqd_trical.light_matter.interface.emulator import (
     AtomicEmulatorCircuit,
     AtomicEmulatorGate,
 )
-
-########################################################################################
 from oqd_trical.light_matter.interface.operator import (
     Annihilation,
     Creation,
@@ -33,8 +35,7 @@ from oqd_trical.light_matter.interface.operator import (
     KetBra,
     WaveCoefficient,
 )
-
-from .utils import intensity_from_laser, rabi_from_intensity
+from oqd_trical.misc import constants as cst
 
 ########################################################################################
 
@@ -120,7 +121,7 @@ class ConstructHamiltonian(ConversionRule):
             abs(model.transition.level2.energy - model.transition.level1.energy)
             + model.detuning
         )
-        wavevector = angular_frequency * np.array(model.wavevector)
+        wavevector = angular_frequency * np.array(model.wavevector) / cst.c
 
         ops = []
         if self.modes:
@@ -130,7 +131,10 @@ class ConstructHamiltonian(ConversionRule):
                 eta = np.dot(
                     wavevector,
                     mode.eigenvector[model.target * 3 : model.target * 3 + 3],
-                ) * np.sqrt(1 / (2 * self.ions[model.target].mass * mode.energy))
+                ) * np.sqrt(
+                    cst.hbar
+                    / (2 * self.ions[model.target].mass * cst.m_u * mode.energy)
+                )
 
                 displacement_plus.append(
                     Displacement(

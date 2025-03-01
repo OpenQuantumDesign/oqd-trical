@@ -50,19 +50,6 @@ Atomic mass unit
 ########################################################################################
 
 
-def convert_m_a(A):
-    """
-    Converts atomic mass from atomic mass units to kilograms
-
-    Args:
-        A (float): Atomic mass in atomic mass units
-
-    Returns:
-        (float): Atomic mass in kilograms
-    """
-    return A * m_u
-
-
 def convert_lamb_to_omega(lamb):
     return 2 * np.pi * c / lamb
 

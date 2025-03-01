@@ -255,13 +255,13 @@ class CombineCoefficient(RewriteRule):
         if (
             isinstance(model.coeff1, WaveCoefficient)
             and isinstance(model.coeff2, WaveCoefficient)
-            and model.coeff1.frequency == MathNum(value=0)
-            and model.coeff1.phase == MathNum(value=0)
-            and model.coeff2.frequency == MathNum(value=0)
-            and model.coeff2.phase == MathNum(value=0)
+            and model.coeff1.frequency == model.coeff2.frequency
+            and model.coeff1.phase == model.coeff2.phase
         ):
-            return ConstantCoefficient(
-                value=model.coeff1.amplitude + model.coeff2.amplitude
+            return WaveCoefficient(
+                amplitude=model.coeff1.amplitude + model.coeff2.amplitude,
+                frequency=model.coeff1.frequency,
+                phase=model.coeff1.phase,
             )
 
 
