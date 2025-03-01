@@ -267,11 +267,11 @@
           },
           "rabi": {
             "class_": "MathNum",
-            "value": 62831853.071795866
+            "value": 62831853071.79586
           },
           "detuning": {
             "class_": "MathNum",
-            "value": 6283185307.179586
+            "value": 208570336271826.38
           },
           "phase": {
             "class_": "MathNum",
@@ -327,11 +327,11 @@
           },
           "rabi": {
             "class_": "MathNum",
-            "value": 62831853.071795866
+            "value": 62831853071.79586
           },
           "detuning": {
             "class_": "MathNum",
-            "value": 6283185307.179586
+            "value": 208570336271826.38
           },
           "phase": {
             "class_": "MathNum",
