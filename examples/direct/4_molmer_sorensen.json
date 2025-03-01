@@ -35,7 +35,7 @@
           {
             "class_": "Level",
             "label": "e0",
-            "principal": 5,
+            "principal": 6,
             "spin": 0.5,
             "orbital": 1.0,
             "nuclear": 0.5,
@@ -47,7 +47,7 @@
           {
             "class_": "Level",
             "label": "e1",
-            "principal": 5,
+            "principal": 6,
             "spin": 0.5,
             "orbital": 1.0,
             "nuclear": 0.5,
@@ -106,7 +106,7 @@
             "level2": {
               "class_": "Level",
               "label": "e0",
-              "principal": 5,
+              "principal": 6,
               "spin": 0.5,
               "orbital": 1.0,
               "nuclear": 0.5,
@@ -136,7 +136,7 @@
             "level2": {
               "class_": "Level",
               "label": "e1",
-              "principal": 5,
+              "principal": 6,
               "spin": 0.5,
               "orbital": 1.0,
               "nuclear": 0.5,
@@ -166,7 +166,7 @@
             "level2": {
               "class_": "Level",
               "label": "e0",
-              "principal": 5,
+              "principal": 6,
               "spin": 0.5,
               "orbital": 1.0,
               "nuclear": 0.5,
@@ -196,7 +196,7 @@
             "level2": {
               "class_": "Level",
               "label": "e1",
-              "principal": 5,
+              "principal": 6,
               "spin": 0.5,
               "orbital": 1.0,
               "nuclear": 0.5,
@@ -247,7 +247,7 @@
           {
             "class_": "Level",
             "label": "e0",
-            "principal": 5,
+            "principal": 6,
             "spin": 0.5,
             "orbital": 1.0,
             "nuclear": 0.5,
@@ -259,7 +259,7 @@
           {
             "class_": "Level",
             "label": "e1",
-            "principal": 5,
+            "principal": 6,
             "spin": 0.5,
             "orbital": 1.0,
             "nuclear": 0.5,
@@ -318,7 +318,7 @@
             "level2": {
               "class_": "Level",
               "label": "e0",
-              "principal": 5,
+              "principal": 6,
               "spin": 0.5,
               "orbital": 1.0,
               "nuclear": 0.5,
@@ -348,7 +348,7 @@
             "level2": {
               "class_": "Level",
               "label": "e1",
-              "principal": 5,
+              "principal": 6,
               "spin": 0.5,
               "orbital": 1.0,
               "nuclear": 0.5,
@@ -378,7 +378,7 @@
             "level2": {
               "class_": "Level",
               "label": "e0",
-              "principal": 5,
+              "principal": 6,
               "spin": 0.5,
               "orbital": 1.0,
               "nuclear": 0.5,
@@ -408,7 +408,7 @@
             "level2": {
               "class_": "Level",
               "label": "e1",
-              "principal": 5,
+              "principal": 6,
               "spin": 0.5,
               "orbital": 1.0,
               "nuclear": 0.5,
@@ -452,7 +452,7 @@
           "class_": "Beam",
           "transition": {
             "class_": "Transition",
-            "label": "q0->q1",
+            "label": "q0->e0",
             "level1": {
               "class_": "Level",
               "label": "q0",
@@ -467,22 +467,22 @@
             },
             "level2": {
               "class_": "Level",
-              "label": "q1",
+              "label": "e0",
               "principal": 6,
               "spin": 0.5,
-              "orbital": 0.0,
+              "orbital": 1.0,
               "nuclear": 0.5,
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
-              "spin_orbital_nuclear_magnetization": 0.0,
-              "energy": 79438311838.67151
+              "spin_orbital_nuclear_magnetization": -1.0,
+              "energy": 5097485407861727.0
             },
             "einsteinA": 1.0,
-            "multipole": "M1"
+            "multipole": "E1"
           },
           "rabi": {
             "class_": "MathNum",
-            "value": 6283185.307179586
+            "value": 628318.5307179586
           },
           "detuning": {
             "class_": "MathNum",
@@ -504,7 +504,7 @@
           ],
           "target": 0
         },
-        "duration": 1e-06
+        "duration": 0.001
       },
       {
         "class_": "Pulse",
@@ -512,7 +512,7 @@
           "class_": "Beam",
           "transition": {
             "class_": "Transition",
-            "label": "q0->q1",
+            "label": "q0->e0",
             "level1": {
               "class_": "Level",
               "label": "q0",
@@ -527,22 +527,22 @@
             },
             "level2": {
               "class_": "Level",
-              "label": "q1",
+              "label": "e0",
               "principal": 6,
               "spin": 0.5,
-              "orbital": 0.0,
+              "orbital": 1.0,
               "nuclear": 0.5,
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
-              "spin_orbital_nuclear_magnetization": 0.0,
-              "energy": 79438311838.67151
+              "spin_orbital_nuclear_magnetization": -1.0,
+              "energy": 5097485407861727.0
             },
             "einsteinA": 1.0,
-            "multipole": "M1"
+            "multipole": "E1"
           },
           "rabi": {
             "class_": "MathNum",
-            "value": 6283185.307179586
+            "value": 628318.5307179586
           },
           "detuning": {
             "class_": "MathNum",
@@ -564,7 +564,7 @@
           ],
           "target": 0
         },
-        "duration": 1e-06
+        "duration": 0.001
       },
       {
         "class_": "Pulse",
@@ -572,7 +572,7 @@
           "class_": "Beam",
           "transition": {
             "class_": "Transition",
-            "label": "q0->q1",
+            "label": "q0->e0",
             "level1": {
               "class_": "Level",
               "label": "q0",
@@ -587,22 +587,22 @@
             },
             "level2": {
               "class_": "Level",
-              "label": "q1",
+              "label": "e0",
               "principal": 6,
               "spin": 0.5,
-              "orbital": 0.0,
+              "orbital": 1.0,
               "nuclear": 0.5,
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
-              "spin_orbital_nuclear_magnetization": 0.0,
-              "energy": 79438311838.67151
+              "spin_orbital_nuclear_magnetization": -1.0,
+              "energy": 5097485407861727.0
             },
             "einsteinA": 1.0,
-            "multipole": "M1"
+            "multipole": "E1"
           },
           "rabi": {
             "class_": "MathNum",
-            "value": 6283185.307179586
+            "value": 1884955.5921538759
           },
           "detuning": {
             "class_": "MathNum",
@@ -624,7 +624,7 @@
           ],
           "target": 1
         },
-        "duration": 1e-06
+        "duration": 0.001
       },
       {
         "class_": "Pulse",
@@ -632,7 +632,7 @@
           "class_": "Beam",
           "transition": {
             "class_": "Transition",
-            "label": "q0->q1",
+            "label": "q0->e0",
             "level1": {
               "class_": "Level",
               "label": "q0",
@@ -647,22 +647,22 @@
             },
             "level2": {
               "class_": "Level",
-              "label": "q1",
+              "label": "e0",
               "principal": 6,
               "spin": 0.5,
-              "orbital": 0.0,
+              "orbital": 1.0,
               "nuclear": 0.5,
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
-              "spin_orbital_nuclear_magnetization": 0.0,
-              "energy": 79438311838.67151
+              "spin_orbital_nuclear_magnetization": -1.0,
+              "energy": 5097485407861727.0
             },
             "einsteinA": 1.0,
-            "multipole": "M1"
+            "multipole": "E1"
           },
           "rabi": {
             "class_": "MathNum",
-            "value": 6283185.307179586
+            "value": 1884955.5921538759
           },
           "detuning": {
             "class_": "MathNum",
@@ -684,7 +684,7 @@
           ],
           "target": 1
         },
-        "duration": 1e-06
+        "duration": 0.001
       }
     ]
   }
