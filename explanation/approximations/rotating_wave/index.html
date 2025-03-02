@@ -81,6 +81,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#rotating-wave-approximation-rwa" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -687,6 +692,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -830,6 +837,8 @@
   
   
   
+    
+  
   
 </nav>
                   </div>
@@ -848,8 +857,7 @@
   
 
 
-  <h1>Rotating Wave Approximation</h1>
-
+<h1 id="rotating-wave-approximation-rwa">Rotating Wave Approximation (RWA) <div style="float:right;"> <a class="autorefs autorefs-internal" href="../../../reference/compiler/approximate/#oqd_trical.light_matter.compiler.approximate.RotatingWaveApprox"><img alt="" src="https://img.shields.io/badge/Implementation-7C4DFF" /></a> </div><a class="headerlink" href="#rotating-wave-approximation-rwa" title="Permanent link">&para;</a></h1>
 <p>The rotating wave approximation (RWA) simply states that any terms in the Hamiltonian oscillating faster than a user-specified cutoff, <span class="arithmatex">\(\omega_{\text{cutoff}}\)</span>, are neglected.</p>
 <p>Looking at the <a href="../../hamiltonian_construction/derivation/#eqn:general_hamiltonian">general Hamiltonian</a>, we see that these oscillating terms will arise from the product of <span class="arithmatex">\(e^{-i\Delta_{nmjk}t}\)</span> and the matrix elements of <span class="arithmatex">\(D(\alpha)\)</span>. Because we are computing these via Laguerre polynomials, it is straightforward to derive a condition on what terms must be dropped.</p>
 <p>Let's first consider one of these oscillating terms for when <span class="arithmatex">\(m\geq n\)</span>. Plugging in <span class="arithmatex">\(\alpha = i\eta e^{i\nu t}\)</span> into <a href="../lamb_dicke/#eqn:first_order_lamb_dicke">first order Lamb-Dicke approximation</a>, we get</p>
