@@ -53,6 +53,9 @@ nav:
 theme:
   name: material
 
+  logo: img/oqd-logo.png
+  favicon: img/oqd-logo.png
+
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -85,6 +88,7 @@ theme:
     - toc.follow
 
 plugins:
+  - search
   - mkdocstrings:
       handlers:
         python:
@@ -102,7 +106,7 @@ plugins:
             separate_signature: false
             group_by_category: true
             members_order: "source"
-          import:
+          inventories:
             - https://docs.python.org/3/objects.inv
             - https://numpy.org/doc/stable/objects.inv
             - https://matplotlib.org/stable/objects.inv

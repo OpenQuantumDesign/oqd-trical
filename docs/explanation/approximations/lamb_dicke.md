@@ -96,7 +96,7 @@ $$
 <!-- prettier-ignore -->
 /// admonition | Note
     type: note
-The matrix elements are not computed until the abstract syntax tree representation is converted to a QuTiP-compatible object by the [QutipCodeGeneration][trical.backend.qutip.QutipCodeGeneration] conversion rule.
+The matrix elements are not computed until the abstract syntax tree representation is converted to a QuTiP-compatible object by the [QutipCodeGeneration][oqd_trical.backend.qutip.codegen.QutipCodeGeneration] conversion rule.
 
 ///
 
