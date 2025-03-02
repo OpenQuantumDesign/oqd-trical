@@ -1,8 +1,8 @@
 The rotating wave approximation (RWA) simply states that any terms in the Hamiltonian oscillating faster than a user-specified cutoff, $\omega_{\text{cutoff}}$, are neglected.
 
-Looking at the [general Hamiltonian](../../hamiltonian_construction/derivation#eqn:general_hamiltonian), we see that these oscillating terms will arise from the product of $e^{-i\Delta_{nmjk}t}$ and the matrix elements of $D(\alpha)$. Because we are computing these via Laguerre polynomials, it is straightforward to derive a condition on what terms must be dropped.
+Looking at the [general Hamiltonian](../hamiltonian_construction/derivation.md#eqn:general_hamiltonian), we see that these oscillating terms will arise from the product of $e^{-i\Delta_{nmjk}t}$ and the matrix elements of $D(\alpha)$. Because we are computing these via Laguerre polynomials, it is straightforward to derive a condition on what terms must be dropped.
 
-Let's first consider one of these oscillating terms for when $m\geq n$. Plugging in $\alpha = i\eta e^{i\nu t}$ into [first order Lamb-Dicke approximation](../lamb_dicke#eqn:first_order_lamb_dicke), we get
+Let's first consider one of these oscillating terms for when $m\geq n$. Plugging in $\alpha = i\eta e^{i\nu t}$ into [first order Lamb-Dicke approximation](lamb_dicke.md#eqn:first_order_lamb_dicke), we get
 
 $$
     \begin{align}
