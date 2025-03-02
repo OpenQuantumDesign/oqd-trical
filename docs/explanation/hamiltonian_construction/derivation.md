@@ -77,7 +77,7 @@ $$
 <!-- prettier-ignore -->
 /// admonition | Note
     type: note
-The computation of the matrix elements: $\langle 1|\vec{r}_e \cdot \vec{\epsilon}_l | 0\rangle$, for dipole and quadropole transitions is described [here](/explanation/hamiltonian_construction/matrix_elements).
+The computation of the matrix elements: $\langle 1|\vec{r}_e \cdot \vec{\epsilon}_l | 0\rangle$, for dipole and quadropole transitions is described [here](./matrix_elements).
 ///
 
 ### Interaction Picture for Spin
