@@ -1,5 +1,6 @@
 site_name: Open Quantum Design - TrICal
 site_description: Trapped-ion Calculator
+site_url: https://openquantumdesign.github.io/oqd-trical/
 
 repo_name: OpenQuantumDesign/oqd-trical
 repo_url: https://github.com/OpenQuantumDesign/oqd-trical
