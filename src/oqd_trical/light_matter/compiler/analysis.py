@@ -15,6 +15,7 @@
 from typing import Dict, Optional, Set
 
 from oqd_compiler_infrastructure import RewriteRule, TypeReflectBaseModel
+from oqd_core.interface.atomic import Level
 from pydantic import ConfigDict
 
 ########################################################################################
@@ -92,3 +93,39 @@ class GetHilbertSpace(RewriteRule):
             return
 
         self._hilbert_space[model.subsystem] = None
+
+
+########################################################################################
+
+
+class ExtractTimeScales(RewriteRule):
+    def __init__(self):
+        self._timescales = set()
+
+    @property
+    def timescales(self):
+        return self._timescales
+
+    def map_Level(self, model):
+        self._timescales.add(model.energy)
+
+    def map_Transition(self, model):
+        if isinstance(model.level1, Level) and isinstance(model.level2, Level):
+            self._timescales.add(model.level2.energy - model.level1.energy)
+
+    def map_Phonon(self, model):
+        self._timescales.add(model.energy)
+
+    def map_Beam(self, model):
+        self._timescales.add(model.rabi)
+        self._timescales.add(model.detuning)
+
+    def map_Pulse(self, model):
+        self._timescales.add(1 / model.duration)
+
+    def map_WaveCoefficient(self, model):
+        self._timescales.add(model.amplitude)
+        self._timescales.add(model.frequency)
+
+    def map_AtomicEmulatorGate(self, model):
+        self._timescales.add(1 / model.duration)
