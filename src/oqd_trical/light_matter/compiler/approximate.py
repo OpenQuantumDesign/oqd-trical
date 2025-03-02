@@ -16,7 +16,7 @@ import warnings
 from functools import cached_property, reduce
 
 import numpy as np
-from oqd_compiler_infrastructure import ConversionRule, Post, RewriteRule
+from oqd_compiler_infrastructure import Chain, ConversionRule, Post, Pre, RewriteRule
 from oqd_core.interface.math import MathNum
 
 from oqd_trical.light_matter.interface.operator import (
@@ -229,7 +229,7 @@ class RotatingReferenceFrame(RewriteRule):
 ########################################################################################
 
 
-class _AdiabaticEliminationHelper(ConversionRule):
+class _GetMatrixElements(ConversionRule):
     # TODO currently non universal formulation for AdiabaticElimination
     def __init__(self, eliminated_specs):
         super().__init__()
@@ -320,9 +320,7 @@ class AdiabaticElimination(RewriteRule):
         )
 
     def map_AtomicEmulatorGate(self, model):
-        adiabatic_elimination_helper = _AdiabaticEliminationHelper(
-            self.eliminated_specs
-        )
+        adiabatic_elimination_helper = _GetMatrixElements(self.eliminated_specs)
         Post(adiabatic_elimination_helper)(model.hamiltonian)
         self.matrix_elements = adiabatic_elimination_helper.matrix_elements
 
@@ -337,7 +335,7 @@ class AdiabaticElimination(RewriteRule):
             return -reduce(
                 lambda x, y: x + y,
                 [
-                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1])
+                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1]).conj()
                     * KetBra(ket=i, bra=model.bra, subsystem=model.subsystem)
                     for (i, c) in self.nondiagonal
                 ],
@@ -347,8 +345,14 @@ class AdiabaticElimination(RewriteRule):
             return -reduce(
                 lambda x, y: x + y,
                 [
-                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1]).conj()
+                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1])
                     * KetBra(ket=model.ket, bra=i, subsystem=model.subsystem)
                     for (i, c) in self.nondiagonal
                 ],
             )
+
+
+def adiabatic_elimination_factory(eliminated_specs):
+    return Pre(
+        Chain(*[AdiabaticElimination(eliminated_specs=e) for e in eliminated_specs])
+    )
