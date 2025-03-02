@@ -15,7 +15,7 @@
 from functools import reduce
 
 import numpy as np
-from oqd_compiler_infrastructure import ConversionRule
+from oqd_compiler_infrastructure import ConversionRule, RewriteRule
 from oqd_core.interface.atomic import SequentialProtocol
 from oqd_core.interface.math import MathFunc, MathVar
 
@@ -323,3 +323,20 @@ class ConstructHamiltonian(ConversionRule):
 
     def map_SequentialProtocol(self, model, operands):
         return operands["sequence"]
+
+
+########################################################################################
+
+
+class InjectDissipation(RewriteRule):
+    def __init__(self, dissipation):
+        super().__init__()
+
+        self.dissipation = dissipation
+
+    def map_AtomicEmulatorGate(self, model):
+        return model.__class__(
+            hamiltonian=model.hamiltonian,
+            dissipation=self.dissipation,
+            duration=model.duration,
+        )

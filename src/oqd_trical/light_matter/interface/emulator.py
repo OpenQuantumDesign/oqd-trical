@@ -49,4 +49,5 @@ class AtomicEmulatorGate(TypeReflectBaseModel):
     """
 
     hamiltonian: OperatorSubTypes
+    dissipation: List[OperatorSubTypes] = []
     duration: float

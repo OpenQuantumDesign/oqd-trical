@@ -51,4 +51,5 @@ class QutipGate(TypeReflectBaseModel):
     model_config = ConfigDict(validate_assignments=True, arbitrary_types_allowed=True)
 
     hamiltonian: Optional[QobjEvo]
+    dissipation: List[QobjEvo] = []
     duration: float
