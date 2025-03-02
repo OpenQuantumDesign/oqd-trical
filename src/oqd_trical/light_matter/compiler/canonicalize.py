@@ -16,13 +16,12 @@ from functools import reduce
 from typing import Union
 
 from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRule
-from oqd_core.compiler.math.passes import simplify_math_expr
 from oqd_core.compiler.math.rules import (
     DistributeMathExpr,
-    PartitionMathExpr,
     ProperOrderMathExpr,
+    SimplifyMathExpr,
 )
-from oqd_core.interface.math import MathNum
+from oqd_core.interface.math import MathExpr, MathNum, MathVar
 
 ########################################################################################
 from oqd_trical.light_matter.interface.operator import (
@@ -256,13 +255,13 @@ class CombineCoefficient(RewriteRule):
         if (
             isinstance(model.coeff1, WaveCoefficient)
             and isinstance(model.coeff2, WaveCoefficient)
-            and model.coeff1.frequency == MathNum(value=0)
-            and model.coeff1.phase == MathNum(value=0)
-            and model.coeff2.frequency == MathNum(value=0)
-            and model.coeff2.phase == MathNum(value=0)
+            and model.coeff1.frequency == model.coeff2.frequency
+            and model.coeff1.phase == model.coeff2.phase
         ):
-            return ConstantCoefficient(
-                value=model.coeff1.amplitude + model.coeff2.amplitude
+            return WaveCoefficient(
+                amplitude=model.coeff1.amplitude + model.coeff2.amplitude,
+                frequency=model.coeff1.frequency,
+                phase=model.coeff1.phase,
             )
 
 
@@ -360,33 +359,83 @@ class RelabelStates(RewriteRule):
 ########################################################################################
 
 
+class SubstituteMathVar(RewriteRule):
+    def __init__(self, variable, substitution):
+        super().__init__()
+
+        if not isinstance(variable, MathVar):
+            raise TypeError("Variable must be a MathVar")
+
+        if not isinstance(variable, MathExpr):
+            raise TypeError("Substituted value must be a MathExpr")
+
+        self.variable = variable
+        self.substitution = substitution
+
+    def map_MathVar(self, model):
+        if model == self.variable:
+            return self.substitution
+
+
+class ResolveRelativeTime(RewriteRule):
+    def __init__(self):
+        super().__init__()
+
+        self.current_t = 0
+
+    def map_AtomicEmulatorGate(self, model):
+        hamiltonian = Post(
+            SubstituteMathVar(
+                variable=MathVar(name="s"),
+                substitution=MathVar(name="t") - self.current_t,
+            )
+        )(model.hamiltonian)
+
+        self.current_t += model.duration
+        return model.__class__(hamiltonian=hamiltonian, duration=model.duration)
+
+
+########################################################################################
+
+
 def canonicalize_math_factory():
     """Creates a new instance of the canonicalization pass for math expressions"""
-    return Chain(
-        FixedPoint(Post(DistributeMathExpr())),
-        FixedPoint(Post(ProperOrderMathExpr())),
-        FixedPoint(Post(PartitionMathExpr())),
-        FixedPoint(Post(PruneZeroPowers())),
-        simplify_math_expr,
+    return FixedPoint(
+        Post(
+            Chain(
+                PruneZeroPowers(),
+                SimplifyMathExpr(),
+                DistributeMathExpr(),
+                ProperOrderMathExpr(),
+            )
+        )
     )
 
 
 def canonicalize_coefficient_factory():
     """Creates a new instance of the canonicalization pass for coefficients"""
-    return Chain(
-        FixedPoint(Post(CoefficientDistributivity())),
-        FixedPoint(Post(CoefficientAssociativity())),
-        FixedPoint(Post(CombineCoefficient())),
-        FixedPoint(Post(PruneCoefficient())),
+    return FixedPoint(
+        Post(
+            Chain(
+                PruneCoefficient(),
+                CoefficientDistributivity(),
+                CombineCoefficient(),
+                CoefficientAssociativity(),
+            )
+        )
     )
 
 
 def canonicalize_operator_factory():
     """Creates a new instance of the canonicalization pass for operators"""
-    return Chain(
-        FixedPoint(Post(OperatorDistributivity())),
-        FixedPoint(Post(OperatorAssociativity())),
-        Post(GatherCoefficient()),
+    return FixedPoint(
+        Post(
+            Chain(
+                OperatorDistributivity(),
+                GatherCoefficient(),
+                OperatorAssociativity(),
+            )
+        )
     )
 
 
@@ -396,10 +445,11 @@ def canonicalize_emulator_circuit_factory():
         canonicalize_operator_factory(),
         canonicalize_coefficient_factory(),
         canonicalize_math_factory(),
-        FixedPoint(Post(PruneOperator())),
+        Post(PruneOperator()),
         Pre(ScaleTerms()),
         Post(CombineTerms()),
         canonicalize_coefficient_factory(),
         canonicalize_math_factory(),
-        FixedPoint(Post(PruneOperator())),
+        Post(PruneOperator()),
+        Post(ResolveRelativeTime()),
     )

@@ -78,7 +78,12 @@ class DynamiqsVM(RewriteRule):
         self.frame = model.frame
 
     def map_DynamiqsGate(self, model):
-        tspan = jnp.arange(0, model.duration, self.timestep) + self.tspan[-1]
+        tspan = jnp.arange(0, model.duration, self.timestep)
+
+        if tspan[-1] != model.duration:
+            tspan = jnp.append(tspan, model.duration)
+
+        tspan = tspan + self.tspan[-1]
 
         empty_hamiltonian = model.hamiltonian is None
 

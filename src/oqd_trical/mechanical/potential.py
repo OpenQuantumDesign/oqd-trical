@@ -435,7 +435,7 @@ class GaussianOpticalPotential(Potential):
         self.params = {"dim": 3}
 
         opt_params = {
-            "m": cst.convert_m_a(171),
+            "m": 171 * cst.m_u,
             "Omega_bar": 2.23e6,
             "transition_wavelength": 369.52e-9,
             "refractive_index": 1,
@@ -782,7 +782,7 @@ class SymbolicOpticalPotential(SymbolicPotential):
         self.wavelength = wavelength
 
         opt_params = {
-            "m": cst.convert_m_a(171),
+            "m": 171 * cst.m_u,
             "Omega_bar": 2.23e6,
             "transition_wavelength": 369.52e-9,
             "refractive_index": 1,
@@ -897,7 +897,7 @@ class OpticalPotential(AutoDiffPotential):
         self.wavelength = wavelength
 
         opt_params = {
-            "m": cst.convert_m_a(171),
+            "m": 171 * cst.m_u,
             "Omega_bar": 2.23e6,
             "transition_wavelength": 369.52e-9,
             "refractive_index": 1,
