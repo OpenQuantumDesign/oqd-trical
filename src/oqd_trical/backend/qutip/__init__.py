@@ -12,12 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from . import interface
 from .base import QutipBackend
 from .codegen import QutipCodeGeneration
 from .vm import QutipVM
 
-__all__ = [
-    "QutipBackend",
-    "QutipCodeGeneration",
-    "QutipVM",
-]
+__all__ = ["QutipBackend", "QutipCodeGeneration", "QutipVM", "interface"]
