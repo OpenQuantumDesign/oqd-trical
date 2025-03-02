@@ -57,14 +57,6 @@
          <lastmod>2025-03-02</lastmod>
     </url>
     <url>
-         <loc>https://openquantumdesign.github.io/oqd-trical/reference/compiler/</loc>
-         <lastmod>2025-03-02</lastmod>
-    </url>
-    <url>
-         <loc>https://openquantumdesign.github.io/oqd-trical/reference/dynamiqs/</loc>
-         <lastmod>2025-03-02</lastmod>
-    </url>
-    <url>
          <loc>https://openquantumdesign.github.io/oqd-trical/reference/interface/</loc>
          <lastmod>2025-03-02</lastmod>
     </url>
@@ -73,19 +65,43 @@
          <lastmod>2025-03-02</lastmod>
     </url>
     <url>
-         <loc>https://openquantumdesign.github.io/oqd-trical/reference/potential/</loc>
+         <loc>https://openquantumdesign.github.io/oqd-trical/reference/backend/dynamiqs/</loc>
          <lastmod>2025-03-02</lastmod>
     </url>
     <url>
-         <loc>https://openquantumdesign.github.io/oqd-trical/reference/qutip/</loc>
+         <loc>https://openquantumdesign.github.io/oqd-trical/reference/backend/qutip/</loc>
          <lastmod>2025-03-02</lastmod>
     </url>
     <url>
-         <loc>https://openquantumdesign.github.io/oqd-trical/reference/spinlattice/</loc>
+         <loc>https://openquantumdesign.github.io/oqd-trical/reference/compiler/analysis/</loc>
          <lastmod>2025-03-02</lastmod>
     </url>
     <url>
-         <loc>https://openquantumdesign.github.io/oqd-trical/reference/trappedions/</loc>
+         <loc>https://openquantumdesign.github.io/oqd-trical/reference/compiler/approximate/</loc>
+         <lastmod>2025-03-02</lastmod>
+    </url>
+    <url>
+         <loc>https://openquantumdesign.github.io/oqd-trical/reference/compiler/canonicalize/</loc>
+         <lastmod>2025-03-02</lastmod>
+    </url>
+    <url>
+         <loc>https://openquantumdesign.github.io/oqd-trical/reference/compiler/codegen/</loc>
+         <lastmod>2025-03-02</lastmod>
+    </url>
+    <url>
+         <loc>https://openquantumdesign.github.io/oqd-trical/reference/compiler/visualize/</loc>
+         <lastmod>2025-03-02</lastmod>
+    </url>
+    <url>
+         <loc>https://openquantumdesign.github.io/oqd-trical/reference/mechanical/potential/</loc>
+         <lastmod>2025-03-02</lastmod>
+    </url>
+    <url>
+         <loc>https://openquantumdesign.github.io/oqd-trical/reference/mechanical/spinlattice/</loc>
+         <lastmod>2025-03-02</lastmod>
+    </url>
+    <url>
+         <loc>https://openquantumdesign.github.io/oqd-trical/reference/mechanical/trappedions/</loc>
          <lastmod>2025-03-02</lastmod>
     </url>
 </urlset>

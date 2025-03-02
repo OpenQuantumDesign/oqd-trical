@@ -266,7 +266,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../reference/potential/" class="md-tabs__link">
+        <a href="../../../reference/mechanical/potential/" class="md-tabs__link">
           
   
   API Reference
@@ -798,7 +798,7 @@
     
   
   
-    <a href="../../../reference/potential/" class="md-nav__link">
+    <a href="../../../reference/mechanical/potential/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -861,25 +861,85 @@
 <!-- prettier-ignore -->
 <div class="admonition goal">
 <p class="admonition-title">Goal</p>
-<p>Compute the multipole matrix elements with <a class="autorefs autorefs-internal" href="../../../reference/compiler/#oqd_trical.light_matter.compiler.utils.compute_matrix_element">compute_matrix_element</a>.</p>
+<p>Compute the multipole matrix elements with <a class="autorefs autorefs-internal" href="../../../reference/compiler/codegen/#oqd_trical.light_matter.compiler.utils.compute_matrix_element">compute_matrix_element</a>.</p>
 </div>
-<p>Multipole matrix elements determine the coupling between transitions. The Rabi frequencies is defined as <span class="arithmatex">\(\Omega = \frac{eE_0}{\hbar} \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle\)</span>. In this section we'll describe how these <span class="arithmatex">\(\langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle\)</span> elements are computed. Currently, TrICal supports matrix element computation for both E1 and E2 transitions.</p>
-<p>Let's consider a transition from level 0 to 1 in an ion with nuclear spin <span class="arithmatex">\(I\)</span> and associated quantum numbers: <span class="arithmatex">\(M_i, J_i, F_i\)</span>; these are the magnetization (a.k.a. <span class="arithmatex">\(m_F\)</span>), spin-orbital, and total angular momentum quantum numbers. Also, let <span class="arithmatex">\(q = M_2 - M_1\)</span>, the change in magnetization quantum number in the transiton.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Electric Dipole Transitions</label><label for="__tabbed_1_2">Electric Quadrupole Transitions</label></div>
+<p>Multipole matrix elements determine the coupling between transitions. The Rabi frequencies is defined as</p>
+<div class="arithmatex">\[
+\Omega = \begin{cases}
+    \frac{eE_0}{\hbar} \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle \, \text{for electric transitions} \\
+    \frac{B_0}{\hbar} \langle 1|\vec{\mu} \cdot \hat{b}|0 \rangle \, \text{for magnetic transitions}
+\end{cases}
+\]</div>
+<p>In this section we'll describe how these <span class="arithmatex">\(\langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle, \langle 1|\vec{\mu} \cdot \hat{b}|0 \rangle\)</span> elements are computed. Currently, TrICal supports matrix element computation for:</p>
+<ul>
+<li><a href="#__tabbed_1_1">Electric dipole (E1)</a></li>
+<li><a href="#__tabbed_1_2">Magnetic dipole (M1)</a></li>
+<li><a href="#__tabbed_1_3">Electric quadrupole (E2)</a></li>
+</ul>
+<p>Let's consider a transition from level 0 to 1 in an ion with nuclear spin <span class="arithmatex">\(I\)</span> and associated quantum numbers:</p>
+<table>
+<thead>
+<tr>
+<th>symbol</th>
+<th>definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(M_i\)</span></td>
+<td>magnetization (a.k.a. <span class="arithmatex">\(m_F\)</span>)</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(J_i\)</span></td>
+<td>spin-orbital</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(F_i\)</span></td>
+<td>total angular momentum</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(q = M_1 - M_0\)</span></td>
+<td>change in magnetization for the transiton</td>
+</tr>
+</tbody>
+</table>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Electric Dipole Transitions</label><label for="__tabbed_1_2">Magnetic Dipole Transitions</label><label for="__tabbed_1_3">Electric Quadrupole Transitions</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>For dipole transitions, <span class="arithmatex">\(q\)</span> can be <span class="arithmatex">\(0, \pm 1\)</span>, each of which corresponds to a required polarization <span class="arithmatex">\(\hat{q}\)</span>:</p>
-<ul>
-<li><span class="arithmatex">\(\hat{q} = \frac{1}{\sqrt{2}} \begin{pmatrix} 1\\ i\\ 0 \end{pmatrix}\)</span> drives <span class="arithmatex">\(q = -1\)</span> transitions</li>
-<li><span class="arithmatex">\(\hat{q} = \begin{pmatrix} 0\\ 0\\ 1 \end{pmatrix}\)</span> drives <span class="arithmatex">\(q = 0\)</span> transitions (<span class="arithmatex">\(\pi\)</span> polarized)</li>
-<li><span class="arithmatex">\(\hat{q} = \frac{1}{\sqrt{2}} \begin{pmatrix} 1\\ -i\\ 0 \end{pmatrix}\)</span> drives <span class="arithmatex">\(q = 1\)</span> transitions</li>
-</ul>
-<p>As a result, the matrix element will depend on the overlap between the laser's polarization <span class="arithmatex">\(\hat{\epsilon}\)</span> and the required <span class="arithmatex">\(\hat{q}\)</span>.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><span class="arithmatex">\(q\)</span></th>
+<th><span class="arithmatex">\(\hat{q}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\sigma_{-}\)</span></td>
+<td>-1</td>
+<td><span class="arithmatex">\(\frac{1}{\sqrt{2}} \begin{pmatrix} 1\\ i\\ 0 \end{pmatrix}\)</span></td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\pi\)</span></td>
+<td>0</td>
+<td><span class="arithmatex">\(\frac{1}{\sqrt{2}} \begin{pmatrix} 0\\ 0\\ 1 \end{pmatrix}\)</span></td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\sigma_{+}\)</span></td>
+<td>1</td>
+<td><span class="arithmatex">\(\frac{1}{\sqrt{2}} \begin{pmatrix} 1\\ -i\\ 0 \end{pmatrix}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>As a result, the matrix element will depend on the overlap between the laser's polarization (electric field direction) <span class="arithmatex">\(\hat{\epsilon}\)</span> and the required <span class="arithmatex">\(\hat{q}\)</span>.</p>
 <!-- prettier-ignore -->
 <div class="admonition important">
 <p class="admonition-title">Important</p>
+</div>
 <div class="arithmatex">\[
-    \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{3\pi\epsilon_0\hbar c^3}{\omega_0 A_{10}}} \sqrt{(2F_1 + 1)(2F_0 + 1)}
+    \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{3\pi\epsilon_0\hbar c^3 A_{10}}{\omega_0 }} \sqrt{(2F_1 + 1)(2F_0 + 1)}
     \begin{Bmatrix}
         J_0 &amp; J_1 &amp; 1\\
         F_1 &amp; F_0 &amp; I
@@ -889,11 +949,57 @@
         M_1 &amp; -q &amp; -M_0
     \end{pmatrix}
 \]</div>
+<p>where <span class="arithmatex">\(\{\}\)</span> refers to the Wigner-6j symbol and <span class="arithmatex">\(()\)</span> refers to the Wigner-3j symbol.</p>
+</div>
+<div class="tabbed-block">
+<p>For dipole transitions, <span class="arithmatex">\(q\)</span> can be <span class="arithmatex">\(0, \pm 1\)</span>, each of which corresponds to a required polarization <span class="arithmatex">\(\hat{q}\)</span>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><span class="arithmatex">\(q\)</span></th>
+<th><span class="arithmatex">\(\hat{q}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\sigma_{-}\)</span></td>
+<td>-1</td>
+<td><span class="arithmatex">\(\frac{1}{\sqrt{2}} \begin{pmatrix} 1\\ i\\ 0 \end{pmatrix}\)</span></td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\pi\)</span></td>
+<td>0</td>
+<td><span class="arithmatex">\(\frac{1}{\sqrt{2}} \begin{pmatrix} 0\\ 0\\ 1 \end{pmatrix}\)</span></td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\sigma_{+}\)</span></td>
+<td>1</td>
+<td><span class="arithmatex">\(\frac{1}{\sqrt{2}} \begin{pmatrix} 1\\ -i\\ 0 \end{pmatrix}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>As a result, the matrix element will depend on the overlap between the laser's magnetic field direction <span class="arithmatex">\(\hat{b} = \hat{k} \times \hat{\epsilon}\)</span> and the required <span class="arithmatex">\(\hat{q}\)</span>.</p>
+<!-- prettier-ignore -->
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<div class="arithmatex">\[
+    \langle 1|\vec{\mu} \cdot \hat{b}|0 \rangle = \sqrt{\frac{3 \hbar \epsilon_0 c^5 A_{10}}{16 \pi^3 \omega_0^3}} \sqrt{(2F_1 + 1)(2F_0 + 1)}
+    \begin{Bmatrix}
+        J_0 &amp; J_1 &amp; 1\\
+        F_1 &amp; F_0 &amp; I
+    \end{Bmatrix} \nonumber \\
+    \sqrt{2J_1+1} \hat{q}\cdot\hat{b}\begin{pmatrix}
+        F_1 &amp; 1 &amp; F_0\\
+        M_1 &amp; -q &amp; -M_0
+    \end{pmatrix}
+\]</div>
 </div>
 <p>where <span class="arithmatex">\(\{\}\)</span> refers to the Wigner-6j symbol and <span class="arithmatex">\(()\)</span> refers to the Wigner-3j symbol.</p>
 </div>
 <div class="tabbed-block">
-<p>For quadrupole transitions, the laser's unit wave-vector <span class="arithmatex">\(\hat{k}\)</span> becomes relevant for coupling (in addition to its polarization). In particular, the coupling strength is now proportional to the overlap between <span class="arithmatex">\(\hat{k}\)</span> and <span class="arithmatex">\(\hat{Q}\hat{\epsilon}\)</span>; <span class="arithmatex">\(\hat{Q}\)</span> is a matrix that depends on the value for <span class="arithmatex">\(q\)</span>, which can now be one of <span class="arithmatex">\(0, \pm 1, \pm 2\)</span>:</p>
+<p>For quadrupole transitions, the laser's unit wavevector <span class="arithmatex">\(\hat{k}\)</span> becomes relevant for coupling (in addition to its polarization). In particular, the coupling strength is now proportional to the overlap between <span class="arithmatex">\(\hat{k}\)</span> and <span class="arithmatex">\(\hat{Q}\hat{\epsilon}\)</span>.</p>
+<p><span class="arithmatex">\(\hat{Q}\)</span> is a matrix that depends on the value for <span class="arithmatex">\(q\)</span>, which can now be one of <span class="arithmatex">\(0, \pm 1, \pm 2\)</span>:</p>
 <table>
 <thead>
 <tr>
@@ -924,12 +1030,11 @@
 </tr>
 </tbody>
 </table>
-<p>This logic is handled in TrICal under the same helper function under the <em>polarization_map</em> dictionary.</p>
 <!-- prettier-ignore -->
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <div class="arithmatex">\[
-    \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{15\pi\epsilon_0\hbar c^3}{\omega_0 A_{10}}} \sqrt{(2F_1 + 1)(2F_0 + 1)}
+    \langle 1|\vec{r}_e \cdot \hat{\epsilon}|0 \rangle = \frac{1}{\omega_0 e}\sqrt{\frac{15\pi\epsilon_0\hbar c^3 A_{10}}{\omega_0}} \sqrt{(2F_1 + 1)(2F_0 + 1)}
     \begin{Bmatrix}
         J_0 &amp; J_1 &amp; 2\\
         F_1 &amp; F_0 &amp; I
