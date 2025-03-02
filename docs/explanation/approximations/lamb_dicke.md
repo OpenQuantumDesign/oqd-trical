@@ -1,3 +1,5 @@
+# Lamb-Dicke Approximation <div style="float:right;"> [![](https://img.shields.io/badge/Implementation-7C4DFF)][oqd_trical.light_matter.compiler.approximate.FirstOrderLambDickeApprox] </div>
+
 We saw in the derivation of the system Hamiltonian that the displacement operator on a motional mode is given by
 
 $$

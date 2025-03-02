@@ -1,3 +1,5 @@
+# Adiabatic Elimination <div style="float:right;"> [![](https://img.shields.io/badge/Implementation-7C4DFF)][oqd_trical.light_matter.compiler.approximate.AdiabaticElimination] </div>
+
 The adiabatic elimination step serves to ignore negligible physics that may result in long simulation run times or simulations being aborted entirely by QuTiP.
 
 ## Single-Photon Adiabatic Elimination

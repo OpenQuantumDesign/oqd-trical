@@ -1,3 +1,5 @@
+# Rotating Wave Approximation (RWA) <div style="float:right;"> [![](https://img.shields.io/badge/Implementation-7C4DFF)][oqd_trical.light_matter.compiler.approximate.RotatingWaveApprox] </div>
+
 The rotating wave approximation (RWA) simply states that any terms in the Hamiltonian oscillating faster than a user-specified cutoff, $\omega_{\text{cutoff}}$, are neglected.
 
 Looking at the [general Hamiltonian](../hamiltonian_construction/derivation.md#eqn:general_hamiltonian), we see that these oscillating terms will arise from the product of $e^{-i\Delta_{nmjk}t}$ and the matrix elements of $D(\alpha)$. Because we are computing these via Laguerre polynomials, it is straightforward to derive a condition on what terms must be dropped.
