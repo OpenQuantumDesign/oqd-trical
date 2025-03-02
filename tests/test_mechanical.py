@@ -112,7 +112,7 @@ class TestPotential:
     def test_gaussian_optical_potential(self, configuration):
         N, dim = configuration.shape
 
-        mass = cst.convert_m_a(171)
+        mass = 171 * cst.m_u
         focal_point = np.zeros(3)
         beam_waist = 1e-6
         refractive_index = 1.0

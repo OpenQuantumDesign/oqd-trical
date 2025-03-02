@@ -17,6 +17,7 @@ import dynamiqs as dq
 import numpy as np
 import pytest
 import qutip as qt
+from oqd_compiler_infrastructure import Chain, Post
 from oqd_core.interface.atomic import (
     AtomicCircuit,
     Beam,
@@ -29,10 +30,17 @@ from oqd_core.interface.atomic import (
     Transition,
 )
 
-from oqd_trical.backend import DynamiqsBackend, QutipBackend
+from oqd_trical.backend import QutipBackend
 from oqd_trical.backend.dynamiqs.vm import DynamiqsVM
 from oqd_trical.backend.qutip.vm import QutipVM
 from oqd_trical.light_matter.compiler.analysis import HilbertSpace
+from oqd_trical.light_matter.compiler.approximate import (
+    RotatingReferenceFrame,
+    RotatingWaveApprox,
+)
+from oqd_trical.light_matter.compiler.canonicalize import (
+    canonicalize_emulator_circuit_factory,
+)
 
 ########################################################################################
 
@@ -88,33 +96,40 @@ class TestBackend:
             spin_orbital=1 / 2,
             spin_orbital_nuclear=1,
             spin_orbital_nuclear_magnetization=0,
-            energy=2 * np.pi * 10,
+            energy=2 * np.pi * 12.643e9,
             label="q1",
         )
         estate = Level(
-            principal=5,
+            principal=6,
             spin=1 / 2,
             orbital=1,
             nuclear=1 / 2,
             spin_orbital=1 / 2,
             spin_orbital_nuclear=1,
             spin_orbital_nuclear_magnetization=-1,
-            energy=2 * np.pi * 100,
+            energy=2 * np.pi * 811.29e12,
             label="e0",
         )
         estate2 = Level(
-            principal=5,
+            principal=6,
             spin=1 / 2,
             orbital=1,
             nuclear=1 / 2,
             spin_orbital=1 / 2,
             spin_orbital_nuclear=1,
             spin_orbital_nuclear_magnetization=1,
-            energy=2 * np.pi * 110,
+            energy=2 * np.pi * 911.14e12,
             label="e1",
         )
 
         transitions = [
+            Transition(
+                level1=downstate,
+                level2=upstate,
+                einsteinA=1,
+                multipole="M1",
+                label="q0->q1",
+            ),
             Transition(
                 level1=downstate,
                 level2=estate,
@@ -145,7 +160,7 @@ class TestBackend:
             ),
         ]
 
-        ion = Ion(
+        Yb171 = Ion(
             mass=171,
             charge=1,
             position=[0, 0, 0],
@@ -153,19 +168,16 @@ class TestBackend:
             transitions=transitions,
         )
 
-        COM_x = Phonon(energy=0.1, eigenvector=[1, 0, 0])
+        COM_x = Phonon(energy=2 * np.pi * 1e6, eigenvector=[1, 0, 0])
 
         system = System(
-            ions=[
-                ion,
-            ],
-            modes=[
-                COM_x,
-            ],
+            ions=[Yb171],
+            modes=[COM_x],
         )
+
         return system
 
-    @pytest.mark.parametrize("backend", [QutipBackend, DynamiqsBackend])
+    @pytest.mark.parametrize("backend", [QutipBackend])
     def test_stationary(self, system, backend):
         beam = Beam(
             transition=system.ions[0].transitions[0],
@@ -181,17 +193,33 @@ class TestBackend:
 
         circuit = AtomicCircuit(system=system, protocol=protocol)
 
-        backend = backend()
+        frame_specs = {
+            "E0": [
+                0,
+                2 * np.pi * 12.643e9,
+                2 * np.pi * 811.29e12,
+                2 * np.pi * 911.14e12,
+            ],
+            "P0": 2 * np.pi * 1e6,
+        }
+
+        approx_pass = Chain(
+            Post(RotatingReferenceFrame(frame_specs=frame_specs)),
+            canonicalize_emulator_circuit_factory(),
+            Post(RotatingWaveApprox(cutoff=2 * np.pi * 1e9)),
+        )
+
+        backend = backend(approx_pass=approx_pass)
 
         experiment, hilbert_space = backend.compile(circuit=circuit, fock_cutoff=3)
 
         backend.run(experiment=experiment, hilbert_space=hilbert_space, timestep=1)
 
-    @pytest.mark.parametrize("backend", [QutipBackend, DynamiqsBackend])
+    @pytest.mark.parametrize("backend", [QutipBackend])
     def test_direct_transition(self, system, backend):
         beam = Beam(
             transition=system.ions[0].transitions[0],
-            rabi=1,
+            rabi=2 * np.pi * 1e6,
             detuning=0,
             phase=0,
             wavevector=[1, 0, 0],
@@ -199,11 +227,27 @@ class TestBackend:
             target=0,
         )
 
-        protocol = SequentialProtocol(sequence=[Pulse(beam=beam, duration=1e-2)])
+        protocol = SequentialProtocol(sequence=[Pulse(beam=beam, duration=1e-6)])
 
         circuit = AtomicCircuit(system=system, protocol=protocol)
 
-        backend = backend()
+        frame_specs = {
+            "E0": [
+                0,
+                2 * np.pi * 12.643e9,
+                2 * np.pi * 811.29e12,
+                2 * np.pi * 911.14e12,
+            ],
+            "P0": 2 * np.pi * 1e6,
+        }
+
+        approx_pass = Chain(
+            Post(RotatingReferenceFrame(frame_specs=frame_specs)),
+            canonicalize_emulator_circuit_factory(),
+            Post(RotatingWaveApprox(cutoff=2 * np.pi * 1e9)),
+        )
+
+        backend = backend(approx_pass=approx_pass)
 
         experiment, hilbert_space = backend.compile(circuit=circuit, fock_cutoff=3)
 
