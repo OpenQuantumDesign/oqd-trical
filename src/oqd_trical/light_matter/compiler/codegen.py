@@ -28,11 +28,10 @@ from oqd_trical.light_matter.interface.emulator import (
     AtomicEmulatorGate,
 )
 from oqd_trical.light_matter.interface.operator import (
-    Annihilation,
-    Creation,
     Displacement,
     Identity,
     KetBra,
+    Number,
     WaveCoefficient,
 )
 from oqd_trical.misc import constants as cst
@@ -110,8 +109,8 @@ class ConstructHamiltonian(ConversionRule):
         return op
 
     def _map_Phonon(self, model, index):
-        return WaveCoefficient(amplitude=model.energy, frequency=0, phase=0) * (
-            Creation(subsystem=f"P{index}") * Annihilation(subsystem=f"P{index}")
+        return WaveCoefficient(amplitude=model.energy, frequency=0, phase=0) * Number(
+            subsystem=f"P{index}"
         )
 
     def map_Beam(self, model, operands):
