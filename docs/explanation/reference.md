@@ -42,7 +42,7 @@ file = {Full Text PDF:C\:\\Users\\Salieri\\Zotero\\storage\\VIPIQIPJ\\Cahill and
 }
 ```
 
-## Atomic Physics <div style="float:right;"> [![](https://img.shields.io/badge/Paper-40C4FF)](https://academic.oup.com/book/52827?login=false) </div>
+## Atomic Physics <div style="float:right;"> [![](https://img.shields.io/badge/Book-40C4FF)](https://academic.oup.com/book/52827?login=false) </div>
 
 ```bib
 @book{foot_atomic_2005,
