@@ -23,7 +23,7 @@ from oqd_trical.backend.qutip.vm import QutipVM
 from oqd_trical.light_matter.compiler.analysis import GetHilbertSpace, HilbertSpace
 from oqd_trical.light_matter.compiler.canonicalize import (
     RelabelStates,
-    ResolveNestedProtocol,
+    canonicalize_atomic_circuit_factory,
     canonicalize_emulator_circuit_factory,
 )
 from oqd_trical.light_matter.compiler.codegen import ConstructHamiltonian
@@ -73,10 +73,10 @@ class QutipBackend(BackendBase):
         assert isinstance(circuit, (AtomicCircuit, AtomicEmulatorCircuit))
 
         if isinstance(circuit, AtomicCircuit):
-            canonicalize = Post(ResolveNestedProtocol())
+            canonicalize = canonicalize_atomic_circuit_factory()
             intermediate = canonicalize(circuit)
             conversion = Post(ConstructHamiltonian())
-            intermediate = conversion(circuit)
+            intermediate = conversion(intermediate)
         else:
             intermediate = circuit
 

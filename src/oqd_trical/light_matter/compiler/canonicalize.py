@@ -378,7 +378,6 @@ class SubstituteMathVar(RewriteRule):
 
 
 class ResolveNestedProtocol(RewriteRule):
-    # TODO fix relative time in protocols
     def __init__(self):
         super().__init__()
 
@@ -510,18 +509,46 @@ class ResolveRelativeTime(RewriteRule):
     def __init__(self):
         super().__init__()
 
-        self.current_t = 0
-
-    def map_AtomicEmulatorGate(self, model):
-        hamiltonian = Post(
+    def map_AtomicCircuit(self, model):
+        protocol = Post(
             SubstituteMathVar(
-                variable=MathVar(name="s"),
-                substitution=MathVar(name="t") - self.current_t,
+                variable=MathVar(name="s"), substitution=MathVar(name="t")
             )
-        )(model.hamiltonian)
+        )(model.protocol)
 
-        self.current_t += model.duration
-        return model.__class__(hamiltonian=hamiltonian, duration=model.duration)
+        return model.__class__(system=model.system, protocol=protocol)
+
+    @classmethod
+    def _calculate_duration(cls, model):
+        if isinstance(model, SequentialProtocol):
+            return reduce(
+                lambda x, y: x + y,
+                [cls._calculate_duration(p) for p in model.sequence],
+            )
+        if isinstance(model, ParallelProtocol):
+            return max(
+                *[cls._calculate_duration(p) for p in model.sequence],
+            )
+        return model.duration
+
+    def map_SequentialProtocol(self, model):
+        current_time = 0
+
+        new_sequence = []
+        for p in model.sequence:
+            duration = self._calculate_duration(p)
+
+            new_p = Post(
+                SubstituteMathVar(
+                    variable=MathVar(name="s"),
+                    substitution=MathVar(name="s") - current_time,
+                )
+            )(p)
+            new_sequence.append(new_p)
+
+            current_time += duration
+
+        return model.__class__(sequence=new_sequence)
 
 
 ########################################################################################
@@ -580,5 +607,11 @@ def canonicalize_emulator_circuit_factory():
         canonicalize_coefficient_factory(),
         canonicalize_math_factory(),
         Post(PruneOperator()),
+    )
+
+
+def canonicalize_atomic_circuit_factory():
+    return Chain(
         Post(ResolveRelativeTime()),
+        Post(ResolveNestedProtocol()),
     )
