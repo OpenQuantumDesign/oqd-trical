@@ -23,6 +23,7 @@ from oqd_trical.backend.dynamiqs.vm import DynamiqsVM
 from oqd_trical.light_matter.compiler.analysis import GetHilbertSpace, HilbertSpace
 from oqd_trical.light_matter.compiler.canonicalize import (
     RelabelStates,
+    ResolveNestedProtocol,
     canonicalize_emulator_circuit_factory,
 )
 from oqd_trical.light_matter.compiler.codegen import ConstructHamiltonian
@@ -72,6 +73,8 @@ class DynamiqsBackend(BackendBase):
         assert isinstance(circuit, (AtomicCircuit, AtomicEmulatorCircuit))
 
         if isinstance(circuit, AtomicCircuit):
+            canonicalize = Post(ResolveNestedProtocol())
+            intermediate = canonicalize(circuit)
             conversion = Post(ConstructHamiltonian())
             intermediate = conversion(circuit)
         else:

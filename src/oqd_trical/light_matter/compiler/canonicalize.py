@@ -21,9 +21,9 @@ from oqd_core.compiler.math.rules import (
     ProperOrderMathExpr,
     SimplifyMathExpr,
 )
+from oqd_core.interface.atomic import ParallelProtocol, SequentialProtocol
 from oqd_core.interface.math import MathExpr, MathNum, MathVar
 
-########################################################################################
 from oqd_trical.light_matter.interface.operator import (
     CoefficientAdd,
     CoefficientMul,
@@ -375,6 +375,135 @@ class SubstituteMathVar(RewriteRule):
     def map_MathVar(self, model):
         if model == self.variable:
             return self.substitution
+
+
+class ResolveNestedProtocol(RewriteRule):
+    # TODO fix relative time in protocols
+    def __init__(self):
+        super().__init__()
+
+        self.durations = []
+
+    def map_ParallelProtocol(self, model):
+        sequence = model.sequence
+
+        protocols = []
+        while sequence:
+            continuous_duration = None
+
+            for p in sequence:
+                if isinstance(p, ParallelProtocol):
+                    if len(p.sequence) == 1:
+                        _continuous_duration = p.sequence[0].duration
+                    else:
+                        _continuous_duration = min(*[_p.duration for _p in p.sequence])
+                    if (
+                        continuous_duration is None
+                        or _continuous_duration < continuous_duration
+                    ):
+                        continuous_duration = _continuous_duration
+
+                elif isinstance(p, SequentialProtocol):
+                    if (
+                        continuous_duration is None
+                        or p.sequence[0].sequence[0].duration < continuous_duration
+                    ):
+                        continuous_duration = p.sequence[0].sequence[0].duration
+                else:
+                    if continuous_duration is None or p.duration < continuous_duration:
+                        continuous_duration = p.duration
+
+            protocol = []
+            new_sequence = []
+            for p in sequence:
+                if isinstance(p, ParallelProtocol):
+                    new_p = []
+                    for _p in p.sequence:
+                        whole, remainder = (
+                            _p.model_copy(deep=True),
+                            _p.model_copy(deep=True),
+                        )
+
+                        whole.duration = continuous_duration
+                        protocol.append(whole)
+
+                        if remainder.duration != continuous_duration:
+                            remainder.duration = (
+                                remainder.duration - continuous_duration
+                            )
+                            new_p.append(remainder)
+
+                    if new_p:
+                        new_sequence.append(ParallelProtocol(sequence=new_p))
+
+                elif isinstance(p, SequentialProtocol):
+                    if p.sequence[0].sequence[0].duration == continuous_duration:
+                        whole = p.sequence.pop(0)
+                        protocol.extend(whole.sequence)
+
+                        if len(p.sequence) == 1:
+                            new_sequence.append(p.sequence[0])
+                        elif len(p.sequence) > 1:
+                            new_sequence.append(p)
+
+                    else:
+                        whole, remainder = (
+                            p.sequence[0].model_copy(deep=True),
+                            p.model_copy(deep=True),
+                        )
+
+                        for w in whole.sequence:
+                            w.duration = continuous_duration
+
+                        protocol.extend(whole.sequence)
+
+                        for r in remainder.sequence[0].sequence:
+                            r.duration = r.duration - continuous_duration
+
+                        new_sequence.append(remainder)
+
+                else:
+                    if p.duration == continuous_duration:
+                        protocol.append(p)
+
+                    else:
+                        whole = p.model_copy(deep=True)
+                        whole.duration = continuous_duration
+                        protocol.append(whole)
+
+                        p.duration = p.duration - continuous_duration
+
+                        new_sequence.append(p)
+
+            if len(protocol) == 1 and isinstance(protocol[0], ParallelProtocol):
+                protocols.append(protocol[0])
+            else:
+                protocols.append(ParallelProtocol(sequence=protocol))
+
+            sequence = new_sequence
+
+        return SequentialProtocol(sequence=protocols)
+
+    def map_SequentialProtocol(self, model):
+        if len(model.sequence) == 1:
+            return model.sequence[0]
+
+        new_p = []
+        for p in model.sequence:
+            if isinstance(p, ParallelProtocol):
+                new_p.append(p)
+            if isinstance(p, SequentialProtocol):
+                new_p.extend(
+                    [
+                        _p
+                        if isinstance(_p, ParallelProtocol)
+                        else ParallelProtocol(sequence=[_p])
+                        for _p in p.sequence
+                    ]
+                )
+            else:
+                new_p.append(ParallelProtocol(sequence=[p]))
+        return model.__class__(sequence=new_p)
 
 
 class ResolveRelativeTime(RewriteRule):
