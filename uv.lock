@@ -1779,7 +1779,7 @@ docs = [
     { name = "mkdocstrings-python" },
     { name = "pymdown-extensions" },
 ]
-test = [
+tests = [
     { name = "pytest" },
 ]
 
@@ -1803,7 +1803,7 @@ requires-dist = [
     { name = "oqd-compiler-infrastructure", git = "https://github.com/openquantumdesign/oqd-compiler-infrastructure" },
     { name = "oqd-core", git = "https://github.com/openquantumdesign/oqd-core" },
     { name = "pymdown-extensions", marker = "extra == 'docs'" },
-    { name = "pytest", marker = "extra == 'test'" },
+    { name = "pytest", marker = "extra == 'tests'" },
     { name = "qutip" },
     { name = "scipy" },
     { name = "sympy" },

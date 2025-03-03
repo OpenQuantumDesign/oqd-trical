@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oqd_compiler_infrastructure import ConversionRule, Post, PrettyPrint
+from matplotlib import pyplot as plt
+from oqd_compiler_infrastructure import ConversionRule, Post, PrettyPrint, RewriteRule
 from oqd_core.compiler.math.rules import PrintMathExpr
 from oqd_core.interface.math import MathNum
 
@@ -95,3 +96,52 @@ class CondensedOperatorPrettyPrint(PrettyPrint):
 
     def map_Operator(self, model, operands):
         return f"Operator({Post(OperatorPrinter())(model)})"
+
+
+########################################################################################'
+
+
+class PlotAtomicCircuit(RewriteRule):
+    def __init__(self, t=0, *, ax=None):
+        super().__init__()
+
+        if ax:
+            self.ax = ax
+        else:
+            self.ax = plt.subplots()
+
+    @property
+    def fig(self):
+        return self.ax.get_figure()
+
+    def map_Level(self, model):
+        self.ax.plot(
+            [model.orbital, model.orbital + 1],
+            [model.energy, model.energy],
+            color="k",
+            alpha=0.5,
+        )
+
+    def map_Transition(self, model):
+        self.ax.plot(
+            [model.level1.orbital + 0.5, model.level2.orbital + 0.5],
+            [model.level1.energy, model.level2.energy],
+            color="k",
+            ls="--",
+            alpha=0.5,
+        )
+
+    def map_Beam(self, model):
+        transition = model.transition
+
+        if isinstance(model.detuning, MathNum):
+            self.ax.plot(
+                [transition.level1.orbital + 0.5, transition.level2.orbital + 0.5],
+                [
+                    transition.level1.energy,
+                    transition.level2.energy + model.detuning.value,
+                ],
+                color="k",
+                ls="-",
+                alpha=0.5,
+            )
