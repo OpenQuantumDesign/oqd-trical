@@ -52,7 +52,6 @@ class QutipCodeGeneration(ConversionRule):
         )
 
     def map_AtomicEmulatorGate(self, model, operands):
-        print(model)
         if isinstance(operands["hamiltonian"], PrunedOperator):
             return QutipGate(
                 hamiltonian=None,
