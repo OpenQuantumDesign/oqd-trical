@@ -22,7 +22,10 @@ from .approximate import (
     SecondOrderLambDickeApprox,
     adiabatic_elimination_factory,
 )
-from .canonicalize import canonicalize_emulator_circuit_factory
+from .canonicalize import (
+    canonicalize_atomic_circuit_factory,
+    canonicalize_emulator_circuit_factory,
+)
 from .codegen import ConstructHamiltonian
 from .visualization import (
     CoefficientPrinter,
@@ -44,4 +47,5 @@ __all__ = [
     "RotatingWaveApprox",
     "adiabatic_elimination_factory",
     "utils",
+    "canonicalize_atomic_circuit_factory",
 ]

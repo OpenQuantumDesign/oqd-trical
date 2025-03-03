@@ -16,8 +16,6 @@ from functools import reduce
 
 import numpy as np
 from oqd_compiler_infrastructure import ConversionRule
-from oqd_core.interface.atomic import SequentialProtocol
-from oqd_core.interface.math import MathFunc, MathVar
 
 from oqd_trical.light_matter.compiler.utils import (
     intensity_from_laser,
@@ -293,34 +291,15 @@ class ConstructHamiltonian(ConversionRule):
         )
 
     def map_ParallelProtocol(self, model, operands):
-        # TODO: Implement correct procedure for SequentialProtocol
-        # within ParallelProtocol
-        for p in model.sequence:
-            if isinstance(p, SequentialProtocol):
-                raise NotImplementedError(
-                    "SequentialProtocol within ParallelProtocol currently unsupported"
-                )
+        duration = operands["sequence"][0].duration
 
-        duration_max = np.max([_op.duration for _op in operands["sequence"]])
+        for op in operands["sequence"]:
+            assert op.duration == duration
 
-        ops = []
-        for _op in operands["sequence"]:
-            if _op.duration != duration_max:
-                ops.append(
-                    _op.hamiltonian
-                    * WaveCoefficient(
-                        amplitude=MathFunc(
-                            func="heaviside", expr=_op.duration - MathVar(name="t")
-                        ),
-                        frequency=0,
-                        phase=0,
-                    )
-                )
-            else:
-                ops.append(_op.hamiltonian)
-
-        op = reduce(lambda x, y: x + y, ops)
-        return AtomicEmulatorGate(hamiltonian=op, duration=duration_max)
+        op = reduce(
+            lambda x, y: x + y, map(lambda x: x.hamiltonian, operands["sequence"])
+        )
+        return AtomicEmulatorGate(hamiltonian=op, duration=duration)
 
     def map_SequentialProtocol(self, model, operands):
         return operands["sequence"]
