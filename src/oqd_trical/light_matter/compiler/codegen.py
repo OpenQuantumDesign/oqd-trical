@@ -296,7 +296,9 @@ class ConstructHamiltonian(ConversionRule):
         for op in operands["sequence"]:
             assert op.duration == duration
 
-        op = reduce(lambda x, y: x + y, operands["sequence"])
+        op = reduce(
+            lambda x, y: x + y, map(lambda x: x.hamiltonian, operands["sequence"])
+        )
         return AtomicEmulatorGate(hamiltonian=op, duration=duration)
 
     def map_SequentialProtocol(self, model, operands):
