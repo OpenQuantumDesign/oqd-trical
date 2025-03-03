@@ -8,5 +8,5 @@
 - [x] Rule for moving into interaction picture for a rotating frame of reference. <div style="float:right;"> [![](https://img.shields.io/badge/Pull%20Request-76FF03)](https://github.com/OpenQuantumDesign/oqd-trical/pull/16) </div>
 - [x] Rule for performing adiabatic elimination. <div style="float:right;"> [![](https://img.shields.io/badge/Pull%20Request-76FF03)](https://github.com/OpenQuantumDesign/oqd-trical/pull/27) </div>
 - [ ] Unit test for `oqd_trical` <div style="float:right;"> [![](https://img.shields.io/badge/Pull%20Request-76FF03)](https://github.com/OpenQuantumDesign/oqd-trical/pull/18) </div>
-- [ ] [`ConstructHamiltonian`][oqd_trical.light_matter.compiler.codegen] support for sequential within parallel protocol
+- [x] [`ConstructHamiltonian`][oqd_trical.light_matter.compiler.codegen] support for sequential within parallel protocol <div style="float:right;"> [![](https://img.shields.io/badge/Pull%20Request-76FF03)](https://github.com/OpenQuantumDesign/oqd-trical/pull/29) </div>
 - [x] Sort out units <div style="float:right;"> [![](https://img.shields.io/badge/Pull%20Request-76FF03)](https://github.com/OpenQuantumDesign/oqd-trical/pull/25) </div>
