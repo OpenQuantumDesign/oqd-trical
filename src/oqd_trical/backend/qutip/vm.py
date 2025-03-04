@@ -16,7 +16,7 @@ import warnings
 
 import numpy as np
 from oqd_compiler_infrastructure import RewriteRule
-from qutip import MESolver, SESolver, basis, tensor
+from qutip import MESolver, SESolver, basis, identity, tensor
 
 ########################################################################################
 
@@ -96,11 +96,18 @@ class QutipVM(RewriteRule):
                 "Experiment contains dissipation terms which SESolver will ignore."
             )
 
+        if empty_hamiltonian:
+            hamiltonian = identity(
+                [self.hilbert_space.size[k] for k in self.hilbert_space.size.keys()]
+            )
+        else:
+            hamiltonian = model.hamiltonian
+
         if self.solver == SESolver:
-            solver = self.solver(model.hamiltonian, options=self.solver_options)
+            solver = self.solver(hamiltonian, options=self.solver_options)
         else:
             solver = self.solver(
-                model.hamiltonian, model.dissipation, options=self.solver_options
+                hamiltonian, model.dissipation, options=self.solver_options
             )
 
         res = solver.run(
