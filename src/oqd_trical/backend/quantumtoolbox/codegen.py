@@ -12,15 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import dynamiqs, qutip
-from .dynamiqs import DynamiqsBackend
-from .quantumoptics import QuantumOpticsBackend
-from .qutip import QutipBackend
 
-__all__ = [
-    "qutip",
-    "dynamiqs",
-    "DynamiqsBackend",
-    "QutipBackend",
-    "QuantumOpticsBackend",
-]
+from oqd_compiler_infrastructure import ConversionRule
+
+########################################################################################
+
+########################################################################################
+
+
+class QuantumToolboxCodeGeneration(ConversionRule):
+    pass

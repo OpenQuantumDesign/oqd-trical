@@ -12,15 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import dynamiqs, qutip
-from .dynamiqs import DynamiqsBackend
-from .quantumoptics import QuantumOpticsBackend
-from .qutip import QutipBackend
+from oqd_trical.backend.quantumoptics.base import QuantumOpticsBackend
+from oqd_trical.backend.quantumoptics.codegen import QuantumOpticsCodeGeneration
 
 __all__ = [
-    "qutip",
-    "dynamiqs",
-    "DynamiqsBackend",
-    "QutipBackend",
     "QuantumOpticsBackend",
+    "QuantumOpticsCodeGeneration",
 ]
