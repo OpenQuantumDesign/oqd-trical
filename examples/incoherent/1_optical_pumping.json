@@ -30,7 +30,7 @@
             "spin_orbital": 0.5,
             "spin_orbital_nuclear": 1.0,
             "spin_orbital_nuclear_magnetization": 0.0,
-            "energy": 79438.3118386715
+            "energy": 79438311838.67151
           },
           {
             "class_": "Level",
@@ -42,7 +42,7 @@
             "spin_orbital": 0.5,
             "spin_orbital_nuclear": 1.0,
             "spin_orbital_nuclear_magnetization": -1.0,
-            "energy": 5097485407.861727
+            "energy": 5097485407861727.0
           }
         ],
         "transitions": [
@@ -71,7 +71,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": 0.0,
-              "energy": 79438.3118386715
+              "energy": 79438311838.67151
             },
             "einsteinA": 1.0,
             "multipole": "M1"
@@ -101,7 +101,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": -1.0,
-              "energy": 5097485407.861727
+              "energy": 5097485407861727.0
             },
             "einsteinA": 1.0,
             "multipole": "E1"
@@ -119,7 +119,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": 0.0,
-              "energy": 79438.3118386715
+              "energy": 79438311838.67151
             },
             "level2": {
               "class_": "Level",
@@ -131,7 +131,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": -1.0,
-              "energy": 5097485407.861727
+              "energy": 5097485407861727.0
             },
             "einsteinA": 1.0,
             "multipole": "E1"
@@ -147,7 +147,7 @@
     "modes": [
       {
         "class_": "Phonon",
-        "energy": 6.283185307179586,
+        "energy": 6283185.307179586,
         "eigenvector": [
           1.0,
           0.0,
@@ -176,7 +176,7 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": 0.0,
-              "energy": 79438.3118386715
+              "energy": 79438311838.67151
             },
             "level2": {
               "class_": "Level",
@@ -188,14 +188,14 @@
               "spin_orbital": 0.5,
               "spin_orbital_nuclear": 1.0,
               "spin_orbital_nuclear_magnetization": -1.0,
-              "energy": 5097485407.861727
+              "energy": 5097485407861727.0
             },
             "einsteinA": 1.0,
             "multipole": "E1"
           },
           "rabi": {
             "class_": "MathNum",
-            "value": 62831.853071795864
+            "value": 6283185307.179586
           },
           "detuning": {
             "class_": "MathNum",
@@ -217,7 +217,7 @@
           ],
           "target": 0
         },
-        "duration": 0.001
+        "duration": 1e-08
       }
     ]
   }
