@@ -310,7 +310,7 @@
           ],
           "target": 0
         },
-        "duration": 1e-06
+        "duration": 8e-07
       },
       {
         "class_": "Pulse",
@@ -391,7 +391,7 @@
           ],
           "target": 0
         },
-        "duration": 1e-06
+        "duration": 8e-07
       }
     ]
   }
