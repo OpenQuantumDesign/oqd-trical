@@ -488,6 +488,9 @@ class ResolveNestedProtocol(RewriteRule):
                 new_sequence.append(ParallelProtocol(sequence=[subprotocol]))
         return model.__class__(sequence=new_sequence)
 
+    def map_Pulse(self, model):
+        return SequentialProtocol(sequence=[model])
+
 
 class ResolveRelativeTime(RewriteRule):
     def __init__(self):
