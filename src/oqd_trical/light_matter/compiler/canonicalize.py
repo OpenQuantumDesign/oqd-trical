@@ -463,8 +463,6 @@ class ResolveNestedProtocol(RewriteRule):
 
             sequence = [r for r in map(lambda x: x[1], pairs) if r is not None]
 
-            print(sequence)
-
         return SequentialProtocol(sequence=protocols)
 
     def map_SequentialProtocol(self, model):
