@@ -100,6 +100,12 @@ class SecondOrderLambDickeApprox(RewriteRule):
 ########################################################################################
 
 
+class _GetMathBounds(RewriteRule):
+    def __init__(self):
+        super().__init__()
+        raise NotImplementedError
+
+
 class RotatingWaveApprox(RewriteRule):
     """
     Applies the rotating wave approximation.
