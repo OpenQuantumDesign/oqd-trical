@@ -270,33 +270,26 @@
             "value": 6283185.307179586
           },
           "detuning": {
-            "class_": "MathNum",
-            "value": 0
-          },
-          "phase": {
             "class_": "MathMul",
             "expr1": {
-              "class_": "MathMul",
+              "class_": "MathNum",
+              "value": 6283185.307179586
+            },
+            "expr2": {
+              "class_": "MathDiv",
               "expr1": {
-                "class_": "MathDiv",
-                "expr1": {
-                  "class_": "MathVar",
-                  "name": "t"
-                },
-                "expr2": {
-                  "class_": "MathNum",
-                  "value": 1e-06
-                }
+                "class_": "MathVar",
+                "name": "t"
               },
               "expr2": {
                 "class_": "MathNum",
-                "value": 2
+                "value": 1e-06
               }
-            },
-            "expr2": {
-              "class_": "MathNum",
-              "value": 3.141592653589793
             }
+          },
+          "phase": {
+            "class_": "MathNum",
+            "value": 0
           },
           "polarization": [
             0.0,
@@ -310,7 +303,7 @@
           ],
           "target": 0
         },
-        "duration": 8e-07
+        "duration": 1e-06
       },
       {
         "class_": "Pulse",
@@ -351,33 +344,26 @@
             "value": 6283185.307179586
           },
           "detuning": {
-            "class_": "MathNum",
-            "value": 0
-          },
-          "phase": {
             "class_": "MathMul",
             "expr1": {
-              "class_": "MathMul",
+              "class_": "MathNum",
+              "value": 6283185.307179586
+            },
+            "expr2": {
+              "class_": "MathDiv",
               "expr1": {
-                "class_": "MathDiv",
-                "expr1": {
-                  "class_": "MathVar",
-                  "name": "s"
-                },
-                "expr2": {
-                  "class_": "MathNum",
-                  "value": 1e-06
-                }
+                "class_": "MathVar",
+                "name": "s"
               },
               "expr2": {
                 "class_": "MathNum",
-                "value": 2
+                "value": 1e-06
               }
-            },
-            "expr2": {
-              "class_": "MathNum",
-              "value": 3.141592653589793
             }
+          },
+          "phase": {
+            "class_": "MathNum",
+            "value": 0
           },
           "polarization": [
             0.0,
@@ -391,7 +377,7 @@
           ],
           "target": 0
         },
-        "duration": 8e-07
+        "duration": 1e-06
       }
     ]
   }
