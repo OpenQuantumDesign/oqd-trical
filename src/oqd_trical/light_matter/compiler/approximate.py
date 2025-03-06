@@ -101,11 +101,21 @@ class SecondOrderLambDickeApprox(RewriteRule):
 
 
 class _GetMathExprBounds(ConversionRule):
+    def __init__(self, start_time, duration):
+        super().__init__()
+
+        self.start_time = start_time
+        self.duration = duration
+        self.end_time = self.start_time + self.duration
+
     def map_MathVar(self, model, operands):
-        if model.name in ["s", "t"]:
-            return ((0, np.inf), (0, 0))
-        else:
-            return ((0, np.inf), (0, np.inf))
+        if model.name == "s":
+            return ((0, self.duration), (0, 0))
+
+        if model.name == "t":
+            return ((self.start_time, self.end_time), (0, 0))
+
+        return ((0, np.inf), (0, np.inf))
 
     def map_MathNum(self, model, operands):
         return ((np.abs(model.value), np.abs(model.value)), (0, 0))
@@ -202,6 +212,29 @@ class _GetMathExprBounds(ConversionRule):
         return ((0, np.inf), (0, np.inf))
 
 
+class _RotatingWaveApproxHelper(RewriteRule):
+    def __init__(self, cutoff, start_time, duration):
+        super().__init__()
+
+        self.cutoff = cutoff
+        self.start_time = start_time
+        self.duration = duration
+
+    def map_WaveCoefficient(self, model):
+        if (
+            isinstance(model.frequency, MathNum)
+            and np.abs(model.frequency.value) > self.cutoff
+        ):
+            return ConstantCoefficient(value=0)
+
+        bounds = Post(
+            _GetMathExprBounds(start_time=self.start_time, duration=self.duration)
+        )(model.frequency)
+
+        if bounds[0][0] > self.cutoff:
+            return ConstantCoefficient(value=0)
+
+
 class RotatingWaveApprox(RewriteRule):
     """
     Applies the rotating wave approximation.
@@ -217,18 +250,19 @@ class RotatingWaveApprox(RewriteRule):
         super().__init__()
 
         self.cutoff = cutoff
+        self.current_time = 0
 
-    def map_WaveCoefficient(self, model):
-        if (
-            isinstance(model.frequency, MathNum)
-            and np.abs(model.frequency.value) > self.cutoff
-        ):
-            return ConstantCoefficient(value=0)
+    def map_AtomicEmulatorGate(self, model):
+        hamiltonian = Post(
+            _RotatingWaveApproxHelper(
+                cutoff=self.cutoff,
+                start_time=self.current_time,
+                duration=model.duration,
+            )
+        )(model.hamiltonian)
 
-        bounds = Post(_GetMathExprBounds())(model.frequency)
-
-        if bounds[0][0] > self.cutoff:
-            return ConstantCoefficient(value=0)
+        self.current_time += model.duration
+        return model.__class__(hamiltonian=hamiltonian, duration=model.duration)
 
 
 ########################################################################################
