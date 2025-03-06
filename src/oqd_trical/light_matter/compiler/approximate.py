@@ -100,10 +100,106 @@ class SecondOrderLambDickeApprox(RewriteRule):
 ########################################################################################
 
 
-class _GetMathBounds(RewriteRule):
-    def __init__(self):
-        super().__init__()
-        raise NotImplementedError
+class _GetMathExprBounds(ConversionRule):
+    def map_MathVar(self, model, operands):
+        if model.name in ["s", "t"]:
+            return ((0, np.inf), (0, 0))
+        else:
+            return ((0, np.inf), (0, np.inf))
+
+    def map_MathNum(self, model, operands):
+        return ((np.abs(model.value), np.abs(model.value)), (0, 0))
+
+    def map_MathImag(self, model, operands):
+        return ((0, 0), (1, 1))
+
+    def map_MathAdd(self, model, operands):
+        bound1 = operands["expr1"]
+        bound2 = operands["expr2"]
+
+        if bound1[0][1] < bound2[0][0]:
+            real_lower_bound = bound2[0][0] - bound1[0][1]
+        elif bound2[0][1] < bound1[0][0]:
+            real_lower_bound = bound1[0][0] - bound2[0][1]
+        else:
+            real_lower_bound = np.float64(0)
+
+        if bound1[1][1] < bound2[1][0]:
+            imag_lower_bound = bound2[1][0] - bound1[1][1]
+        elif bound2[1][1] < bound1[1][0]:
+            imag_lower_bound = bound1[1][0] - bound2[1][1]
+        else:
+            imag_lower_bound = np.float64(0)
+
+        return (
+            (real_lower_bound, bound1[0][1] + bound2[0][1]),
+            (imag_lower_bound, bound1[1][1] + bound2[1][0]),
+        )
+
+    def map_MathMul(self, model, operands):
+        bound1 = operands["expr1"]
+        bound2 = operands["expr2"]
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
+
+            if bound1[0][1] * bound2[0][1] < bound1[1][0] * bound2[1][0]:
+                real_lower_bound = (
+                    bound2[1][0] * bound2[1][0] - bound1[0][1] * bound1[0][1]
+                )
+            elif bound1[1][1] * bound2[1][1] < bound1[0][0] * bound2[0][0]:
+                real_lower_bound = (
+                    bound2[0][0] * bound2[0][0] - bound1[1][1] * bound1[1][1]
+                )
+            else:
+                real_lower_bound = np.float64(0)
+
+            if bound1[0][1] * bound2[1][1] < bound1[1][0] * bound2[0][0]:
+                imag_lower_bound = (
+                    bound1[1][0] * bound2[0][0] - bound1[0][1] * bound2[1][1]
+                )
+            elif bound1[1][1] * bound2[0][1] < bound1[0][0] * bound2[1][0]:
+                imag_lower_bound = (
+                    bound1[0][0] * bound2[1][0] - bound1[1][1] * bound2[0][1]
+                )
+            else:
+                imag_lower_bound = np.float64(0)
+
+            return (
+                (
+                    real_lower_bound,
+                    np.nan_to_num(
+                        bound1[0][1] * bound2[0][1] + bound1[1][1] * bound2[1][1],
+                        nan=0,
+                        posinf=np.inf,
+                    ),
+                ),
+                (
+                    imag_lower_bound,
+                    np.nan_to_num(
+                        bound1[0][1] * bound2[1][1] + bound1[1][1] * bound2[0][1],
+                        nan=0,
+                        posinf=np.inf,
+                    ),
+                ),
+            )
+
+    def map_MathPow(self, model, operands):
+        if operands["expr1"][1] == (0, 0) and operands["expr2"][0] == (0, 0):
+            return operands["expr1"]
+
+        return ((0, np.inf), (0, np.inf))
+
+    def map_MathFunc(self, model, operands):
+        if model.func in ["cos", "sin"]:
+            if operands["expr"][1] == (0, 0):
+                return ((0, 1), (0, 0))
+
+        if model.func in ["exp"]:
+            if operands["expr"][0] != (0, 0):
+                return ((0, 1), (0, 0))
+
+        return ((0, np.inf), (0, np.inf))
 
 
 class RotatingWaveApprox(RewriteRule):
@@ -127,6 +223,11 @@ class RotatingWaveApprox(RewriteRule):
             isinstance(model.frequency, MathNum)
             and np.abs(model.frequency.value) > self.cutoff
         ):
+            return ConstantCoefficient(value=0)
+
+        bounds = Post(_GetMathExprBounds())(model.frequency)
+
+        if bounds[0][0] > self.cutoff:
             return ConstantCoefficient(value=0)
 
 
