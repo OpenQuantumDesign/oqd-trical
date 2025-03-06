@@ -19,6 +19,7 @@ from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRul
 from oqd_core.compiler.math.rules import (
     DistributeMathExpr,
     ProperOrderMathExpr,
+    PruneMathExpr,
     SimplifyMathExpr,
 )
 from oqd_core.interface.atomic import ParallelProtocol, SequentialProtocol
@@ -546,6 +547,7 @@ def canonicalize_math_factory():
     return FixedPoint(
         Post(
             Chain(
+                PruneMathExpr(),
                 PruneZeroPowers(),
                 SimplifyMathExpr(),
                 DistributeMathExpr(),
