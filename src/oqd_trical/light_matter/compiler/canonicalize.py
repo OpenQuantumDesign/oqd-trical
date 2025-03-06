@@ -19,10 +19,20 @@ from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRul
 from oqd_core.compiler.math.rules import (
     DistributeMathExpr,
     ProperOrderMathExpr,
+    PruneMathExpr,
     SimplifyMathExpr,
 )
 from oqd_core.interface.atomic import ParallelProtocol, SequentialProtocol
-from oqd_core.interface.math import MathExpr, MathNum, MathVar
+from oqd_core.interface.math import (
+    MathAdd,
+    MathExpr,
+    MathFunc,
+    MathImag,
+    MathMul,
+    MathNum,
+    MathPow,
+    MathVar,
+)
 
 from oqd_trical.light_matter.interface.operator import (
     CoefficientAdd,
@@ -541,17 +551,94 @@ class ResolveRelativeTime(RewriteRule):
 ########################################################################################
 
 
+class PartitionMathExpr(RewriteRule):
+    """
+    This separates real and complex portions of [`MathExpr`][oqd_core.interface.math.MathExpr] objects.
+
+    Args:
+        model (MathExpr): The rule only acts on [`MathExpr`][oqd_core.interface.math.MathExpr] objects.
+
+    Returns:
+        model (MathExpr):
+
+    Assumptions:
+        [`DistributeMathExpr`][oqd_core.compiler.math.rules.DistributeMathExpr],
+        [`ProperOrderMathExpr`][oqd_core.compiler.math.rules.ProperOrderMathExpr]
+
+    Example:
+        - MathStr(string = '1 + 1j + 2') => MathStr(string = '1 + 2 + 1j')
+        - MathStr(string = '1 * 1j * 2') => MathStr(string = '1j * 1 * 2')
+    """
+
+    def map_MathAdd(self, model):
+        priority = dict(
+            MathImag=5, MathNum=4, MathVar=3, MathFunc=2, MathPow=1, MathMul=0
+        )
+
+        if isinstance(
+            model.expr2, (MathImag, MathNum, MathVar, MathFunc, MathPow, MathMul)
+        ):
+            if isinstance(model.expr1, MathAdd):
+                if (
+                    priority[model.expr2.__class__.__name__]
+                    > priority[model.expr1.expr2.__class__.__name__]
+                ):
+                    return MathAdd(
+                        expr1=MathAdd(expr1=model.expr1.expr1, expr2=model.expr2),
+                        expr2=model.expr1.expr2,
+                    )
+            else:
+                if (
+                    priority[model.expr2.__class__.__name__]
+                    > priority[model.expr1.__class__.__name__]
+                ):
+                    return MathAdd(
+                        expr1=model.expr2,
+                        expr2=model.expr1,
+                    )
+
+    def map_MathMul(self, model: MathMul):
+        priority = dict(MathImag=4, MathNum=3, MathVar=2, MathFunc=1, MathPow=0)
+
+        if isinstance(model.expr2, (MathImag, MathNum, MathVar, MathFunc, MathPow)):
+            if isinstance(model.expr1, MathMul):
+                if (
+                    priority[model.expr2.__class__.__name__]
+                    > priority[model.expr1.expr2.__class__.__name__]
+                ):
+                    return MathMul(
+                        expr1=MathMul(expr1=model.expr1.expr1, expr2=model.expr2),
+                        expr2=model.expr1.expr2,
+                    )
+            else:
+                if (
+                    priority[model.expr2.__class__.__name__]
+                    > priority[model.expr1.__class__.__name__]
+                ):
+                    return MathMul(
+                        expr1=model.expr2,
+                        expr2=model.expr1,
+                    )
+
+
+########################################################################################
+
+
 def canonicalize_math_factory():
     """Creates a new instance of the canonicalization pass for math expressions"""
-    return FixedPoint(
-        Post(
-            Chain(
-                PruneZeroPowers(),
-                SimplifyMathExpr(),
-                DistributeMathExpr(),
-                ProperOrderMathExpr(),
+    return Chain(
+        FixedPoint(
+            Post(
+                Chain(
+                    PruneMathExpr(),
+                    PruneZeroPowers(),
+                    SimplifyMathExpr(),
+                    DistributeMathExpr(),
+                    ProperOrderMathExpr(),
+                )
             )
-        )
+        ),
+        FixedPoint(Post(PartitionMathExpr())),
     )
 
 
