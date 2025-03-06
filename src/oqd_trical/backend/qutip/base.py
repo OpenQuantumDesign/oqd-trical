@@ -95,8 +95,14 @@ class QutipBackend(BackendBase):
         _hilbert_space = hilbert_space.hilbert_space
         for k in _hilbert_space.keys():
             if k[0] == "P":
-                _hilbert_space[k] = set(range(fock_cutoff))
+                if isinstance(fock_cutoff, int):
+                    _hilbert_space[k] = set(range(fock_cutoff))
+                else:
+                    _hilbert_space[k] = set(range(fock_cutoff[k]))
         hilbert_space = HilbertSpace(hilbert_space=_hilbert_space)
+
+        if any(map(lambda x: x is None, hilbert_space.hilbert_space.values())):
+            raise "Hilbert space not fully specified."
 
         relabeller = Post(RelabelStates(hilbert_space.get_relabel_rules()))
         intermediate = relabeller(intermediate)
