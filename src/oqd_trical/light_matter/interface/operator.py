@@ -272,6 +272,10 @@ class PrunedOperator(Operator):
     pass
 
 
+def Number(*, subsystem):
+    return Creation(subsystem=subsystem) * Annihilation(subsystem=subsystem)
+
+
 ########################################################################################
 
 
