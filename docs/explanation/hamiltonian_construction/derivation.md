@@ -11,8 +11,7 @@ Derive the [general Hamiltonian](#eqn:general_hamiltonian) of the trapped-ion sy
 - $M$ lasers
 - $L$ phonon modes
 
-Implemented with [ConstructHamiltonian][oqd_trical.light_matter.compiler.codegen.ConstructHamiltonian]
-
+Implemented with [ConstructHamiltonian][oqd_trical.light_matter.compiler.codegen.ConstructHamiltonian] for the full Hamiltonian without any of the approximations used below.
 ///
 
 ## Simple 2-level Ion System
@@ -77,7 +76,7 @@ $$
 <!-- prettier-ignore -->
 /// admonition | Note
     type: note
-The computation of the matrix elements: $\langle 1|\vec{r}_e \cdot \vec{\epsilon}_l | 0\rangle$, for dipole and quadropole transitions is described [here](/explanation/hamiltonian_construction/matrix_elements).
+The computation of the matrix elements: $\langle 1|\vec{r}_e \cdot \vec{\epsilon}_l | 0\rangle$, for dipole and quadropole transitions is described [here](matrix_elements.md).
 ///
 
 ### Interaction Picture for Spin

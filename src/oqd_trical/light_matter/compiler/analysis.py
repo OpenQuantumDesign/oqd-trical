@@ -21,17 +21,28 @@ from pydantic import ConfigDict
 
 
 class HilbertSpace(TypeReflectBaseModel):
+    """
+    Represents a Hilbert space.
+
+    Attributes:
+        hilbert_space (Dict[str, Optional[Set[int]]]): Hilbert space for the AtomicEmulatorCircuit
+        size (Dict[str, int]): Hilbert space for the AtomicEmulatorCircuit
+    """
+
     model_config = ConfigDict(frozen=True)
     hilbert_space: Dict[str, Optional[Set[int]]]
 
     @property
     def size(self):
         return {
-            k: len(v) if isinstance(v, set) else v
+            k: len(v) if isinstance(v, set) else 0
             for k, v in self.hilbert_space.items()
         }
 
     def get_relabel_rules(self):
+        """
+        Retrieves a relabeling scheme for the Hilbert space.
+        """
         relabel_rules = {}
         for k, v in self.hilbert_space.items():
             if k[0] == "E":
@@ -40,6 +51,13 @@ class HilbertSpace(TypeReflectBaseModel):
 
 
 class GetHilbertSpace(RewriteRule):
+    """
+    Retrieves the Hilbert space for an AtomicEmulatorCircuit.
+
+    Attributes:
+        hilbert_space (HilbertSpace): Hilbert space for the AtomicEmulatorCircuit
+    """
+
     def __init__(self):
         self._hilbert_space = {}
 
