@@ -119,21 +119,27 @@ class QuantumOpticsBackend(BackendBase):
         Returns:
             result (Dict[str,Any]): Result of execution of [`QuantumOpticsExperiment`][oqd_trical.backend.quantumoptics.interface.QuantumOpticsExperiment].
         """
+
+        with open("__experiment.jl", "w") as f:
+            f.write(experiment)
+
         if project:
-            subprocess.run(
-                ["julia", f"--project={project}", "-e", experiment],
+            p = subprocess.run(
+                ["julia", f"--project={project}", "__experiment.jl"],
                 capture_output=True,
                 text=True,
             )
         else:
-            subprocess.run(
-                ["julia", "-e", experiment],
+            p = subprocess.run(
+                ["julia", "__experiment.jl"],
                 capture_output=True,
                 text=True,
             )
 
-        tspan = np.load("times.npz")
-        states = np.load("states.npz")
+        print(p.stdout, p.stderr)
+
+        tspan = np.load("__times.npz")
+        states = np.load("__states.npz")
 
         states = states.reshape(
             -1,
@@ -146,8 +152,9 @@ class QuantumOpticsBackend(BackendBase):
         )
         states = states.reshape(states.shape[0], -1)
 
-        os.remove("times.npz")
-        os.remove("states.npz")
+        os.remove("__times.npz")
+        os.remove("__states.npz")
+        os.remove("__experiment.jl")
 
         return dict(
             tspan=tspan,
