@@ -107,7 +107,13 @@ class QuantumOpticsBackend(BackendBase):
 
         return experiment, hilbert_space
 
-    def run(self, experiment, hilbert_space, *, project="."):
+    def run(
+        self,
+        experiment,
+        hilbert_space,
+        *,
+        julia_options=dict(home=None, project=None, sysimage=None),
+    ):
         """
         Runs a [`QuantumOpticsExperiment`][oqd_trical.backend.quantumoptics.interface.QuantumOpticsExperiment].
 
@@ -123,20 +129,23 @@ class QuantumOpticsBackend(BackendBase):
         with open("__experiment.jl", "w") as f:
             f.write(experiment)
 
-        if project:
-            p = subprocess.run(
-                ["julia", f"--project={project}", "__experiment.jl"],
-                capture_output=True,
-                text=True,
-            )
-        else:
-            p = subprocess.run(
-                ["julia", "__experiment.jl"],
-                capture_output=True,
-                text=True,
-            )
+        command = ["julia"]
+        if "home" in julia_options.keys() and julia_options["home"]:
+            command.append("--home", julia_options["home"])
+        if "project" in julia_options.keys() and julia_options["project"]:
+            command.append(f"--project={julia_options['project']}")
+        if "sysimage" in julia_options.keys() and julia_options["sysimage"]:
+            command.extend(["--sysimage", julia_options["sysimage"]])
+        command.append("__experiment.jl")
 
-        print(p.stdout, p.stderr)
+        p = subprocess.run(args=command, capture_output=True, text=True)
+
+        if p.stdout:
+            header = "{:=^100}".format(" stdout ")
+            print(f"{header}\n{p.stdout}")
+        if p.stderr:
+            header = "{:=^100}".format(" stderr ")
+            print(f"{header}\n{p.stderr}")
 
         tspan = np.load("__times.npz")
         states = np.load("__states.npz")
@@ -152,9 +161,9 @@ class QuantumOpticsBackend(BackendBase):
         )
         states = states.reshape(states.shape[0], -1)
 
+        os.remove("__experiment.jl")
         os.remove("__times.npz")
         os.remove("__states.npz")
-        os.remove("__experiment.jl")
 
         return dict(
             tspan=tspan,

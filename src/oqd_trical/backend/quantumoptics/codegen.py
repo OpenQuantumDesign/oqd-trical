@@ -43,12 +43,14 @@ class QuantumOpticsCodeGeneration(ConversionRule):
 using QuantumOptics
 using NPZ
 
+@time begin
 psi_0 = {self.initial_state}
 
 times = [0.0]
 states = [psi_0]
 
 {gates}
+end
 
 states = map(s->s.data, states)
 states = transpose(hcat(states...))
@@ -59,7 +61,10 @@ npzwrite("__states.npz", states)
 
     def map_AtomicEmulatorGate(self, model, operands):
         return f"""
-H = (t, psi) -> {operands["hamiltonian"]}
+function H(t, psi)
+{operands["hamiltonian"]}
+end
+
 tspan = LinRange(0, {model.duration}, 101) .+ times[end]
 
 tout, psi_t = timeevolution.schroedinger_dynamic(tspan, states[end], H)
