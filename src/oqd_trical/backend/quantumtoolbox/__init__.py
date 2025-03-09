@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .codegen import QuantumToolboxCodeGeneration
+from oqd_trical.backend.quantumtoolbox.base import QuantumToolboxBackend
+from oqd_trical.backend.quantumtoolbox.codegen import QuantumToolboxCodeGeneration
 
-__all__ = ["QuantumToolboxCodeGeneration"]
+__all__ = [
+    "QuantumToolboxBackend",
+    "QuantumToolboxCodeGeneration",
+]

@@ -15,6 +15,7 @@
 from . import dynamiqs, qutip
 from .dynamiqs import DynamiqsBackend
 from .quantumoptics import QuantumOpticsBackend
+from .quantumtoolbox import QuantumToolboxBackend
 from .qutip import QutipBackend
 
 __all__ = [
@@ -23,4 +24,5 @@ __all__ = [
     "DynamiqsBackend",
     "QutipBackend",
     "QuantumOpticsBackend",
+    "QuantumToolboxBackend",
 ]
