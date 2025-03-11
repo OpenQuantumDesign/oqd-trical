@@ -58,7 +58,7 @@ class QuantumToolboxBackend(BackendBase):
         self.solver = solver
         self.solver_options = solver_options
 
-    def compile(self, circuit, fock_cutoff):
+    def compile(self, circuit, *, timestep, fock_cutoff):
         """
         Compiles a AtomicCircuit or AtomicEmulatorCircuit to a [`QuantumToolboxExperiment`][oqd_trical.backend.quantumtoolbox.interface.QuantumToolboxExperiment].
 
@@ -102,7 +102,9 @@ class QuantumToolboxBackend(BackendBase):
         if self.save_intermediate:
             self.intermediate = intermediate
 
-        compiler_p3 = Post(QuantumToolboxCodeGeneration(hilbert_space=hilbert_space))
+        compiler_p3 = Post(
+            QuantumToolboxCodeGeneration(hilbert_space=hilbert_space, timestep=timestep)
+        )
         experiment = compiler_p3(intermediate)
 
         return experiment, hilbert_space

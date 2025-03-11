@@ -16,17 +16,17 @@
 from oqd_compiler_infrastructure import ConversionRule
 from oqd_core.interface.math import MathNum
 
-from oqd_trical.light_matter.compiler.analysis import HilbertSpace
 from oqd_trical.light_matter.interface.operator import WaveCoefficient
 
 ########################################################################################
 
 
 class QuantumToolboxCodeGeneration(ConversionRule):
-    def __init__(self, hilbert_space: HilbertSpace):
+    def __init__(self, hilbert_space, timestep):
         super().__init__()
 
         self.hilbert_space = hilbert_space
+        self.timestep = timestep
 
         _basis = ", ".join(
             [
@@ -63,7 +63,9 @@ npzwrite("__states.npz", states)
 
 H = {operands["hamiltonian"]}
 
-tspan = LinRange(0, {model.duration}, 101) .+ times[end]
+tspan = range(0, {model.duration}, step={self.timestep})
+if (tspan[end] != {model.duration}) push!(tspan, {model.duration}) end
+tspan = tspan .+ times[end]
 
 sol = sesolve(H, states[end], tspan)
 

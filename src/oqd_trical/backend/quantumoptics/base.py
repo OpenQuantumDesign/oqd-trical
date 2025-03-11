@@ -58,7 +58,7 @@ class QuantumOpticsBackend(BackendBase):
         self.solver = solver
         self.solver_options = solver_options
 
-    def compile(self, circuit, fock_cutoff):
+    def compile(self, circuit, *, timestep, fock_cutoff):
         """
         Compiles a AtomicCircuit or AtomicEmulatorCircuit to a [`QuantumOpticsExperiment`][oqd_trical.backend.quantumoptics.interface.QuantumOpticsExperiment].
 
@@ -102,7 +102,9 @@ class QuantumOpticsBackend(BackendBase):
         if self.save_intermediate:
             self.intermediate = intermediate
 
-        compiler_p3 = Post(QuantumOpticsCodeGeneration(hilbert_space=hilbert_space))
+        compiler_p3 = Post(
+            QuantumOpticsCodeGeneration(hilbert_space=hilbert_space, timestep=timestep)
+        )
         experiment = compiler_p3(intermediate)
 
         return experiment, hilbert_space
