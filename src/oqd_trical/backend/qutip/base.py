@@ -58,7 +58,7 @@ class QutipBackend(BackendBase):
         self.solver = solver
         self.solver_options = solver_options
 
-    def compile(self, circuit, fock_cutoff):
+    def compile(self, circuit, fock_cutoff, *, relabel=True):
         """
         Compiles a AtomicCircuit or AtomicEmulatorCircuit to a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
 
@@ -89,7 +89,11 @@ class QutipBackend(BackendBase):
 
         get_hilbert_space = GetHilbertSpace()
         analysis = Post(get_hilbert_space)
-        analysis(intermediate)
+
+        if relabel:
+            analysis(intermediate)
+        else:
+            analysis(circuit.system)
 
         hilbert_space = get_hilbert_space.hilbert_space
         _hilbert_space = hilbert_space.hilbert_space

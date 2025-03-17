@@ -16,6 +16,7 @@ from functools import partial, reduce
 from typing import Union
 
 from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRule
+from oqd_core.compiler.atomic.canonicalize import unroll_label_pass
 from oqd_core.compiler.math.rules import (
     DistributeMathExpr,
     ProperOrderMathExpr,
@@ -697,6 +698,7 @@ def canonicalize_emulator_circuit_factory():
 
 def canonicalize_atomic_circuit_factory():
     return Chain(
+        unroll_label_pass,
         Post(ResolveRelativeTime()),
         Post(ResolveNestedProtocol()),
     )
