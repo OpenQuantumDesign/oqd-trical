@@ -12,18 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from functools import reduce
+from functools import partial, reduce
 from typing import Union
 
 from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRule
+from oqd_core.compiler.atomic.canonicalize import unroll_label_pass
 from oqd_core.compiler.math.rules import (
     DistributeMathExpr,
     ProperOrderMathExpr,
+    PruneMathExpr,
     SimplifyMathExpr,
 )
-from oqd_core.interface.math import MathExpr, MathNum, MathVar
+from oqd_core.interface.atomic import ParallelProtocol, SequentialProtocol
+from oqd_core.interface.math import (
+    MathAdd,
+    MathExpr,
+    MathFunc,
+    MathImag,
+    MathMul,
+    MathNum,
+    MathPow,
+    MathVar,
+)
 
-########################################################################################
 from oqd_trical.light_matter.interface.operator import (
     CoefficientAdd,
     CoefficientMul,
@@ -240,6 +251,50 @@ class CoefficientAssociativity(RewriteRule):
         return model.__class__(coeff1=model.coeff1, coeff2=model.coeff2)
 
 
+class SortCoefficient(RewriteRule):
+    def map_CoefficientAdd(self, model):
+        if isinstance(model.coeff1, CoefficientAdd):
+            if isinstance(model.coeff2.frequency, MathNum) and not isinstance(
+                model.coeff1.coeff2.frequency, MathNum
+            ):
+                return (model.coeff1.coeff1 + model.coeff2) + model.coeff1.coeff2
+
+            if (
+                isinstance(model.coeff1.coeff2.frequency, MathNum)
+                and isinstance(model.coeff2.frequency, MathNum)
+                and model.coeff1.coeff2.frequency.value > model.coeff2.frequency.value
+            ):
+                return (model.coeff1.coeff1 + model.coeff2) + model.coeff1.coeff2
+
+            if model.coeff1.coeff2.frequency == model.coeff2.frequency and (
+                isinstance(model.coeff1.coeff2.phase, MathNum)
+                and isinstance(model.coeff2.phase, MathNum)
+                and model.coeff1.coeff2.phase.value > model.coeff2.phase.value
+            ):
+                return (model.coeff1.coeff1 + model.coeff2) + model.coeff1.coeff2
+
+            return
+
+        if isinstance(model.coeff2.frequency, MathNum) and not isinstance(
+            model.coeff1.frequency, MathNum
+        ):
+            return model.coeff2 + model.coeff1
+
+        if (
+            isinstance(model.coeff1.frequency, MathNum)
+            and isinstance(model.coeff2.frequency, MathNum)
+            and model.coeff1.frequency.value > model.coeff2.frequency.value
+        ):
+            return model.coeff2 + model.coeff1
+
+        if model.coeff1.frequency == model.coeff2.frequency and (
+            isinstance(model.coeff1.phase, MathNum)
+            and isinstance(model.coeff2.phase, MathNum)
+            and model.coeff1.phase.value > model.coeff2.phase.value
+        ):
+            return model.coeff2 + model.coeff1
+
+
 class CombineCoefficient(RewriteRule):
     def map_CoefficientMul(self, model):
         if isinstance(model.coeff1, WaveCoefficient) and isinstance(
@@ -262,6 +317,19 @@ class CombineCoefficient(RewriteRule):
                 amplitude=model.coeff1.amplitude + model.coeff2.amplitude,
                 frequency=model.coeff1.frequency,
                 phase=model.coeff1.phase,
+            )
+
+        if (
+            isinstance(model.coeff1, CoefficientAdd)
+            and isinstance(model.coeff1.coeff2, WaveCoefficient)
+            and isinstance(model.coeff2, WaveCoefficient)
+            and model.coeff1.coeff2.frequency == model.coeff2.frequency
+            and model.coeff1.coeff2.phase == model.coeff2.phase
+        ):
+            return model.coeff1.coeff1 + WaveCoefficient(
+                amplitude=model.coeff1.coeff2.amplitude + model.coeff2.amplitude,
+                frequency=model.coeff1.coeff2.frequency,
+                phase=model.coeff1.coeff2.phase,
             )
 
 
@@ -377,22 +445,238 @@ class SubstituteMathVar(RewriteRule):
             return self.substitution
 
 
+class ResolveNestedProtocol(RewriteRule):
+    def __init__(self):
+        super().__init__()
+
+        self.durations = []
+
+    @classmethod
+    def _get_continuous_duration(self, model):
+        if isinstance(model, ParallelProtocol):
+            if len(model.sequence) == 1:
+                return model.sequence[0].duration
+
+            return min(map(lambda x: x.duration, model.sequence))
+
+        if isinstance(model, SequentialProtocol):
+            return self._get_continuous_duration(model.sequence[0])
+
+        return model.duration
+
+    @classmethod
+    def _cut_protocol(cls, model, continuous_duration):
+        if isinstance(model, ParallelProtocol):
+            pairs = list(
+                map(
+                    partial(cls._cut_protocol, continuous_duration=continuous_duration),
+                    model.sequence,
+                )
+            )
+
+            cut = reduce(lambda x, y: x + y, map(lambda x: x[0], pairs))
+
+            remainder = [r for r in map(lambda x: x[1], pairs) if r is not None]
+
+            if remainder:
+                return cut, ParallelProtocol(sequence=remainder)
+
+            return cut, None
+
+        if isinstance(model, SequentialProtocol):
+            cut, remainder = cls._cut_protocol(
+                model.sequence[0], continuous_duration=continuous_duration
+            )
+
+            if remainder:
+                return cut, SequentialProtocol(
+                    sequence=[remainder, *model.sequence[1:]]
+                )
+            if model.sequence[1:]:
+                return cut, SequentialProtocol(sequence=model.sequence[1:])
+
+            return cut, None
+
+        cut = model.model_copy(deep=True)
+        if cut.duration == continuous_duration:
+            return [cut], None
+        cut.duration = continuous_duration
+
+        remainder = model.model_copy(deep=True)
+        remainder.duration = remainder.duration - continuous_duration
+
+        return [cut], remainder
+
+    def map_ParallelProtocol(self, model):
+        sequence = model.sequence
+
+        protocols = []
+        while sequence:
+            continuous_duration = min(map(self._get_continuous_duration, sequence))
+
+            pairs = list(
+                map(
+                    partial(
+                        self._cut_protocol, continuous_duration=continuous_duration
+                    ),
+                    sequence,
+                )
+            )
+
+            protocols.append(
+                ParallelProtocol(
+                    sequence=reduce(lambda x, y: x + y, map(lambda x: x[0], pairs))
+                )
+            )
+
+            sequence = [r for r in map(lambda x: x[1], pairs) if r is not None]
+
+        return SequentialProtocol(sequence=protocols)
+
+    def map_SequentialProtocol(self, model):
+        if len(model.sequence) == 1:
+            return model.sequence[0]
+
+        new_sequence = []
+        for subprotocol in model.sequence:
+            if isinstance(subprotocol, SequentialProtocol):
+                new_sequence.extend(
+                    list(
+                        map(
+                            lambda x: x
+                            if isinstance(x, ParallelProtocol)
+                            else ParallelProtocol(sequence=[x]),
+                            subprotocol.sequence,
+                        )
+                    )
+                )
+            elif isinstance(subprotocol, ParallelProtocol):
+                new_sequence.append(subprotocol)
+            else:
+                new_sequence.append(ParallelProtocol(sequence=[subprotocol]))
+        return model.__class__(sequence=new_sequence)
+
+    def map_Pulse(self, model):
+        return SequentialProtocol(sequence=[model])
+
+
 class ResolveRelativeTime(RewriteRule):
     def __init__(self):
         super().__init__()
 
-        self.current_t = 0
-
-    def map_AtomicEmulatorGate(self, model):
-        hamiltonian = Post(
+    def map_AtomicCircuit(self, model):
+        protocol = Post(
             SubstituteMathVar(
-                variable=MathVar(name="s"),
-                substitution=MathVar(name="t") - self.current_t,
+                variable=MathVar(name="s"), substitution=MathVar(name="t")
             )
-        )(model.hamiltonian)
+        )(model.protocol)
 
-        self.current_t += model.duration
-        return model.__class__(hamiltonian=hamiltonian, duration=model.duration)
+        return model.__class__(system=model.system, protocol=protocol)
+
+    @classmethod
+    def _get_duration(cls, model):
+        if isinstance(model, SequentialProtocol):
+            return reduce(
+                lambda x, y: x + y,
+                [cls._get_duration(p) for p in model.sequence],
+            )
+        if isinstance(model, ParallelProtocol):
+            return max(
+                *[cls._get_duration(p) for p in model.sequence],
+            )
+        return model.duration
+
+    def map_SequentialProtocol(self, model):
+        current_time = 0
+
+        new_sequence = []
+        for p in model.sequence:
+            duration = self._get_duration(p)
+
+            new_p = Post(
+                SubstituteMathVar(
+                    variable=MathVar(name="s"),
+                    substitution=MathVar(name="s") - current_time,
+                )
+            )(p)
+            new_sequence.append(new_p)
+
+            current_time += duration
+
+        return model.__class__(sequence=new_sequence)
+
+
+########################################################################################
+
+
+class PartitionMathExpr(RewriteRule):
+    """
+    This separates real and complex portions of [`MathExpr`][oqd_core.interface.math.MathExpr] objects.
+
+    Args:
+        model (MathExpr): The rule only acts on [`MathExpr`][oqd_core.interface.math.MathExpr] objects.
+
+    Returns:
+        model (MathExpr):
+
+    Assumptions:
+        [`DistributeMathExpr`][oqd_core.compiler.math.rules.DistributeMathExpr],
+        [`ProperOrderMathExpr`][oqd_core.compiler.math.rules.ProperOrderMathExpr]
+
+    Example:
+        - MathStr(string = '1 + 1j + 2') => MathStr(string = '1 + 2 + 1j')
+        - MathStr(string = '1 * 1j * 2') => MathStr(string = '1j * 1 * 2')
+    """
+
+    def map_MathAdd(self, model):
+        priority = dict(
+            MathImag=5, MathNum=4, MathVar=3, MathFunc=2, MathPow=1, MathMul=0
+        )
+
+        if isinstance(
+            model.expr2, (MathImag, MathNum, MathVar, MathFunc, MathPow, MathMul)
+        ):
+            if isinstance(model.expr1, MathAdd):
+                if (
+                    priority[model.expr2.__class__.__name__]
+                    > priority[model.expr1.expr2.__class__.__name__]
+                ):
+                    return MathAdd(
+                        expr1=MathAdd(expr1=model.expr1.expr1, expr2=model.expr2),
+                        expr2=model.expr1.expr2,
+                    )
+            else:
+                if (
+                    priority[model.expr2.__class__.__name__]
+                    > priority[model.expr1.__class__.__name__]
+                ):
+                    return MathAdd(
+                        expr1=model.expr2,
+                        expr2=model.expr1,
+                    )
+
+    def map_MathMul(self, model: MathMul):
+        priority = dict(MathImag=4, MathNum=3, MathVar=2, MathFunc=1, MathPow=0)
+
+        if isinstance(model.expr2, (MathImag, MathNum, MathVar, MathFunc, MathPow)):
+            if isinstance(model.expr1, MathMul):
+                if (
+                    priority[model.expr2.__class__.__name__]
+                    > priority[model.expr1.expr2.__class__.__name__]
+                ):
+                    return MathMul(
+                        expr1=MathMul(expr1=model.expr1.expr1, expr2=model.expr2),
+                        expr2=model.expr1.expr2,
+                    )
+            else:
+                if (
+                    priority[model.expr2.__class__.__name__]
+                    > priority[model.expr1.__class__.__name__]
+                ):
+                    return MathMul(
+                        expr1=model.expr2,
+                        expr2=model.expr1,
+                    )
 
 
 ########################################################################################
@@ -400,29 +684,36 @@ class ResolveRelativeTime(RewriteRule):
 
 def canonicalize_math_factory():
     """Creates a new instance of the canonicalization pass for math expressions"""
-    return FixedPoint(
-        Post(
-            Chain(
-                PruneZeroPowers(),
-                SimplifyMathExpr(),
-                DistributeMathExpr(),
-                ProperOrderMathExpr(),
+    return Chain(
+        FixedPoint(
+            Post(
+                Chain(
+                    PruneMathExpr(),
+                    PruneZeroPowers(),
+                    SimplifyMathExpr(),
+                    DistributeMathExpr(),
+                    ProperOrderMathExpr(),
+                )
             )
-        )
+        ),
+        FixedPoint(Post(PartitionMathExpr())),
     )
 
 
 def canonicalize_coefficient_factory():
     """Creates a new instance of the canonicalization pass for coefficients"""
-    return FixedPoint(
-        Post(
-            Chain(
-                PruneCoefficient(),
-                CoefficientDistributivity(),
-                CombineCoefficient(),
-                CoefficientAssociativity(),
+    return Chain(
+        FixedPoint(
+            Post(
+                Chain(
+                    PruneCoefficient(),
+                    CoefficientDistributivity(),
+                    CombineCoefficient(),
+                    CoefficientAssociativity(),
+                )
             )
-        )
+        ),
+        FixedPoint(Post(Chain(SortCoefficient(), CombineCoefficient()))),
     )
 
 
@@ -451,5 +742,12 @@ def canonicalize_emulator_circuit_factory():
         canonicalize_coefficient_factory(),
         canonicalize_math_factory(),
         Post(PruneOperator()),
+    )
+
+
+def canonicalize_atomic_circuit_factory():
+    return Chain(
+        unroll_label_pass,
         Post(ResolveRelativeTime()),
+        Post(ResolveNestedProtocol()),
     )
