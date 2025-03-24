@@ -251,6 +251,50 @@ class CoefficientAssociativity(RewriteRule):
         return model.__class__(coeff1=model.coeff1, coeff2=model.coeff2)
 
 
+class SortCoefficient(RewriteRule):
+    def map_CoefficientAdd(self, model):
+        if isinstance(model.coeff1, CoefficientAdd):
+            if isinstance(model.coeff2.frequency, MathNum) and not isinstance(
+                model.coeff1.coeff2.frequency, MathNum
+            ):
+                return (model.coeff1.coeff1 + model.coeff2) + model.coeff1.coeff2
+
+            if (
+                isinstance(model.coeff1.coeff2.frequency, MathNum)
+                and isinstance(model.coeff2.frequency, MathNum)
+                and model.coeff1.coeff2.frequency.value > model.coeff2.frequency.value
+            ):
+                return (model.coeff1.coeff1 + model.coeff2) + model.coeff1.coeff2
+
+            if model.coeff1.coeff2.frequency == model.coeff2.frequency and (
+                isinstance(model.coeff1.coeff2.phase, MathNum)
+                and isinstance(model.coeff2.phase, MathNum)
+                and model.coeff1.coeff2.phase.value > model.coeff2.phase.value
+            ):
+                return (model.coeff1.coeff1 + model.coeff2) + model.coeff1.coeff2
+
+            return
+
+        if isinstance(model.coeff2.frequency, MathNum) and not isinstance(
+            model.coeff1.frequency, MathNum
+        ):
+            return model.coeff2 + model.coeff1
+
+        if (
+            isinstance(model.coeff1.frequency, MathNum)
+            and isinstance(model.coeff2.frequency, MathNum)
+            and model.coeff1.frequency.value > model.coeff2.frequency.value
+        ):
+            return model.coeff2 + model.coeff1
+
+        if model.coeff1.frequency == model.coeff2.frequency and (
+            isinstance(model.coeff1.phase, MathNum)
+            and isinstance(model.coeff2.phase, MathNum)
+            and model.coeff1.phase.value > model.coeff2.phase.value
+        ):
+            return model.coeff2 + model.coeff1
+
+
 class CombineCoefficient(RewriteRule):
     def map_CoefficientMul(self, model):
         if isinstance(model.coeff1, WaveCoefficient) and isinstance(
@@ -273,6 +317,19 @@ class CombineCoefficient(RewriteRule):
                 amplitude=model.coeff1.amplitude + model.coeff2.amplitude,
                 frequency=model.coeff1.frequency,
                 phase=model.coeff1.phase,
+            )
+
+        if (
+            isinstance(model.coeff1, CoefficientAdd)
+            and isinstance(model.coeff1.coeff2, WaveCoefficient)
+            and isinstance(model.coeff2, WaveCoefficient)
+            and model.coeff1.coeff2.frequency == model.coeff2.frequency
+            and model.coeff1.coeff2.phase == model.coeff2.phase
+        ):
+            return model.coeff1.coeff1 + WaveCoefficient(
+                amplitude=model.coeff1.coeff2.amplitude + model.coeff2.amplitude,
+                frequency=model.coeff1.coeff2.frequency,
+                phase=model.coeff1.coeff2.phase,
             )
 
 
@@ -656,15 +713,18 @@ def canonicalize_math_factory():
 
 def canonicalize_coefficient_factory():
     """Creates a new instance of the canonicalization pass for coefficients"""
-    return FixedPoint(
-        Post(
-            Chain(
-                PruneCoefficient(),
-                CoefficientDistributivity(),
-                CombineCoefficient(),
-                CoefficientAssociativity(),
+    return Chain(
+        FixedPoint(
+            Post(
+                Chain(
+                    PruneCoefficient(),
+                    CoefficientDistributivity(),
+                    CombineCoefficient(),
+                    CoefficientAssociativity(),
+                )
             )
-        )
+        ),
+        FixedPoint(Post(Chain(SortCoefficient(), CombineCoefficient()))),
     )
 
 
