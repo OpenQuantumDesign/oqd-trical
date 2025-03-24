@@ -241,9 +241,6 @@ class RotatingWaveApprox(RewriteRule):
 
     Attributes:
         cutoff (float): Frequency cutoff above which approximation is applied.
-
-    Warning:
-        Currently not implmented!
     """
 
     def __init__(self, cutoff):
@@ -273,10 +270,7 @@ class RotatingReferenceFrame(RewriteRule):
     Moves to an interaction picture with a rotating frame of reference.
 
     Attributes:
-        frame (Operator): [`Operator`][oqd_trical.light_matter.interface.operator.Operator] that defines the rotating frame of reference.
-
-    Warning:
-        Currently not implmented!
+        frame (Operator): [`Operator`][oqd_trical.light_matter.interface.operator.Operator] that defines the rotating frame of reference
     """
 
     def __init__(self, frame_specs):
@@ -417,6 +411,13 @@ class _GetMatrixElements(ConversionRule):
 
 
 class AdiabaticElimination(RewriteRule):
+    """
+    Moves to an interaction picture with a rotating frame of reference.
+
+    Attributes:
+        eliminated_spec (Tuple[int,str]): Specification of state of a subsystem to eliminate.
+    """
+
     # TODO currently non universal formulation for AdiabaticElimination
     def __init__(self, eliminated_specs):
         super().__init__()

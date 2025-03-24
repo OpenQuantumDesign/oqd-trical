@@ -12,8 +12,4 @@ Install with pip:
 pip install .
 ```
 
-TrICal has a dependency on [oqd_compiler_infrastructure](https://github.com/OpenQuantumDesign/compiler_infrastructure), which can be installed with:
-
-```sh
-pip install git+https://github.com/OpenQuantumDesign/compiler_infrastructure.git
-```
+TrICal has a dependency on [oqd-compiler-infrastructure](https://github.com/OpenQuantumDesign/oqd-compiler-infrastructure) and [oqd-core](https://github.com/OpenQuantumDesign/oqd-core).
