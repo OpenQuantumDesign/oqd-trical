@@ -30,7 +30,6 @@ class AtomicEmulatorCircuit(TypeReflectBaseModel):
 
     Attributes:
         frame (Optional[Operator]): [`Operator`][oqd_trical.light_matter.interface.operator.Operator] that defines the rotating frame of reference.
-        base (Operator): Free Hamiltonian.
         sequence (List[AtomicEmulatorGate]): List of gates to apply.
 
     """
@@ -45,6 +44,7 @@ class AtomicEmulatorGate(TypeReflectBaseModel):
 
     Attributes:
         hamiltonian (Operator): Hamiltonian to evolve by.
+        dissipation (List[Operator]): Dissipation terms to apply.
         duration (float): Time to evolve for.
     """
 

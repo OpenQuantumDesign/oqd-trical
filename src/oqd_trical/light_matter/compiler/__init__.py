@@ -14,7 +14,10 @@
 
 from .analysis import GetHilbertSpace
 from .approximate import FirstOrderLambDickeApprox, SecondOrderLambDickeApprox
-from .canonicalize import canonicalize_emulator_circuit_factory
+from .canonicalize import (
+    canonicalize_atomic_circuit_factory,
+    canonicalize_emulator_circuit_factory,
+)
 from .codegen import ConstructHamiltonian
 from .utils import compute_matrix_element, intensity_from_laser, rabi_from_intensity
 from .visualization import (
@@ -35,4 +38,5 @@ __all__ = [
     "CoefficientPrinter",
     "CondensedOperatorPrettyPrint",
     "OperatorPrinter",
+    "canonicalize_atomic_circuit_factory",
 ]
