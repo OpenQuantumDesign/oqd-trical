@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from functools import reduce
+from functools import partial, reduce
 
 import numpy as np
 from oqd_compiler_infrastructure import ConversionRule, RewriteRule
@@ -26,6 +26,7 @@ from oqd_trical.light_matter.interface.emulator import (
     AtomicEmulatorGate,
 )
 from oqd_trical.light_matter.interface.operator import (
+    ConstantCoefficient,
     Displacement,
     Identity,
     KetBra,
@@ -302,6 +303,69 @@ class ConstructHamiltonian(ConversionRule):
 
     def map_SequentialProtocol(self, model, operands):
         return operands["sequence"]
+
+
+########################################################################################
+
+
+class ConstructDissipation(ConversionRule):
+    def map_System(self, model, operands):
+        self.N = len(model.ions)
+        self.M = len(model.modes)
+
+        ops = []
+
+        for n, ion in enumerate(model.ions):
+            ops.append(
+                reduce(
+                    ConstructDissipation.kron,
+                    [
+                        (
+                            self._map_Ion(ion, n)
+                            if i == n
+                            else Identity(
+                                subsystem=f"E{i}" if i < self.N else f"P{i - self.N}"
+                            )
+                        )
+                        for i in range(self.N + self.M)
+                    ],
+                )
+            )
+
+        ops = reduce(lambda x, y: x + y, ops)
+        return ops
+
+    @staticmethod
+    def kron(x, y):
+        if isinstance(x, list) and isinstance(y, list):
+            raise TypeError("Only one of x or y can be a list.")
+
+        if isinstance(x, list):
+            return list(map(partial(ConstructDissipation.kron, y=y), x))
+
+        if isinstance(y, list):
+            return list(map(partial(ConstructDissipation.kron, x), y))
+
+        return x @ y
+
+    def _map_Ion(self, model, index):
+        ops = []
+
+        for transition in model.transitions:
+            if transition.level1.energy < transition.level2.energy:
+                level1, level2 = transition.level1, transition.level2
+            else:
+                level1, level2 = transition.level2, transition.level1
+
+            ket = model.levels.index(level1)
+            bra = model.levels.index(level2)
+
+            ops.append(
+                ConstantCoefficient(value=np.sqrt(transition.einsteinA))
+                * KetBra(ket=ket, bra=bra, subsystem=f"E{index}")
+            )
+
+        return ops
 
 
 ########################################################################################
