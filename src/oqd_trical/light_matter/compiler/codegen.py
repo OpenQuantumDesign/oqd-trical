@@ -38,28 +38,31 @@ from oqd_trical.misc import constants as cst
 ########################################################################################
 
 
+def _kron(x, y):
+    if isinstance(x, list) and isinstance(y, list):
+        raise TypeError("Only one of x or y can be a list.")
+
+    if isinstance(x, list):
+        return list(map(partial(_kron, y=y), x))
+
+    if isinstance(y, list):
+        return list(map(partial(_kron, x), y))
+
+    return x @ y
+
+
+def _fill_operator(op, index, hilbert_space):
+    return reduce(
+        lambda x, y: x @ y,
+        [op if index == h else Identity(subsystem=h) for h in hilbert_space],
+    )
+
+
+########################################################################################
+
+
 class ConstructHamiltonian(ConversionRule):
     """Maps an AtomicCircuit to an AtomicEmulatorCircuit replaces laser descriptions of operations with Hamiltonian description of operations"""
-
-    @staticmethod
-    def kron(x, y):
-        if isinstance(x, list) and isinstance(y, list):
-            raise TypeError("Only one of x or y can be a list.")
-
-        if isinstance(x, list):
-            return list(map(partial(ConstructDissipation.kron, y=y), x))
-
-        if isinstance(y, list):
-            return list(map(partial(ConstructDissipation.kron, x), y))
-
-        return x @ y
-
-    @staticmethod
-    def _fill_operator(op, index, hilbert_space):
-        return reduce(
-            lambda x, y: x @ y,
-            [op if index == h else Identity(subsystem=h) for h in hilbert_space],
-        )
 
     def map_AtomicCircuit(self, model, operands):
         gates = (
@@ -98,14 +101,14 @@ class ConstructHamiltonian(ConversionRule):
 
         op = reduce(lambda x, y: x + y, ops)
 
-        op = ConstructHamiltonian._fill_operator(op, f"E{index}", self.hilbert_space)
+        op = _fill_operator(op, f"E{index}", self.hilbert_space)
         return op
 
     def _map_Phonon(self, model, index):
         op = WaveCoefficient(amplitude=model.energy, frequency=0, phase=0) * Number(
             subsystem=f"P{index}"
         )
-        op = ConstructHamiltonian._fill_operator(op, f"P{index}", self.hilbert_space)
+        op = _fill_operator(op, f"P{index}", self.hilbert_space)
         return op
 
     def map_Beam(self, model, operands):
@@ -118,7 +121,7 @@ class ConstructHamiltonian(ConversionRule):
         wavevector = angular_frequency * np.array(model.wavevector) / cst.c
 
         electronic_plus = [
-            ConstructHamiltonian._fill_operator(
+            _fill_operator(
                 WaveCoefficient(
                     amplitude=rabi_from_intensity(model, transition, I) / 2,
                     frequency=-angular_frequency,
@@ -142,7 +145,7 @@ class ConstructHamiltonian(ConversionRule):
             for transition in self.ions[model.target].transitions
         ]
         electronic_minus = [
-            ConstructHamiltonian._fill_operator(
+            _fill_operator(
                 WaveCoefficient(
                     amplitude=rabi_from_intensity(model, transition, I) / 2,
                     frequency=angular_frequency,
@@ -197,8 +200,8 @@ class ConstructHamiltonian(ConversionRule):
 
         return reduce(
             lambda x, y: x + y,
-            ConstructDissipation.kron(electronic_plus, displacement_plus)
-            + ConstructDissipation.kron(electronic_minus, displacement_minus),
+            _kron(electronic_plus, displacement_plus)
+            + _kron(electronic_minus, displacement_minus),
         )
 
     def map_Pulse(self, model, operands):
@@ -227,43 +230,15 @@ class ConstructHamiltonian(ConversionRule):
 
 class ConstructDissipation(ConversionRule):
     def map_System(self, model, operands):
-        self.N = len(model.ions)
-        self.M = len(model.modes)
+        N, M = len(model.ions), len(model.modes)
 
-        ops = []
+        self.hilbert_space = list(map(lambda i: f"E{i}", range(N))) + list(
+            map(lambda i: f"P{i}", range(M))
+        )
 
-        for n, ion in enumerate(model.ions):
-            ops.append(
-                reduce(
-                    ConstructDissipation.kron,
-                    [
-                        (
-                            self._map_Ion(ion, n)
-                            if i == n
-                            else Identity(
-                                subsystem=f"E{i}" if i < self.N else f"P{i - self.N}"
-                            )
-                        )
-                        for i in range(self.N + self.M)
-                    ],
-                )
-            )
-
+        ops = [self._map_Ion(ion, n) for n, ion in enumerate(model.ions)]
         ops = reduce(lambda x, y: x + y, ops)
         return ops
-
-    @staticmethod
-    def kron(x, y):
-        if isinstance(x, list) and isinstance(y, list):
-            raise TypeError("Only one of x or y can be a list.")
-
-        if isinstance(x, list):
-            return list(map(partial(ConstructDissipation.kron, y=y), x))
-
-        if isinstance(y, list):
-            return list(map(partial(ConstructDissipation.kron, x), y))
-
-        return x @ y
 
     def _map_Ion(self, model, index):
         ops = []
@@ -277,10 +252,14 @@ class ConstructDissipation(ConversionRule):
             ket = model.levels.index(level1)
             bra = model.levels.index(level2)
 
-            ops.append(
+            op = _fill_operator(
                 ConstantCoefficient(value=np.sqrt(transition.einsteinA))
-                * KetBra(ket=ket, bra=bra, subsystem=f"E{index}")
+                * KetBra(ket=ket, bra=bra, subsystem=f"E{index}"),
+                f"E{index}",
+                self.hilbert_space,
             )
+
+            ops.append(op)
 
         return ops
 
