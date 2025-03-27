@@ -33,8 +33,8 @@ dependencies = [
     "scipy",
     "sympy",
     "qutip",
-    "oqd_core@git+https://github.com/openquantumdesign/oqd-core",
-    "oqd_compiler_infrastructure@git+https://github.com/openquantumdesign/oqd-compiler-infrastructure",
+    "oqd-core@git+https://github.com/openquantumdesign/oqd-core@ion_species",
+    "oqd-compiler-infrastructure@git+https://github.com/openquantumdesign/oqd-compiler-infrastructure",
     "dynamiqs>=0.3.1",
 ]
 

@@ -407,10 +407,21 @@ class CombineTerms(RewriteRule):
         return model.__class__(frame=model.frame, sequence=model.sequence)
 
     def map_AtomicEmulatorGate(self, model):
-        combiner = _CombineTermsHelper()
-        Pre(combiner)(model)
+        hamiltonian_combiner = _CombineTermsHelper()
+        Pre(hamiltonian_combiner)(model.hamiltonian)
+        hamiltonian = hamiltonian_combiner.emit()
 
-        return model.__class__(hamiltonian=combiner.emit(), duration=model.duration)
+        dissipation = []
+        for D in model.dissipation:
+            dissipation_combiner = _CombineTermsHelper()
+            Pre(dissipation_combiner)(D)
+            dissipation.append(dissipation_combiner.emit())
+
+        return model.__class__(
+            hamiltonian=hamiltonian,
+            dissipation=dissipation,
+            duration=model.duration,
+        )
 
 
 class RelabelStates(RewriteRule):
