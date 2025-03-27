@@ -41,6 +41,26 @@ from oqd_trical.misc import constants as cst
 class ConstructHamiltonian(ConversionRule):
     """Maps an AtomicCircuit to an AtomicEmulatorCircuit replaces laser descriptions of operations with Hamiltonian description of operations"""
 
+    @staticmethod
+    def kron(x, y):
+        if isinstance(x, list) and isinstance(y, list):
+            raise TypeError("Only one of x or y can be a list.")
+
+        if isinstance(x, list):
+            return list(map(partial(ConstructDissipation.kron, y=y), x))
+
+        if isinstance(y, list):
+            return list(map(partial(ConstructDissipation.kron, x), y))
+
+        return x @ y
+
+    @staticmethod
+    def _fill_operator(op, index, hilbert_space):
+        return reduce(
+            lambda x, y: x @ y,
+            [op if index == h else Identity(subsystem=h) for h in hilbert_space],
+        )
+
     def map_AtomicCircuit(self, model, operands):
         gates = (
             [operands["protocol"]]
@@ -53,46 +73,18 @@ class ConstructHamiltonian(ConversionRule):
         return AtomicEmulatorCircuit(sequence=gates)
 
     def map_System(self, model, operands):
-        self.N = len(model.ions)
-        self.M = len(model.modes)
+        N, M = len(model.ions), len(model.modes)
+
+        self.hilbert_space = list(map(lambda i: f"E{i}", range(N))) + list(
+            map(lambda i: f"P{i}", range(M))
+        )
 
         self.ions = model.ions
         self.modes = model.modes
 
-        ops = []
-        for n, ion in enumerate(model.ions):
-            ops.append(
-                reduce(
-                    lambda x, y: x @ y,
-                    [
-                        (
-                            self._map_Ion(ion, n)
-                            if i == n
-                            else Identity(
-                                subsystem=f"E{i}" if i < self.N else f"P{i - self.N}"
-                            )
-                        )
-                        for i in range(self.N + self.M)
-                    ],
-                )
-            )
-
-        for m, mode in enumerate(model.modes):
-            ops.append(
-                reduce(
-                    lambda x, y: x @ y,
-                    [
-                        (
-                            self._map_Phonon(mode, m)
-                            if i == self.N + m
-                            else Identity(
-                                subsystem=f"E{i}" if i < self.N else f"P{i - self.N}"
-                            )
-                        )
-                        for i in range(self.N + self.M)
-                    ],
-                )
-            )
+        ops = [self._map_Ion(ion, n) for n, ion in enumerate(model.ions)] + [
+            self._map_Phonon(mode, m) for m, mode in enumerate(model.modes)
+        ]
 
         op = reduce(lambda x, y: x + y, ops)
         return op
@@ -105,12 +97,16 @@ class ConstructHamiltonian(ConversionRule):
         ]
 
         op = reduce(lambda x, y: x + y, ops)
+
+        op = ConstructHamiltonian._fill_operator(op, f"E{index}", self.hilbert_space)
         return op
 
     def _map_Phonon(self, model, index):
-        return WaveCoefficient(amplitude=model.energy, frequency=0, phase=0) * Number(
+        op = WaveCoefficient(amplitude=model.energy, frequency=0, phase=0) * Number(
             subsystem=f"P{index}"
         )
+        op = ConstructHamiltonian._fill_operator(op, f"P{index}", self.hilbert_space)
+        return op
 
     def map_Beam(self, model, operands):
         I = intensity_from_laser(model)  # noqa: E741
@@ -121,168 +117,89 @@ class ConstructHamiltonian(ConversionRule):
         )
         wavevector = angular_frequency * np.array(model.wavevector) / cst.c
 
-        ops = []
-        if self.modes:
-            displacement_plus = []
-            displacement_minus = []
-            for m, mode in enumerate(self.modes):
-                eta = np.dot(
-                    wavevector,
-                    mode.eigenvector[model.target * 3 : model.target * 3 + 3],
-                ) * np.sqrt(
-                    cst.hbar
-                    / (2 * self.ions[model.target].mass * cst.m_u * mode.energy)
+        electronic_plus = [
+            ConstructHamiltonian._fill_operator(
+                WaveCoefficient(
+                    amplitude=rabi_from_intensity(model, transition, I) / 2,
+                    frequency=-angular_frequency,
+                    phase=model.phase,
                 )
-
-                displacement_plus.append(
-                    Displacement(
-                        alpha=WaveCoefficient(
-                            amplitude=eta, frequency=0, phase=np.pi / 2
-                        ),
-                        subsystem=f"P{m}",
+                * (
+                    KetBra(
+                        ket=self.ions[model.target].levels.index(transition.level1),
+                        bra=self.ions[model.target].levels.index(transition.level2),
+                        subsystem=f"E{model.target}",
                     )
-                )
-                displacement_minus.append(
-                    Displacement(
-                        alpha=WaveCoefficient(
-                            amplitude=eta, frequency=0, phase=-np.pi / 2
-                        ),
-                        subsystem=f"P{m}",
+                    + KetBra(
+                        ket=self.ions[model.target].levels.index(transition.level2),
+                        bra=self.ions[model.target].levels.index(transition.level1),
+                        subsystem=f"E{model.target}",
                     )
+                ),
+                f"E{model.target}",
+                list(filter(lambda x: x[0] == "E", self.hilbert_space)),
+            )
+            for transition in self.ions[model.target].transitions
+        ]
+        electronic_minus = [
+            ConstructHamiltonian._fill_operator(
+                WaveCoefficient(
+                    amplitude=rabi_from_intensity(model, transition, I) / 2,
+                    frequency=angular_frequency,
+                    phase=-model.phase,
                 )
-
-            displacement_plus = reduce(lambda x, y: x @ y, displacement_plus)
-            displacement_minus = reduce(lambda x, y: x @ y, displacement_minus)
-
-            for transition in self.ions[model.target].transitions:
-                rabi = rabi_from_intensity(model, transition, I)
-
-                ops.append(
-                    (
-                        reduce(
-                            lambda x, y: x @ y,
-                            [
-                                (
-                                    WaveCoefficient(
-                                        amplitude=rabi / 2,
-                                        frequency=-angular_frequency,
-                                        phase=model.phase,
-                                    )
-                                    * (
-                                        KetBra(
-                                            ket=self.ions[model.target].levels.index(
-                                                transition.level1
-                                            ),
-                                            bra=self.ions[model.target].levels.index(
-                                                transition.level2
-                                            ),
-                                            subsystem=f"E{model.target}",
-                                        )
-                                        + KetBra(
-                                            ket=self.ions[model.target].levels.index(
-                                                transition.level2
-                                            ),
-                                            bra=self.ions[model.target].levels.index(
-                                                transition.level1
-                                            ),
-                                            subsystem=f"E{model.target}",
-                                        )
-                                    )
-                                    if i == model.target
-                                    else Identity(subsystem=f"E{i}")
-                                )
-                                for i in range(self.N)
-                            ],
-                        )
-                        @ displacement_plus
+                * (
+                    KetBra(
+                        ket=self.ions[model.target].levels.index(transition.level1),
+                        bra=self.ions[model.target].levels.index(transition.level2),
+                        subsystem=f"E{model.target}",
                     )
-                )
-
-                ops.append(
-                    (
-                        reduce(
-                            lambda x, y: x @ y,
-                            [
-                                (
-                                    WaveCoefficient(
-                                        amplitude=rabi / 2,
-                                        frequency=angular_frequency,
-                                        phase=-model.phase,
-                                    )
-                                    * (
-                                        KetBra(
-                                            ket=self.ions[model.target].levels.index(
-                                                transition.level1
-                                            ),
-                                            bra=self.ions[model.target].levels.index(
-                                                transition.level2
-                                            ),
-                                            subsystem=f"E{model.target}",
-                                        )
-                                        + KetBra(
-                                            ket=self.ions[model.target].levels.index(
-                                                transition.level2
-                                            ),
-                                            bra=self.ions[model.target].levels.index(
-                                                transition.level1
-                                            ),
-                                            subsystem=f"E{model.target}",
-                                        )
-                                    )
-                                    if i == model.target
-                                    else Identity(subsystem=f"E{i}")
-                                )
-                                for i in range(self.N)
-                            ],
-                        )
-                        @ displacement_minus
+                    + KetBra(
+                        ket=self.ions[model.target].levels.index(transition.level2),
+                        bra=self.ions[model.target].levels.index(transition.level1),
+                        subsystem=f"E{model.target}",
                     )
+                ),
+                f"E{model.target}",
+                list(filter(lambda x: x[0] == "E", self.hilbert_space)),
+            )
+            for transition in self.ions[model.target].transitions
+        ]
+
+        if not self.modes:
+            return reduce(lambda x, y: x + y, electronic_plus + electronic_minus)
+
+        displacement_plus = []
+        displacement_minus = []
+        for m, mode in enumerate(self.modes):
+            eta = np.dot(
+                wavevector,
+                mode.eigenvector[model.target * 3 : model.target * 3 + 3],
+            ) * np.sqrt(
+                cst.hbar / (2 * self.ions[model.target].mass * cst.m_u * mode.energy)
+            )
+
+            displacement_plus.append(
+                Displacement(
+                    alpha=WaveCoefficient(amplitude=eta, frequency=0, phase=np.pi / 2),
+                    subsystem=f"P{m}",
                 )
-
-        else:
-            for transition in self.ions[model.target].transitions:
-                rabi = rabi_from_intensity(model, transition, I)
-
-                ops.append(
-                    reduce(
-                        lambda x, y: x @ y,
-                        [
-                            (
-                                WaveCoefficient(
-                                    amplitude=rabi / 2,
-                                    frequency=angular_frequency,
-                                    phase=model.phase,
-                                )
-                                * (
-                                    KetBra(
-                                        ket=self.ions[model.target].levels.index(
-                                            transition.level1
-                                        ),
-                                        bra=self.ions[model.target].levels.index(
-                                            transition.level2
-                                        ),
-                                        subsystem=f"E{model.target}",
-                                    )
-                                    + KetBra(
-                                        ket=self.ions[model.target].levels.index(
-                                            transition.level2
-                                        ),
-                                        bra=self.ions[model.target].levels.index(
-                                            transition.level1
-                                        ),
-                                        subsystem=f"E{model.target}",
-                                    )
-                                )
-                                if i == model.target
-                                else Identity(subsystem=f"E{i}")
-                            )
-                            for i in range(self.N)
-                        ],
-                    )
+            )
+            displacement_minus.append(
+                Displacement(
+                    alpha=WaveCoefficient(amplitude=eta, frequency=0, phase=-np.pi / 2),
+                    subsystem=f"P{m}",
                 )
+            )
 
-        op = reduce(lambda x, y: x + y, ops)
-        return op
+        displacement_plus = reduce(lambda x, y: x @ y, displacement_plus)
+        displacement_minus = reduce(lambda x, y: x @ y, displacement_minus)
+
+        return reduce(
+            lambda x, y: x + y,
+            ConstructDissipation.kron(electronic_plus, displacement_plus)
+            + ConstructDissipation.kron(electronic_minus, displacement_minus),
+        )
 
     def map_Pulse(self, model, operands):
         return AtomicEmulatorGate(
