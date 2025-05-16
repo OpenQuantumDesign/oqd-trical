@@ -51,19 +51,21 @@ nav:
 
 theme:
   name: material
+  logo: img/oqd-icon.png
+  favicon: img/oqd-icon.png
 
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: teal
-      accent: pink
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: teal
-      accent: pink
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-night
         name: Switch to light mode
@@ -149,3 +151,4 @@ extra_javascript:
 extra_css:
   - stylesheets/headers.css
   - stylesheets/admonitions.css
+  - stylesheets/brand.css
