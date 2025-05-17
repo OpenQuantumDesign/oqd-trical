@@ -40,7 +40,11 @@ note = {Publisher: American Physical Society},
 pages = {1857--1881},
 file = {Full Text PDF:C\:\\Users\\Salieri\\Zotero\\storage\\VIPIQIPJ\\Cahill and Glauber - 1969 - Ordered Expansions in Boson Amplitude Operators.pdf:application/pdf},
 }
+```
 
+## Atomic Physics <div style="float:right;"> [![](https://img.shields.io/badge/Book-40C4FF)](https://academic.oup.com/book/52827?login=false) </div>
+
+```bib
 @book{foot_atomic_2005,
 title = {Atomic {Physics}},
 isbn = {978-0-19-850695-9},

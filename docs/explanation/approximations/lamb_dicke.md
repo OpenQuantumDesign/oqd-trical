@@ -1,3 +1,5 @@
+# Lamb-Dicke Approximation <div style="float:right;"> [![](https://img.shields.io/badge/Implementation-7C4DFF)][oqd_trical.light_matter.compiler.approximate.FirstOrderLambDickeApprox] </div>
+
 We saw in the derivation of the system Hamiltonian that the displacement operator on a motional mode is given by
 
 $$
@@ -96,7 +98,7 @@ $$
 <!-- prettier-ignore -->
 /// admonition | Note
     type: note
-The matrix elements are not computed until the abstract syntax tree representation is converted to a QuTiP-compatible object by the [QutipConversion][trical.backend.qutip.QutipConversion] rewrite rule.
+The matrix elements are not computed until the abstract syntax tree representation is converted to a QuTiP-compatible object by the [QutipCodeGeneration][oqd_trical.backend.qutip.codegen.QutipCodeGeneration] conversion rule.
 
 ///
 

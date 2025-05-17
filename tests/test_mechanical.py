@@ -12,9 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import interface
-from .base import DynamiqsBackend
-from .codegen import DynamiqsCodeGeneration
-from .vm import DynamiqsVM
 
-__all__ = ["DynamiqsBackend", "DynamiqsCodeGeneration", "DynamiqsVM", "interface"]
+########################################################################################
+
+
+class TestPotential:
+    pass
+
+
+class TestTrappedIons:
+    pass
+
+
+class TestSpinLattice:
+    pass

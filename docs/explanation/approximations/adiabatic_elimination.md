@@ -1,3 +1,5 @@
+# Adiabatic Elimination <div style="float:right;"> [![](https://img.shields.io/badge/Implementation-7C4DFF)][oqd_trical.light_matter.compiler.approximate.AdiabaticElimination] </div>
+
 The adiabatic elimination step serves to ignore negligible physics that may result in long simulation run times or simulations being aborted entirely by QuTiP.
 
 ## Single-Photon Adiabatic Elimination
@@ -8,7 +10,7 @@ A simple example of this in action is a three level system $|0\rangle, |1\rangle
 
 It also predicts that $\Delta_{0002}$ and $\Delta_{0012}$ will be large since the laser is far-detuned from these transitions (refer to Section 2.1 for subscript meanings). Because the probability $P$ of exciting the transition goes as $\frac{\Omega^2}{\Delta^2}$ for large $\Delta$, we expect transitions into level 2 to be extremely unlikely.
 
-As such, a RewriteRule named [PureElimination][trical.light_matter.compiler.rule.adiabatic_elimination.PureElimination] is tasked with traversing the Hamiltonian tree, and if $\Omega_{00ij}^2 / \Delta_{00ij}^2 \ll$ than the user-defined threshold, it will remove all terms coupling levels $i$ and $j$ ($|i\rangle\langle j|$). This has the same effect as simply removing $|2\rangle$ from the Hilbert space entirely as far as levels 0 and 1 are concerned.
+As such, a RewriteRule named [AdiabaticElimination][oqd_trical.light_matter.compiler.approximate.AdiabaticElimination] is tasked with traversing the Hamiltonian tree, and if $\Omega_{00ij}^2 / \Delta_{00ij}^2 \ll$ than the user-defined threshold, it will remove all terms coupling levels $i$ and $j$ ($|i\rangle\langle j|$). This has the same effect as simply removing $|2\rangle$ from the Hilbert space entirely as far as levels 0 and 1 are concerned.
 
 ## Raman Transitions
 

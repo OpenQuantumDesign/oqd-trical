@@ -12,14 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from . import utils
 from .analysis import GetHilbertSpace
-from .approximate import FirstOrderLambDickeApprox, SecondOrderLambDickeApprox
+from .approximate import (
+    AdiabaticElimination,
+    FirstOrderLambDickeApprox,
+    RotatingReferenceFrame,
+    RotatingWaveApprox,
+    SecondOrderLambDickeApprox,
+    adiabatic_elimination_factory,
+)
 from .canonicalize import (
     canonicalize_atomic_circuit_factory,
     canonicalize_emulator_circuit_factory,
 )
 from .codegen import ConstructHamiltonian
-from .utils import compute_matrix_element, intensity_from_laser, rabi_from_intensity
 from .visualization import (
     CoefficientPrinter,
     CondensedOperatorPrettyPrint,
@@ -32,11 +39,13 @@ __all__ = [
     "SecondOrderLambDickeApprox",
     "canonicalize_emulator_circuit_factory",
     "ConstructHamiltonian",
-    "compute_matrix_element",
-    "intensity_from_laser",
-    "rabi_from_intensity",
     "CoefficientPrinter",
     "CondensedOperatorPrettyPrint",
     "OperatorPrinter",
+    "AdiabaticElimination",
+    "RotatingReferenceFrame",
+    "RotatingWaveApprox",
+    "adiabatic_elimination_factory",
+    "utils",
     "canonicalize_atomic_circuit_factory",
 ]
