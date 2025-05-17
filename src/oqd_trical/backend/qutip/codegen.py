@@ -53,10 +53,16 @@ class QutipCodeGeneration(ConversionRule):
 
     def map_AtomicEmulatorGate(self, model, operands):
         if isinstance(operands["hamiltonian"], PrunedOperator):
-            return QutipGate(hamiltonian=None, duration=operands["duration"])
+            return QutipGate(
+                hamiltonian=None,
+                dissipation=operands["dissipation"],
+                duration=operands["duration"],
+            )
 
         return QutipGate(
-            hamiltonian=operands["hamiltonian"], duration=operands["duration"]
+            hamiltonian=operands["hamiltonian"],
+            dissipation=operands["dissipation"],
+            duration=operands["duration"],
         )
 
     def map_Identity(self, model, operands):

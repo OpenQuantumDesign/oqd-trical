@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import warnings
+
 import numpy as np
 from oqd_compiler_infrastructure import RewriteRule
-from qutip import MESolver, SESolver, basis, tensor
+from qutip import MESolver, SESolver, basis, identity, tensor
 
 ########################################################################################
 
@@ -78,20 +80,35 @@ class QutipVM(RewriteRule):
 
     def map_QutipGate(self, model):
         tspan = np.arange(0, model.duration, self.timestep)
-
         if tspan[-1] != model.duration:
             tspan = np.append(tspan, model.duration)
-
         tspan = tspan + self.tspan[-1]
 
         empty_hamiltonian = model.hamiltonian is None
-
-        if empty_hamiltonian:
+        empty_dissipation = model.dissipation == []
+        if empty_hamiltonian and empty_dissipation:
             self.tspan.extend(list(tspan[1:] + self.tspan[-1]))
             self.states.extend([self.current_state] * (len(tspan) - 1))
             return
 
-        solver = self.solver(model.hamiltonian, options=self.solver_options)
+        if model.dissipation and self.solver == SESolver:
+            warnings.warn(
+                "Experiment contains dissipation terms which SESolver will ignore."
+            )
+
+        if empty_hamiltonian:
+            hamiltonian = identity(
+                [self.hilbert_space.size[k] for k in self.hilbert_space.size.keys()]
+            )
+        else:
+            hamiltonian = model.hamiltonian
+
+        if self.solver == SESolver:
+            solver = self.solver(hamiltonian, options=self.solver_options)
+        else:
+            solver = self.solver(
+                hamiltonian, model.dissipation, options=self.solver_options
+            )
 
         res = solver.run(
             self.current_state,
