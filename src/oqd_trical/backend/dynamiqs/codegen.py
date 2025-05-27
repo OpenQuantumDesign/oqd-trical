@@ -133,6 +133,9 @@ class DynamiqsCodeGeneration(ConversionRule):
         if model.func == "conj":
             return lambda t: jnp.conj(operands["expr"](t))
 
+        if model.func == "abs":
+            return lambda t: jnp.abs(operands["expr"](t))
+
         raise ValueError(f"Unsupported function {model.func}")
 
     def map_MathAdd(self, model, operands):
