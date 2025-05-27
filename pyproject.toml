@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "oqd-trical"
 version = "0.1.0dev1"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<=3.12"
 readme = "README.md"
 license = { text = "Apache 2.0" }
 keywords = ["quantum", "computing", "compiler", "transpilation", "atomic"]
@@ -33,8 +33,8 @@ dependencies = [
     "scipy",
     "sympy",
     "qutip",
-    "oqd_core@git+https://github.com/openquantumdesign/oqd-core",
-    "oqd_compiler_infrastructure@git+https://github.com/openquantumdesign/oqd-compiler-infrastructure",
+    "oqd-core",
+    "oqd-compiler-infrastructure",
     "dynamiqs>=0.3.1",
 ]
 
@@ -55,6 +55,10 @@ include = ["oqd_trical*"]
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I"]
 fixable = ["ALL"]
+
+[tool.uv.sources]
+oqd-core = { git = "https://github.com/openquantumdesign/oqd-core", rev = "atomic" }
+oqd-compiler-infrastructure = { git = "https://github.com/openquantumdesign/oqd-compiler-infrastructure" }
 
 [dependency-groups]
 dev = ["jupyter>=1.1.1", "pre-commit>=4.1.0", "ruff>=0.9.6"]
