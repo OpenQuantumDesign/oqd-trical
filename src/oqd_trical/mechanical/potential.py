@@ -6,21 +6,39 @@ from jax import numpy as jnp
 
 ########################################################################################
 
+__all__ = [
+    "CoulombPotential",
+    "PolynomialPotential",
+    "HarmonicPotential",
+    "Potential",
+]
+
+
+########################################################################################
+
 
 class Potential:
+    _eps = 1e-15
+
     def __init__(self, phi):
-        self.phi = jax.jit(phi)
-        pass
+        self.phi = phi
+
+    @staticmethod
+    def set_epsilon(eps):
+        Potential._eps = eps
 
     def __call__(self, x):
+        x.at[jnp.where(x == 0)].set(self._eps)
         x = jnp.array(x, dtype=jnp.float32)
         return self.phi(x)
 
     def grad(self, x):
+        x.at[jnp.where(x == 0)].set(self._eps)
         x = jnp.array(x, dtype=jnp.float32)
         return jax.grad(self.phi)(x)
 
     def hessian(self, x):
+        x.at[jnp.where(x == 0)].set(self._eps)
         x = jnp.array(x, dtype=jnp.float32)
         return jax.hessian(self.phi)(x)
 
@@ -75,10 +93,12 @@ class PotentialScalarMul(Potential):
 class CoulombPotential(Potential):
     def __init__(self):
         def phi(x):
-            idcs = jnp.triu_indices(n=x.shape[-1], k=1)
+            if x.shape[0] == 1:
+                return jnp.zeros(())
 
-            D = jnp.linalg.norm(x[:, idcs[0]] - x[:, idcs[1]], axis=0)
+            idcs = jnp.triu_indices(n=x.shape[0], k=1)
 
+            D = 1 / jnp.linalg.norm(x[idcs[0]] - x[idcs[1]], axis=-1)
             return D.sum()
 
         super().__init__(phi)
@@ -98,12 +118,12 @@ class PolynomialPotential(Potential):
         exponent = jnp.array(
             jnp.meshgrid(
                 *[jnp.arange(s, dtype=jnp.int32) for s in alpha.shape], indexing="ij"
-            )
+            ),
+            dtype=jnp.int32,
         )
 
         return (
-            (x[:, None, None, None, :] ** exponent[..., None]).prod(0)
-            * alpha[..., None]
+            (x.reshape(*x.shape, *([1] * x.shape[-1])) ** exponent).prod(1) * alpha
         ).sum()
 
 
@@ -111,8 +131,10 @@ class HarmonicPotential(PolynomialPotential):
     def __init__(self, omega):
         self.omega = omega
 
-        alpha = jnp.zeros((3, 3, 3))
-        alpha = alpha.at[tuple(jnp.eye(3, dtype=int) * 2)].set(jnp.array([5, 5, 1]))
+        alpha = jnp.zeros([3] * len(omega))
+        alpha = alpha.at[tuple(jnp.eye(len(omega), dtype=int) * 2)].set(
+            jnp.array(self.omega)
+        )
 
         super().__init__(alpha)
 

@@ -27,7 +27,6 @@ classifiers = [
 ]
 
 dependencies = [
-    "autograd",
     "jax",
     "matplotlib",
     "numpy",
@@ -36,6 +35,8 @@ dependencies = [
     "oqd_core@git+https://github.com/openquantumdesign/oqd-core",
     "oqd_compiler_infrastructure@git+https://github.com/openquantumdesign/oqd-compiler-infrastructure",
     "dynamiqs>=0.3.1",
+    "sympy>=1.14.0",
+    "optax>=0.2.5",
 ]
 
 [project.optional-dependencies]

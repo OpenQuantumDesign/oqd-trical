@@ -1,15 +1,13 @@
 from .potential import (
     CoulombPotential,
-    GaussianOpticalPotential,
-    OpticalPotential,
+    HarmonicPotential,
     PolynomialPotential,
     Potential,
 )
 
 __all__ = [
-    "Potential",
     "CoulombPotential",
     "PolynomialPotential",
-    "OpticalPotential",
-    "GaussianOpticalPotential",
+    "HarmonicPotential",
+    "Potential",
 ]
