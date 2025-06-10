@@ -31,12 +31,32 @@ class DynamiqsVM(RewriteRule):
         solver_options (Dict[str,Any]): Dynamiqs solver options
     """
 
-    def __init__(self, hilbert_space, timestep, solver="SESolver", solver_options={}):
+    def __init__(
+        self,
+        hilbert_space,
+        timestep,
+        *,
+        initial_state=None,
+        solver="SESolver",
+        solver_options={},
+    ):
         self.hilbert_space = hilbert_space
         self.timestep = timestep
 
-        self.states = []
-        self.tspan = []
+        if initial_state:
+            if initial_state.dims != tuple(self.hilbert_space.size.values()):
+                raise ValueError("Initial state incompatible with Hilbert space")
+            self.current_state = initial_state
+        else:
+            self.current_state = dq.tensor(
+                *[
+                    dq.basis(self.hilbert_space.size[k], 0)
+                    for k in self.hilbert_space.size.keys()
+                ]
+            )
+
+        self.states = [self.current_state]
+        self.tspan = [0.0]
 
         self.solver = {
             "SESolver": sesolve,
@@ -47,22 +67,23 @@ class DynamiqsVM(RewriteRule):
     @property
     def result(self):
         return dict(
-            final_state=self.current_state, states=self.states, tspan=self.tspan
+            final_state=self.current_state,
+            states=self.states,
+            tspan=self.tspan,
+            frame=self.frame,
+            hilbert_space=self.hilbert_space,
         )
 
     def map_DynamiqsExperiment(self, model):
-        self.current_state = dq.tensor(
-            *[
-                dq.basis(self.hilbert_space.size[k], 0)
-                for k in self.hilbert_space.size.keys()
-            ]
-        )
-
-        self.states.append(self.current_state)
-        self.tspan.append(0)
+        self.frame = model.frame
 
     def map_DynamiqsGate(self, model):
-        tspan = jnp.arange(0, model.duration, self.timestep) + self.tspan[-1]
+        tspan = jnp.arange(0, model.duration, self.timestep)
+
+        if tspan[-1] != model.duration:
+            tspan = jnp.append(tspan, model.duration)
+
+        tspan = tspan + self.tspan[-1]
 
         empty_hamiltonian = model.hamiltonian is None
 

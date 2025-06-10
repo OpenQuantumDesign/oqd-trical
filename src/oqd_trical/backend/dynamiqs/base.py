@@ -23,6 +23,7 @@ from oqd_trical.backend.dynamiqs.vm import DynamiqsVM
 from oqd_trical.light_matter.compiler.analysis import GetHilbertSpace, HilbertSpace
 from oqd_trical.light_matter.compiler.canonicalize import (
     RelabelStates,
+    canonicalize_atomic_circuit_factory,
     canonicalize_emulator_circuit_factory,
 )
 from oqd_trical.light_matter.compiler.codegen import ConstructHamiltonian
@@ -57,13 +58,13 @@ class DynamiqsBackend(BackendBase):
         self.solver = solver
         self.solver_options = solver_options
 
-    def compile(self, circuit, fock_cutoff):
+    def compile(self, circuit, fock_cutoff, *, relabel=True):
         """
         Compiles a AtomicCircuit or AtomicEmulatorCircuit to a [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
 
         Args:
             circuit (Union[AtomicCircuit,AtomicEmulatorCircuit]): circuit to be compiled.
-            fock_cutoff (int): Truncation for fock spaces.
+            fock_cutoff (int, Dict[str, int]): Truncation for fock spaces.
 
         Returns:
             experiment (DynamiqsExperiment): Compiled [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
@@ -72,8 +73,10 @@ class DynamiqsBackend(BackendBase):
         assert isinstance(circuit, (AtomicCircuit, AtomicEmulatorCircuit))
 
         if isinstance(circuit, AtomicCircuit):
+            canonicalize = canonicalize_atomic_circuit_factory()
+            intermediate = canonicalize(circuit)
             conversion = Post(ConstructHamiltonian())
-            intermediate = conversion(circuit)
+            intermediate = conversion(intermediate)
         else:
             intermediate = circuit
 
@@ -88,12 +91,23 @@ class DynamiqsBackend(BackendBase):
         analysis = Post(get_hilbert_space)
         analysis(intermediate)
 
+        if relabel:
+            analysis(intermediate)
+        else:
+            analysis(circuit.system)
+
         hilbert_space = get_hilbert_space.hilbert_space
         _hilbert_space = hilbert_space.hilbert_space
         for k in _hilbert_space.keys():
             if k[0] == "P":
-                _hilbert_space[k] = set(range(fock_cutoff))
+                if isinstance(fock_cutoff, int):
+                    _hilbert_space[k] = set(range(fock_cutoff))
+                else:
+                    _hilbert_space[k] = set(range(fock_cutoff[k]))
         hilbert_space = HilbertSpace(hilbert_space=_hilbert_space)
+
+        if any(map(lambda x: x is None, hilbert_space.hilbert_space.values())):
+            raise "Hilbert space not fully specified."
 
         relabeller = Post(RelabelStates(hilbert_space.get_relabel_rules()))
         intermediate = relabeller(intermediate)
@@ -106,7 +120,7 @@ class DynamiqsBackend(BackendBase):
 
         return experiment, hilbert_space
 
-    def run(self, experiment, hilbert_space, timestep):
+    def run(self, experiment, hilbert_space, timestep, *, initial_state=None):
         """
         Runs a [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment].
 
@@ -124,6 +138,7 @@ class DynamiqsBackend(BackendBase):
                 timestep=timestep,
                 solver=self.solver,
                 solver_options=self.solver_options,
+                initial_state=initial_state,
             )
         )
 

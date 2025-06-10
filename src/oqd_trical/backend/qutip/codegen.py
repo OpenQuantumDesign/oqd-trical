@@ -43,7 +43,10 @@ class QutipCodeGeneration(ConversionRule):
     def map_AtomicEmulatorCircuit(self, model, operands):
         return QutipExperiment(
             frame=None
-            if isinstance(operands["frame"], PrunedOperator)
+            if (
+                isinstance(operands["frame"], PrunedOperator)
+                or operands["frame"] is None
+            )
             else operands["frame"],
             sequence=operands["sequence"],
         )

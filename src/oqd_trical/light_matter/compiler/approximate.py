@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import warnings
 from functools import cached_property, reduce
 
 import numpy as np
-from oqd_compiler_infrastructure import ConversionRule, Post, RewriteRule
+from oqd_compiler_infrastructure import Chain, ConversionRule, Post, Pre, RewriteRule
 from oqd_core.interface.math import MathNum
 
 from oqd_trical.light_matter.interface.operator import (
@@ -50,11 +51,7 @@ class FirstOrderLambDickeApprox(RewriteRule):
             if np.abs(model.alpha.amplitude.value) < self.cutoff:
                 self.approximated_operators.append(model)
 
-                alpha_conj = WaveCoefficient(
-                    amplitude=model.alpha.amplitude,
-                    frequency=-model.alpha.frequency,
-                    phase=-model.alpha.phase,
-                )
+                alpha_conj = model.alpha.conj()
                 return Identity(subsystem=model.subsystem) + (
                     model.alpha * Creation(subsystem=model.subsystem)
                     - alpha_conj * Annihilation(subsystem=model.subsystem)
@@ -81,11 +78,7 @@ class SecondOrderLambDickeApprox(RewriteRule):
             if np.abs(model.alpha.amplitude.value) < self.cutoff:
                 self.approximated_operators.append(model)
 
-                alpha_conj = WaveCoefficient(
-                    amplitude=model.alpha.amplitude,
-                    frequency=-model.alpha.frequency,
-                    phase=-model.alpha.phase,
-                )
+                alpha_conj = model.alpha.conj()
                 return (
                     Identity(subsystem=model.subsystem)
                     + (
@@ -104,6 +97,144 @@ class SecondOrderLambDickeApprox(RewriteRule):
                 )
 
 
+########################################################################################
+
+
+class _GetMathExprBounds(ConversionRule):
+    def __init__(self, start_time, duration):
+        super().__init__()
+
+        self.start_time = start_time
+        self.duration = duration
+        self.end_time = self.start_time + self.duration
+
+    def map_MathVar(self, model, operands):
+        if model.name == "s":
+            return ((0, self.duration), (0, 0))
+
+        if model.name == "t":
+            return ((self.start_time, self.end_time), (0, 0))
+
+        return ((0, np.inf), (0, np.inf))
+
+    def map_MathNum(self, model, operands):
+        return ((np.abs(model.value), np.abs(model.value)), (0, 0))
+
+    def map_MathImag(self, model, operands):
+        return ((0, 0), (1, 1))
+
+    def map_MathAdd(self, model, operands):
+        bound1 = operands["expr1"]
+        bound2 = operands["expr2"]
+
+        if bound1[0][1] < bound2[0][0]:
+            real_lower_bound = bound2[0][0] - bound1[0][1]
+        elif bound2[0][1] < bound1[0][0]:
+            real_lower_bound = bound1[0][0] - bound2[0][1]
+        else:
+            real_lower_bound = np.float64(0)
+
+        if bound1[1][1] < bound2[1][0]:
+            imag_lower_bound = bound2[1][0] - bound1[1][1]
+        elif bound2[1][1] < bound1[1][0]:
+            imag_lower_bound = bound1[1][0] - bound2[1][1]
+        else:
+            imag_lower_bound = np.float64(0)
+
+        return (
+            (real_lower_bound, bound1[0][1] + bound2[0][1]),
+            (imag_lower_bound, bound1[1][1] + bound2[1][0]),
+        )
+
+    def map_MathMul(self, model, operands):
+        bound1 = operands["expr1"]
+        bound2 = operands["expr2"]
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
+
+            if bound1[0][1] * bound2[0][1] < bound1[1][0] * bound2[1][0]:
+                real_lower_bound = (
+                    bound2[1][0] * bound2[1][0] - bound1[0][1] * bound1[0][1]
+                )
+            elif bound1[1][1] * bound2[1][1] < bound1[0][0] * bound2[0][0]:
+                real_lower_bound = (
+                    bound2[0][0] * bound2[0][0] - bound1[1][1] * bound1[1][1]
+                )
+            else:
+                real_lower_bound = np.float64(0)
+
+            if bound1[0][1] * bound2[1][1] < bound1[1][0] * bound2[0][0]:
+                imag_lower_bound = (
+                    bound1[1][0] * bound2[0][0] - bound1[0][1] * bound2[1][1]
+                )
+            elif bound1[1][1] * bound2[0][1] < bound1[0][0] * bound2[1][0]:
+                imag_lower_bound = (
+                    bound1[0][0] * bound2[1][0] - bound1[1][1] * bound2[0][1]
+                )
+            else:
+                imag_lower_bound = np.float64(0)
+
+            return (
+                (
+                    real_lower_bound,
+                    np.nan_to_num(
+                        bound1[0][1] * bound2[0][1] + bound1[1][1] * bound2[1][1],
+                        nan=0,
+                        posinf=np.inf,
+                    ),
+                ),
+                (
+                    imag_lower_bound,
+                    np.nan_to_num(
+                        bound1[0][1] * bound2[1][1] + bound1[1][1] * bound2[0][1],
+                        nan=0,
+                        posinf=np.inf,
+                    ),
+                ),
+            )
+
+    def map_MathPow(self, model, operands):
+        if operands["expr1"][1] == (0, 0) and operands["expr2"][0] == (0, 0):
+            return operands["expr1"]
+
+        return ((0, np.inf), (0, np.inf))
+
+    def map_MathFunc(self, model, operands):
+        if model.func in ["cos", "sin"]:
+            if operands["expr"][1] == (0, 0):
+                return ((0, 1), (0, 0))
+
+        if model.func in ["exp"]:
+            if operands["expr"][0] != (0, 0):
+                return ((0, 1), (0, 0))
+
+        return ((0, np.inf), (0, np.inf))
+
+
+class _RotatingWaveApproxHelper(RewriteRule):
+    def __init__(self, cutoff, start_time, duration):
+        super().__init__()
+
+        self.cutoff = cutoff
+        self.start_time = start_time
+        self.duration = duration
+
+    def map_WaveCoefficient(self, model):
+        if (
+            isinstance(model.frequency, MathNum)
+            and np.abs(model.frequency.value) > self.cutoff
+        ):
+            return ConstantCoefficient(value=0)
+
+        bounds = Post(
+            _GetMathExprBounds(start_time=self.start_time, duration=self.duration)
+        )(model.frequency)
+
+        if bounds[0][0] > self.cutoff:
+            return ConstantCoefficient(value=0)
+
+
 class RotatingWaveApprox(RewriteRule):
     """
     Applies the rotating wave approximation.
@@ -119,13 +250,19 @@ class RotatingWaveApprox(RewriteRule):
         super().__init__()
 
         self.cutoff = cutoff
+        self.current_time = 0
 
-    def map_WaveCoefficient(self, model):
-        if (
-            isinstance(model.frequency, MathNum)
-            and np.abs(model.frequency.value) > self.cutoff
-        ):
-            return ConstantCoefficient(value=0)
+    def map_AtomicEmulatorGate(self, model):
+        hamiltonian = Post(
+            _RotatingWaveApproxHelper(
+                cutoff=self.cutoff,
+                start_time=self.current_time,
+                duration=model.duration,
+            )
+        )(model.hamiltonian)
+
+        self.current_time += model.duration
+        return model.__class__(hamiltonian=hamiltonian, duration=model.duration)
 
 
 ########################################################################################
@@ -233,7 +370,8 @@ class RotatingReferenceFrame(RewriteRule):
 ########################################################################################
 
 
-class _AdiabaticEliminationHelper(ConversionRule):
+class _GetMatrixElements(ConversionRule):
+    # TODO currently non universal formulation for AdiabaticElimination
     def __init__(self, eliminated_specs):
         super().__init__()
 
@@ -279,8 +417,13 @@ class _AdiabaticEliminationHelper(ConversionRule):
 
 
 class AdiabaticElimination(RewriteRule):
+    # TODO currently non universal formulation for AdiabaticElimination
     def __init__(self, eliminated_specs):
         super().__init__()
+
+        warnings.warn(
+            "Caution required when using adiabatic elimination, system needs to be put in the appropriate rotating reference frame."
+        )
 
         self._eliminated_specs = eliminated_specs
 
@@ -318,9 +461,7 @@ class AdiabaticElimination(RewriteRule):
         )
 
     def map_AtomicEmulatorGate(self, model):
-        adiabatic_elimination_helper = _AdiabaticEliminationHelper(
-            self.eliminated_specs
-        )
+        adiabatic_elimination_helper = _GetMatrixElements(self.eliminated_specs)
         Post(adiabatic_elimination_helper)(model.hamiltonian)
         self.matrix_elements = adiabatic_elimination_helper.matrix_elements
 
@@ -335,7 +476,7 @@ class AdiabaticElimination(RewriteRule):
             return -reduce(
                 lambda x, y: x + y,
                 [
-                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1])
+                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1]).conj()
                     * KetBra(ket=i, bra=model.bra, subsystem=model.subsystem)
                     for (i, c) in self.nondiagonal
                 ],
@@ -345,8 +486,14 @@ class AdiabaticElimination(RewriteRule):
             return -reduce(
                 lambda x, y: x + y,
                 [
-                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1]).conj()
+                    (ConstantCoefficient(value=0.5) * c / self.diagonal[0][1])
                     * KetBra(ket=model.ket, bra=i, subsystem=model.subsystem)
                     for (i, c) in self.nondiagonal
                 ],
             )
+
+
+def adiabatic_elimination_factory(eliminated_specs):
+    return Pre(
+        Chain(*[AdiabaticElimination(eliminated_specs=e) for e in eliminated_specs])
+    )
