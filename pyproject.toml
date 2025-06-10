@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "oqd-trical"
 version = "0.1.0dev1"
-requires-python = ">=3.10,<=3.12"
+requires-python = ">=3.10,<3.13"
 readme = "README.md"
 license = { text = "Apache 2.0" }
 keywords = ["quantum", "computing", "compiler", "transpilation", "atomic"]
