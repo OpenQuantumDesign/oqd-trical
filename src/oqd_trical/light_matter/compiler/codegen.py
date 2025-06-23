@@ -248,10 +248,17 @@ class ConstructHamiltonian(ConversionRule):
                         lambda x, y: x @ y,
                         [
                             (
-                                WaveCoefficient(
-                                    amplitude=rabi / 2,
-                                    frequency=angular_frequency,
-                                    phase=model.phase,
+                                (
+                                    WaveCoefficient(
+                                        amplitude=rabi / 2,
+                                        frequency=-angular_frequency,
+                                        phase=model.phase,
+                                    )
+                                    + WaveCoefficient(
+                                        amplitude=rabi / 2,
+                                        frequency=angular_frequency,
+                                        phase=-model.phase,
+                                    )
                                 )
                                 * (
                                     KetBra(
