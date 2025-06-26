@@ -18,9 +18,9 @@ from typing import Union
 from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRule
 from oqd_core.compiler.atomic.canonicalize import unroll_label_pass
 from oqd_core.compiler.math.passes import canonicalize_math_expr
+from oqd_core.compiler.math.rules import SubstituteMathVar
 from oqd_core.interface.atomic import ParallelProtocol, SequentialProtocol
 from oqd_core.interface.math import (
-    MathExpr,
     MathNum,
     MathVar,
 )
@@ -407,24 +407,6 @@ class RelabelStates(RewriteRule):
 
 
 ########################################################################################
-
-
-class SubstituteMathVar(RewriteRule):
-    def __init__(self, variable, substitution):
-        super().__init__()
-
-        if not isinstance(variable, MathVar):
-            raise TypeError("Variable must be a MathVar")
-
-        if not isinstance(variable, MathExpr):
-            raise TypeError("Substituted value must be a MathExpr")
-
-        self.variable = variable
-        self.substitution = substitution
-
-    def map_MathVar(self, model):
-        if model == self.variable:
-            return self.substitution
 
 
 class ResolveNestedProtocol(RewriteRule):
