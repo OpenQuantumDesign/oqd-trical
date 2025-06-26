@@ -1,4 +1,4 @@
-# 
+#
 
 <p align="center">
   <img src="img/oqd-logo-black.png#only-light" alt="Logo" style="max-height: 200px;">

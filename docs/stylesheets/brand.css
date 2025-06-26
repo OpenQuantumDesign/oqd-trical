@@ -36,12 +36,12 @@ h1, h2, h3, h4, h5, h6,
 
 
 /* Apply Raleway to all navigation and sidebar elements */
-.md-nav, 
-.md-nav__title, 
-.md-nav__link, 
-.md-header, 
-.md-tabs, 
-.md-sidebar, 
+.md-nav,
+.md-nav__title,
+.md-nav__link,
+.md-header,
+.md-tabs,
+.md-sidebar,
 .md-sidebar__inner,
 .md-nav__item,
 .md-footer,
@@ -79,7 +79,7 @@ h1, h2, h3, h4, h5, h6,
 
 
 /* Light mode nav/ToC font color */
-[data-md-color-scheme="default"] .md-nav, 
+[data-md-color-scheme="default"] .md-nav,
 [data-md-color-scheme="default"] .md-nav__link,
 [data-md-color-scheme="default"] .md-header,
 [data-md-color-scheme="default"] .md-tabs {
@@ -88,7 +88,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* Dark mode nav/ToC font color */
-[data-md-color-scheme="slate"] .md-nav, 
+[data-md-color-scheme="slate"] .md-nav,
 [data-md-color-scheme="slate"] .md-nav__link,
 [data-md-color-scheme="slate"] .md-header,
 [data-md-color-scheme="slate"] .md-tabs {
