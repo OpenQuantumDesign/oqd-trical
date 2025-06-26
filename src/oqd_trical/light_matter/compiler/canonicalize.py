@@ -17,21 +17,11 @@ from typing import Union
 
 from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRule
 from oqd_core.compiler.atomic.canonicalize import unroll_label_pass
-from oqd_core.compiler.math.rules import (
-    DistributeMathExpr,
-    ProperOrderMathExpr,
-    PruneMathExpr,
-    SimplifyMathExpr,
-)
+from oqd_core.compiler.math.passes import canonicalize_math_expr
 from oqd_core.interface.atomic import ParallelProtocol, SequentialProtocol
 from oqd_core.interface.math import (
-    MathAdd,
     MathExpr,
-    MathFunc,
-    MathImag,
-    MathMul,
     MathNum,
-    MathPow,
     MathVar,
 )
 
@@ -107,14 +97,6 @@ class PruneCoefficient(RewriteRule):
             and model.coeff2.amplitude == MathNum(value=0)
         ):
             return ConstantCoefficient(value=0)
-
-
-class PruneZeroPowers(RewriteRule):
-    """Prunes a MathExpr AST by MathPow when base is zero"""
-
-    def map_MathPow(self, model):
-        if model.expr1 == MathNum(value=0):
-            return MathNum(value=0)
 
 
 ########################################################################################
@@ -609,97 +591,6 @@ class ResolveRelativeTime(RewriteRule):
 ########################################################################################
 
 
-class PartitionMathExpr(RewriteRule):
-    """
-    This separates real and complex portions of [`MathExpr`][oqd_core.interface.math.MathExpr] objects.
-
-    Args:
-        model (MathExpr): The rule only acts on [`MathExpr`][oqd_core.interface.math.MathExpr] objects.
-
-    Returns:
-        model (MathExpr):
-
-    Assumptions:
-        [`DistributeMathExpr`][oqd_core.compiler.math.rules.DistributeMathExpr],
-        [`ProperOrderMathExpr`][oqd_core.compiler.math.rules.ProperOrderMathExpr]
-
-    Example:
-        - MathStr(string = '1 + 1j + 2') => MathStr(string = '1 + 2 + 1j')
-        - MathStr(string = '1 * 1j * 2') => MathStr(string = '1j * 1 * 2')
-    """
-
-    def map_MathAdd(self, model):
-        priority = dict(
-            MathImag=5, MathNum=4, MathVar=3, MathFunc=2, MathPow=1, MathMul=0
-        )
-
-        if isinstance(
-            model.expr2, (MathImag, MathNum, MathVar, MathFunc, MathPow, MathMul)
-        ):
-            if isinstance(model.expr1, MathAdd):
-                if (
-                    priority[model.expr2.__class__.__name__]
-                    > priority[model.expr1.expr2.__class__.__name__]
-                ):
-                    return MathAdd(
-                        expr1=MathAdd(expr1=model.expr1.expr1, expr2=model.expr2),
-                        expr2=model.expr1.expr2,
-                    )
-            else:
-                if (
-                    priority[model.expr2.__class__.__name__]
-                    > priority[model.expr1.__class__.__name__]
-                ):
-                    return MathAdd(
-                        expr1=model.expr2,
-                        expr2=model.expr1,
-                    )
-
-    def map_MathMul(self, model: MathMul):
-        priority = dict(MathImag=4, MathNum=3, MathVar=2, MathFunc=1, MathPow=0)
-
-        if isinstance(model.expr2, (MathImag, MathNum, MathVar, MathFunc, MathPow)):
-            if isinstance(model.expr1, MathMul):
-                if (
-                    priority[model.expr2.__class__.__name__]
-                    > priority[model.expr1.expr2.__class__.__name__]
-                ):
-                    return MathMul(
-                        expr1=MathMul(expr1=model.expr1.expr1, expr2=model.expr2),
-                        expr2=model.expr1.expr2,
-                    )
-            else:
-                if (
-                    priority[model.expr2.__class__.__name__]
-                    > priority[model.expr1.__class__.__name__]
-                ):
-                    return MathMul(
-                        expr1=model.expr2,
-                        expr2=model.expr1,
-                    )
-
-
-########################################################################################
-
-
-def canonicalize_math_factory():
-    """Creates a new instance of the canonicalization pass for math expressions"""
-    return Chain(
-        FixedPoint(
-            Post(
-                Chain(
-                    PruneMathExpr(),
-                    PruneZeroPowers(),
-                    SimplifyMathExpr(),
-                    DistributeMathExpr(),
-                    ProperOrderMathExpr(),
-                )
-            )
-        ),
-        FixedPoint(Post(PartitionMathExpr())),
-    )
-
-
 def canonicalize_coefficient_factory():
     """Creates a new instance of the canonicalization pass for coefficients"""
     return Chain(
@@ -735,12 +626,12 @@ def canonicalize_emulator_circuit_factory():
     return Chain(
         canonicalize_operator_factory(),
         canonicalize_coefficient_factory(),
-        canonicalize_math_factory(),
+        canonicalize_math_expr,
         Post(PruneOperator()),
         Pre(ScaleTerms()),
         Post(CombineTerms()),
         canonicalize_coefficient_factory(),
-        canonicalize_math_factory(),
+        canonicalize_math_expr,
         Post(PruneOperator()),
     )
 
