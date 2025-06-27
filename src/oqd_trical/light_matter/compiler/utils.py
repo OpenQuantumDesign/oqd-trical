@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import math
+
 import numpy as np
+from oqd_core.interface.math import MathFunc
 from sympy.physics.wigner import wigner_3j, wigner_6j
 
-########################################################################################
 from oqd_trical.misc import constants as cst
 
 ########################################################################################
@@ -45,8 +47,8 @@ def compute_matrix_element(laser, transition):
     if transition.level1.energy > transition.level2.energy:
         raise ValueError("Expected energy of level2 > energy of level1")
 
-    polarization = np.array(laser.polarization).T  # make it a column vector
-    wavevector = laser.wavevector
+    polarization = np.array(laser.polarization)  # make it a column vector
+    wavevector = np.array(laser.wavevector)
 
     J1, J2, F1, F2, M1, M2, E1, E2, I, A = (  # noqa: E741
         transition.level1.spin_orbital,
@@ -71,7 +73,7 @@ def compute_matrix_element(laser, transition):
         #   A(M1) = (16 * pi^3)/(3 * hbar) * (omega^3/c^3) * (|<J2||μ||J1>|^2/(2J2+1))
 
         # Solving for the reduced matrix element (expressed in units of the Bohr magneton, μ_B) :
-        #   |<J2||μ||J1>|/μ_B = sqrt((3 * hbar * c^3 * A * (2J2+1))/(16 * pi^3 * omega^3)) / μ_B
+        #   |<J2||μ||J1>|/μ_Bmath sqrt((3 * hbar * c^3 * A * (2J2+1))/(16 * pi^3 * omega^3)) / μ_B
 
         # Reference: I. I. Sobelman, "Atomic Spectra and Radiative Transitions", 2nd ed., Springer (1992).
 
@@ -81,8 +83,8 @@ def compute_matrix_element(laser, transition):
             (3 * cst.hbar * cst.epsilon_0 * cst.c**5 * A) / (16 * np.pi**3 * omega**3)
         )
 
-        hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * wigner_6j(
-            J1, J2, 1, F2, F1, I
+        hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * float(
+            wigner_6j(J1, J2, 1, F2, F1, I)
         )
 
         # For M1 transitions the operator is a vector operator coupling to the magnetic field
@@ -99,11 +101,13 @@ def compute_matrix_element(laser, transition):
         geometry_term = (
             np.sqrt(2 * J2 + 1)
             * polarization_map[q].dot(B_field)
-            * wigner_3j(F2, 1, F1, M2, -q, -M1)
+            * float(wigner_3j(F2, 1, F1, M2, -q, -M1).evalf())
         )
 
-        return float(
-            (abs(units_term) * abs(geometry_term) * abs(hyperfine_term)).evalf()
+        return (
+            abs(units_term)
+            * MathFunc(func="abs", expr=geometry_term)
+            * abs(hyperfine_term)
         )
 
     # --- E1 transition multipole ---
@@ -112,8 +116,8 @@ def compute_matrix_element(laser, transition):
             (3 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3 * A)
             / (omega**3 * cst.e**2)
         )
-        hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * wigner_6j(
-            J1, J2, 1, F2, F1, I
+        hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * float(
+            wigner_6j(J1, J2, 1, F2, F1, I)
         )
 
         # q -> polarization
@@ -126,40 +130,44 @@ def compute_matrix_element(laser, transition):
         geometry_term = (
             np.sqrt(2 * J2 + 1)
             * polarization_map[q].dot(polarization)
-            * wigner_3j(F2, 1, F1, M2, -q, -M1)
+            * float(wigner_3j(F2, 1, F1, M2, -q, -M1).evalf())
         )
 
-        return float(
-            (abs(units_term) * abs(geometry_term) * abs(hyperfine_term)).evalf()
+        return (
+            abs(units_term)
+            * MathFunc(func="abs", expr=geometry_term)
+            * abs(hyperfine_term)
         )
 
     # --- E2 transition multipole ---
     elif transition.multipole == "E2":
-        units_term = np.sqrt(
+        units_term = math.sqrt(
             (15 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3 * A)
             / (omega**3 * cst.e**2)
         )  # <- anomalous constants I needed to add... hmm
-        hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * wigner_6j(
-            J1, J2, 2, F2, F1, I
+        hyperfine_term = math.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * float(
+            wigner_6j(J1, J2, 2, F2, F1, I)
         )
 
         # q -> polarization
         polarization_map = {
-            -2: 1 / np.sqrt(6) * np.array([[1, 1j, 0], [1j, -1, 0], [0, 0, 0]]),
-            -1: 1 / np.sqrt(6) * np.array([[0, 0, 1], [0, 0, 1j], [1, 1j, 0]]),
+            -2: 1 / math.sqrt(6) * np.array([[1, 1j, 0], [1j, -1, 0], [0, 0, 0]]),
+            -1: 1 / math.sqrt(6) * np.array([[0, 0, 1], [0, 0, 1j], [1, 1j, 0]]),
             0: 1 / 3 * np.array([[-1, 0, 0], [0, -1, 0], [0, 0, 2]]),
-            1: 1 / np.sqrt(6) * np.array([[0, 0, -1], [0, 0, 1j], [-1, 1j, 0]]),
-            2: 1 / np.sqrt(6) * np.array([[1, -1j, 0], [-1j, -1, 0], [0, 0, 0]]),
+            1: 1 / math.sqrt(6) * np.array([[0, 0, -1], [0, 0, 1j], [-1, 1j, 0]]),
+            2: 1 / math.sqrt(6) * np.array([[1, -1j, 0], [-1j, -1, 0], [0, 0, 0]]),
         }
 
         geometry_term = (
-            np.sqrt(2 * J2 + 1)
+            math.sqrt(2 * J2 + 1)
             * wavevector.dot(np.matmul(polarization_map[q], polarization))
-            * wigner_3j(F2, 2, F1, M2, -q, -M1)
+            * float(wigner_3j(F2, 2, F1, M2, -q, -M1).evalf())
         )
 
-        return float(
-            (abs(units_term) * abs(geometry_term) * abs(hyperfine_term)).evalf()
+        return (
+            abs(units_term)
+            * MathFunc(func="abs", expr=geometry_term)
+            * abs(hyperfine_term)
         )
 
     else:
