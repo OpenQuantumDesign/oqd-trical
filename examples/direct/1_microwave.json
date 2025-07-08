@@ -71,21 +71,8 @@
           "class_": "Beam",
           "transition": "q0->q1",
           "rabi": {
-            "class_": "MathAdd",
-            "expr1": {
-              "class_": "MathNum",
-              "value": 0.0
-            },
-            "expr2": {
-              "class_": "MathMul",
-              "expr1": {
-                "class_": "MathImag"
-              },
-              "expr2": {
-                "class_": "MathNum",
-                "value": 6283185.307179586
-              }
-            }
+            "class_": "MathNum",
+            "value": 6283185.307179586
           },
           "detuning": {
             "class_": "MathNum",
