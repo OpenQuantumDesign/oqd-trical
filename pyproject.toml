@@ -58,7 +58,7 @@ fixable = ["ALL"]
 
 [tool.uv.sources]
 oqd-compiler-infrastructure = { git = "https://github.com/openquantumdesign/oqd-compiler-infrastructure" }
-oqd-core = { git = "https://github.com/openquantumdesign/oqd-core", rev = "canonicalization" }
+oqd-core = { git = "https://github.com/openquantumdesign/oqd-core", rev = "binary_functions" }
 
 [dependency-groups]
 dev = ["jupyter>=1.1.1", "pre-commit>=4.1.0", "ruff>=0.9.6"]
