@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import math
+########################################################################################
 
 import numpy as np
-from oqd_core.interface.math import MathFunc
+from oqd_compiler_infrastructure import Post, PrettyPrint
+from oqd_core.compiler.math.passes import canonicalize_math_expr
+from oqd_core.interface.math import MathFunc, MathNum
 from sympy.physics.wigner import wigner_3j, wigner_6j
 
 from oqd_trical.misc import constants as cst
@@ -141,25 +143,25 @@ def compute_matrix_element(laser, transition):
 
     # --- E2 transition multipole ---
     elif transition.multipole == "E2":
-        units_term = math.sqrt(
+        units_term = np.sqrt(
             (15 * np.pi * cst.epsilon_0 * cst.hbar * cst.c**3 * A)
             / (omega**3 * cst.e**2)
         )  # <- anomalous constants I needed to add... hmm
-        hyperfine_term = math.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * float(
+        hyperfine_term = np.sqrt((2 * F2 + 1) * (2 * F1 + 1)) * float(
             wigner_6j(J1, J2, 2, F2, F1, I)
         )
 
         # q -> polarization
         polarization_map = {
-            -2: 1 / math.sqrt(6) * np.array([[1, 1j, 0], [1j, -1, 0], [0, 0, 0]]),
-            -1: 1 / math.sqrt(6) * np.array([[0, 0, 1], [0, 0, 1j], [1, 1j, 0]]),
+            -2: 1 / np.sqrt(6) * np.array([[1, 1j, 0], [1j, -1, 0], [0, 0, 0]]),
+            -1: 1 / np.sqrt(6) * np.array([[0, 0, 1], [0, 0, 1j], [1, 1j, 0]]),
             0: 1 / 3 * np.array([[-1, 0, 0], [0, -1, 0], [0, 0, 2]]),
-            1: 1 / math.sqrt(6) * np.array([[0, 0, -1], [0, 0, 1j], [-1, 1j, 0]]),
-            2: 1 / math.sqrt(6) * np.array([[1, -1j, 0], [-1j, -1, 0], [0, 0, 0]]),
+            1: 1 / np.sqrt(6) * np.array([[0, 0, -1], [0, 0, 1j], [-1, 1j, 0]]),
+            2: 1 / np.sqrt(6) * np.array([[1, -1j, 0], [-1j, -1, 0], [0, 0, 0]]),
         }
 
         geometry_term = (
-            math.sqrt(2 * J2 + 1)
+            np.sqrt(2 * J2 + 1)
             * wavevector.dot(np.matmul(polarization_map[q], polarization))
             * float(wigner_3j(F2, 2, F1, M2, -q, -M1).evalf())
         )
@@ -210,7 +212,21 @@ def intensity_from_laser(laser):
     Returns:
         intensity (float): intensity of the laser
     """
+    if laser.rabi == MathNum(value=0):
+        return MathNum(value=0)
+
     matrix_elem = compute_matrix_element(laser, laser.transition)
+    matrix_elem = canonicalize_math_expr(matrix_elem)
+
+    if matrix_elem == MathNum(value=0):
+        raise ValueError(
+            "\n".join(
+                [
+                    "Beam does not couple to specified reference transition:",
+                    Post(PrettyPrint())(laser),
+                ]
+            )
+        )
 
     if laser.transition.multipole[0] == "E":
         return (
