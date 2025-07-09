@@ -15,7 +15,9 @@
 import math
 
 import numpy as np
-from oqd_core.interface.math import MathFunc
+from oqd_compiler_infrastructure import Post, PrettyPrint
+from oqd_core.compiler.math.passes import canonicalize_math_expr
+from oqd_core.interface.math import MathFunc, MathNum
 from sympy.physics.wigner import wigner_3j, wigner_6j
 
 from oqd_trical.misc import constants as cst
@@ -210,7 +212,21 @@ def intensity_from_laser(laser):
     Returns:
         intensity (float): intensity of the laser
     """
+    if laser.rabi == MathNum(value=0):
+        return MathNum(value=0)
+
     matrix_elem = compute_matrix_element(laser, laser.transition)
+    matrix_elem = canonicalize_math_expr(matrix_elem)
+
+    if matrix_elem == MathNum(value=0):
+        raise ValueError(
+            "\n".join(
+                [
+                    "Beam does not couple to specified reference transition:",
+                    Post(PrettyPrint())(laser),
+                ]
+            )
+        )
 
     if laser.transition.multipole[0] == "E":
         return (
