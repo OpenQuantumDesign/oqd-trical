@@ -37,7 +37,13 @@ class DynamiqsBackend(BackendBase):
         save_intermediate (bool): Whether compiler saves the intermediate representation of the atomic circuit
         approx_pass (PassBase): Pass of approximations to apply to the system.
         solver (Literal["SESolver","MESolver"]): Dynamiqs solver to use.
-        solver_options (Dict[str,Any]): Dynamiqs solver options
+        solver_options (Dict[str,Any]): Options forwarded to the dynamiqs VM.
+            Recognised keys:
+
+            - ``"solver"``: integration method (e.g. ``dq.Tsit5()``).
+            - ``"progress_meter"``: ``False`` / ``True`` / an
+              ``AbstractProgressMeter``. Defaults to ``NoProgressMeter()``
+              (silent) to prevent ZMQ file-descriptor exhaustion in Jupyter.
         intermediate (AtomicEmulatorCircuit): Intermediate representation of the atomic circuit during compilation
     """
 
