@@ -87,7 +87,15 @@ class DynamiqsCodeGeneration(ConversionRule):
         )
 
     def map_OperatorMul(self, model, operands):
-        return lambda t: operands["op1"](t) @ operands["op2"](t)
+        op1, op2 = operands["op1"], operands["op2"]
+
+        def combined(t):
+            m1, m2 = op1(t), op2(t)
+            if m1.shape != m2.shape:
+                return dq.tensor(m1, m2)
+            return m1 @ m2
+
+        return combined
 
     def map_OperatorKron(self, model, operands):
         return lambda t: dq.tensor(operands["op1"](t), operands["op2"](t))

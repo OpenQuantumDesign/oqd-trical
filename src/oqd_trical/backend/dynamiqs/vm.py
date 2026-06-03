@@ -17,6 +17,8 @@ from dynamiqs import mesolve, sesolve
 from jax import numpy as jnp
 from oqd_compiler_infrastructure import RewriteRule
 
+from oqd_trical.backend.dynamiqs.solver import normalize_solver_options
+
 ########################################################################################
 
 
@@ -26,9 +28,10 @@ class DynamiqsVM(RewriteRule):
 
     Attributes:
         hilbert_space (Dict[str, int]): Hilbert space of the system.
-        timestep (float): Timestep between tracked states of the evolution.
+        timestep (float): Timestep between tracked states of the evolution (seconds).
         solver (Literal["SESolver","MESolver"]): Dynamiqs solver to use.
-        solver_options (Dict[str,Any]): Dynamiqs solver options
+        solver_options (Dict[str,Any]): Keys ``method`` (dq.method.*) and ``options``
+            (dq.Options); see [`DynamiqsSolverOptions`][oqd_trical.backend.dynamiqs.solver.DynamiqsSolverOptions].
     """
 
     def __init__(
@@ -38,7 +41,7 @@ class DynamiqsVM(RewriteRule):
         *,
         initial_state=None,
         solver="SESolver",
-        solver_options={},
+        solver_options=None,
     ):
         self.hilbert_space = hilbert_space
         self.timestep = timestep
@@ -62,7 +65,7 @@ class DynamiqsVM(RewriteRule):
             "SESolver": sesolve,
             "MESolver": mesolve,
         }[solver]
-        self.solver_options = solver_options
+        self.solver_options = normalize_solver_options(solver_options)
 
     @property
     def result(self):
@@ -88,20 +91,60 @@ class DynamiqsVM(RewriteRule):
         empty_hamiltonian = model.hamiltonian is None
 
         if empty_hamiltonian:
-            self.tspan.extend(list(tspan[1:] + self.tspan[-1]))
+            self.tspan.extend(list(tspan[1:]))
             self.states.extend([self.current_state] * (len(tspan) - 1))
             return
 
-        res = self.solver(
+        hamiltonian, tspan_solve = _prepare_hamiltonian_and_tspan(
             model.hamiltonian,
-            self.current_state,
             tspan,
-            solver=self.solver_options["solver"]
-            if "solver" in self.solver_options.keys()
-            else dq.solver.Tsit5(),
+            model.duration,
+            rescale_time=self.solver_options.get("rescale_time", True),
+            time_scale=self.solver_options.get("time_scale"),
+        )
+
+        res = self.solver(
+            hamiltonian,
+            self.current_state,
+            tspan_solve,
+            method=self.solver_options["method"],
+            options=self.solver_options["options"],
         )
 
         self.current_state = res.final_state
 
         self.tspan.extend(list(tspan[1:]))
         self.states.extend(list(res.states[1:]))
+
+
+def _hamiltonian_scale(hamiltonian, duration: float) -> float:
+    """Characteristic angular frequency (rad/s) for dimensionless time rescaling."""
+    omega = float(jnp.max(jnp.abs(hamiltonian(0.0).to_jax())))
+    if duration > 0:
+        omega = max(
+            omega, float(jnp.max(jnp.abs(hamiltonian(duration).to_jax())))
+        )
+    return max(omega, 1.0)
+
+
+def _prepare_hamiltonian_and_tspan(
+    hamiltonian,
+    tspan,
+    duration: float,
+    *,
+    rescale_time: bool,
+    time_scale: float | None,
+):
+    """Optionally rescale to dimensionless time for Diffrax (see solver module docstring)."""
+    if not rescale_time:
+        return hamiltonian, tspan
+
+    omega = float(
+        time_scale
+        if time_scale is not None
+        else _hamiltonian_scale(hamiltonian, duration)
+    )
+    # Compose with the inner callable; avoid nesting timecallable(TimeQArray).
+    base = hamiltonian.f if hasattr(hamiltonian, "f") else hamiltonian
+    hamiltonian = dq.timecallable(lambda tau, f=base, om=omega: f(tau / om) / om)
+    return hamiltonian, tspan * omega

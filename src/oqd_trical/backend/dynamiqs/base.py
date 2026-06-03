@@ -14,10 +14,18 @@
 
 from oqd_compiler_infrastructure import Chain, Post, Pre
 from oqd_core.backend.base import BackendBase
+from oqd_core.backend.task import Task, TaskArgsAtomic
 from oqd_core.compiler.atomic.canonicalize import canonicalize_atomic_circuit_factory
 from oqd_core.interface.atomic import AtomicCircuit
 
 from oqd_trical.backend.dynamiqs.codegen import DynamiqsCodeGeneration
+from oqd_trical.backend.dynamiqs.solver import (
+    normalize_solver_options,
+)
+from oqd_trical.backend.dynamiqs.task import (
+    TaskArgsAtomicEmulator,
+    task_args_from_atomic,
+)
 from oqd_trical.backend.dynamiqs.vm import DynamiqsVM
 from oqd_trical.light_matter.compiler.analysis import GetHilbertSpace, HilbertSpace
 from oqd_trical.light_matter.compiler.canonicalize import (
@@ -37,7 +45,9 @@ class DynamiqsBackend(BackendBase):
         save_intermediate (bool): Whether compiler saves the intermediate representation of the atomic circuit
         approx_pass (PassBase): Pass of approximations to apply to the system.
         solver (Literal["SESolver","MESolver"]): Dynamiqs solver to use.
-        solver_options (Dict[str,Any]): Dynamiqs solver options
+        solver_options (Union[DynamiqsSolverOptions, Dict[str, Any]]): Diffrax method and
+            tolerances passed to ``dq.sesolve``; see
+            [`DynamiqsSolverOptions`][oqd_trical.backend.dynamiqs.solver.DynamiqsSolverOptions].
         intermediate (AtomicEmulatorCircuit): Intermediate representation of the atomic circuit during compilation
     """
 
@@ -46,7 +56,7 @@ class DynamiqsBackend(BackendBase):
         save_intermediate=True,
         approx_pass=None,
         solver="SESolver",
-        solver_options={},
+        solver_options=None,
     ):
         super().__init__()
 
@@ -54,7 +64,7 @@ class DynamiqsBackend(BackendBase):
         self.intermediate = None
         self.approx_pass = approx_pass
         self.solver = solver
-        self.solver_options = solver_options
+        self.solver_options = normalize_solver_options(solver_options)
 
     def compile(self, circuit, fock_cutoff, *, relabel=True):
         """
@@ -87,7 +97,6 @@ class DynamiqsBackend(BackendBase):
 
         get_hilbert_space = GetHilbertSpace()
         analysis = Post(get_hilbert_space)
-        analysis(intermediate)
 
         if relabel:
             analysis(intermediate)
@@ -143,3 +152,45 @@ class DynamiqsBackend(BackendBase):
         vm(experiment)
 
         return vm.children[0].result
+
+    def run_task(
+        self,
+        task: Task,
+        *,
+        relabel: bool = True,
+        initial_state=None,
+    ):
+        """
+        Compile and run an atomic-layer [`Task`][oqd_core.backend.task.Task].
+
+        Expects ``task.program`` to be an [`AtomicCircuit`][oqd_core.interface.atomic.AtomicCircuit]
+        and ``task.args`` to be [`TaskArgsAtomic`][oqd_core.backend.task.TaskArgsAtomic]
+        or [`TaskArgsAtomicEmulator`][oqd_trical.backend.dynamiqs.task.TaskArgsAtomicEmulator]
+        (the latter adds ``dynamiqs_solver_options``).
+
+        Returns:
+            Same dict as [`run`][oqd_trical.backend.dynamiqs.DynamiqsBackend.run]
+            (``final_state``, ``states``, ``tspan``, ...).
+        """
+        if not isinstance(task.program, AtomicCircuit):
+            raise TypeError(
+                "DynamiqsBackend.run_task expects task.program to be AtomicCircuit."
+            )
+        if not isinstance(task.args, (TaskArgsAtomic, TaskArgsAtomicEmulator)):
+            raise TypeError(
+                "DynamiqsBackend.run_task expects TaskArgsAtomic or TaskArgsAtomicEmulator."
+            )
+
+        fock_trunc, dt, solver_opts = task_args_from_atomic(task.args)
+        if solver_opts is not None:
+            self.solver_options = normalize_solver_options(solver_opts)
+
+        experiment, hilbert_space = self.compile(
+            task.program, fock_trunc, relabel=relabel
+        )
+        return self.run(
+            experiment,
+            hilbert_space,
+            dt,
+            initial_state=initial_state,
+        )
