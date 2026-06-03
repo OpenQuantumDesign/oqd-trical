@@ -63,12 +63,16 @@ def hilbert_space_to_size_dict(hilbert_space: HilbertSpace) -> Dict[str, int]:
 def states_to_array(states) -> np.ndarray:
     """Stack a sequence of QuTiP ``Qobj`` states into a single complex array.
 
+    The input is coerced to a list so that generators and iterators are
+    accepted without raising a ``TypeError`` on ``len()``.
+
     The result is shape ``(n_tsteps, hilbert_dim, 1)`` when all states are kets
     (because ``Qobj.full()`` returns a column vector) and
     ``(n_tsteps, hilbert_dim, hilbert_dim)`` when all states are density
     matrices. An empty input returns a 1-D length-zero complex array, which
     is the same shape that the ``Dataset`` validator accepts.
     """
+    states = list(states)
     if len(states) == 0:
         return np.empty((0,), dtype=np.complex128)
 
@@ -127,9 +131,9 @@ class TrICalEmulatorDataGroup(GroupBase):
             returns a column vector ``(N, 1)`` for kets, so the extra trailing
             dimension is always present for ket-based simulations.
         final_state: Complex array holding the state at the end of the
-            evolution; 1-D ``(hilbert_dim,)`` if the solver returned kets or
-            2-D ``(hilbert_dim, hilbert_dim)`` for density matrices.
-            (For ket solvers, ``Qobj.full()`` returns ``(N, 1)``.)
+            evolution; shape ``(hilbert_dim, 1)`` for ket solvers (because
+            ``Qobj.full()`` always returns a column vector) or
+            ``(hilbert_dim, hilbert_dim)`` for density-matrix solvers.
         frame: Complex array of the rotating frame evaluated at ``t=0``,
             or ``None`` if no frame was set. The presence of a frame is
             also recorded in :attr:`attrs`.

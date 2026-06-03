@@ -12,14 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from importlib.metadata import PackageNotFoundError
-from importlib.metadata import version as _pkg_version
-
 from oqd_compiler_infrastructure import Chain, Post, Pre
 from oqd_core.backend.base import BackendBase
 from oqd_core.compiler.atomic.canonicalize import canonicalize_atomic_circuit_factory
 from oqd_core.interface.atomic import AtomicCircuit
 
+from oqd_trical._version import __version__
 from oqd_trical.backend.qutip.codegen import QutipCodeGeneration
 from oqd_trical.backend.qutip.datastore import build_emulator_datastore
 from oqd_trical.backend.qutip.vm import QutipVM
@@ -30,11 +28,6 @@ from oqd_trical.light_matter.compiler.canonicalize import (
 )
 from oqd_trical.light_matter.compiler.codegen import ConstructHamiltonian
 from oqd_trical.light_matter.interface.emulator import AtomicEmulatorCircuit
-
-try:
-    __version__ = _pkg_version("oqd-trical")
-except PackageNotFoundError:
-    __version__ = "0+unknown"
 
 ########################################################################################
 

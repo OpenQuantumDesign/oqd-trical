@@ -49,6 +49,11 @@ docs = [
 ]
 tests = ["pytest"]
 
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests as slow (integration / physics solvers)",
+]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["oqd_trical*"]

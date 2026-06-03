@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import backend, light_matter, mechanical, misc
-from ._version import __version__
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _pkg_version
 
-__all__ = ["backend", "light_matter", "mechanical", "misc", "__version__"]
+try:
+    __version__ = _pkg_version("oqd-trical")
+except PackageNotFoundError:
+    __version__ = "0+unknown"
