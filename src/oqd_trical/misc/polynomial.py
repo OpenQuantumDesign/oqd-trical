@@ -56,7 +56,7 @@ def polyval(x, alpha):
     dim = len(alpha.shape)
 
     x = jnp.moveaxis(
-        jnp.tile(x, jnp.concatenate((jnp.array(alpha.shape), jnp.array([1, 1])  ))),
+        jnp.tile(x, jnp.concatenate((jnp.array(alpha.shape), jnp.array([1, 1])))),
         jnp.concatenate(
             (
                 jnp.arange(dim + 2, dtype=int)[-1:-3:-1],

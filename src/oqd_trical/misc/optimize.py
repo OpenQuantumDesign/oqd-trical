@@ -17,7 +17,9 @@ Module containing default optimization function generators for TrICal.
 """
 
 ########################################################################################
-
+import jax
+import jax.numpy as jnp
+import optax
 import numpy as np
 from scipy import optimize as opt
 
@@ -34,21 +36,51 @@ def dflt_opt(ti, **kwargs):
     Returns:
         (Callable): Default optimization function that finds the equilibrium position of the trapped ions system of interest via the minimization of the potential.
     """
-    opt_params = {"method": "SLSQP", "options": {"maxiter": 1000}, "tol": 1e-15}
+    # L-BFGS is the closest unconstrained quasi-Newton analogue to SLSQP natively in Optax
+    opt_params = {"maxiter": 10000, "tol": 1e-15, "learning_rate": 0.1}
     opt_params.update(kwargs)
 
     if ti.dim == 1:
-        x_guess = np.linspace(-(ti.N - 1) / 2, (ti.N - 1) / 2, ti.N)
+        x_guess = jnp.linspace(-(ti.N - 1) / 2, (ti.N - 1) / 2, ti.N)
     else:
-        x_guess = np.append(
-            np.concatenate([np.zeros(ti.N)] * (ti.dim - 1)),
-            np.linspace(-(ti.N - 1) / 2, (ti.N - 1) / 2, ti.N),
+        x_guess = jnp.append(
+            jnp.concatenate([jnp.zeros(ti.N)] * (ti.dim - 1)),
+            jnp.linspace(-(ti.N - 1) / 2, (ti.N - 1) / 2, ti.N),
         )
 
     def _dflt_opt(f):
-        res = opt.minimize(f, x_guess, **opt_params)
-        assert res.success, res.__str__()
-        return res.x
+        maxiter = opt_params["maxiter"]
+        tol = opt_params["tol"]
+
+        optimizer = optax.lbfgs(learning_rate=opt_params["learning_rate"])
+
+        @jax.jit
+        def step(params, opt_state):
+            value, grad = jax.value_and_grad(f)(params)
+
+            updates, opt_state = optimizer.update(
+                grad, opt_state, params, value=value, grad=grad, value_fn=f
+            )
+
+            params = optax.apply_updates(params, updates)
+
+            return params, opt_state, value, grad
+
+        params = x_guess
+        opt_state = optimizer.init(params)
+        prev_value = jnp.inf
+
+        for i in range(maxiter):
+            params, opt_state, value, grad = step(params, opt_state)
+
+            if jnp.abs(prev_value - value) < tol or jnp.max(jnp.abs(grad)) < tol:
+                break
+
+            prev_value = value
+
+        assert not jnp.isnan(value), "Optimization diverged (NaNs encountered)."
+
+        return params
 
     return _dflt_opt
 
@@ -65,8 +97,9 @@ def dflt_ls_opt(deg):
     """
 
     def _dflt_ls_opt(a, b):
-        res = opt.lsq_linear(a, b)
-        assert res.success
-        return res.x
+        a = jnp.asarray(a)
+        b = jnp.asarray(b)
+        x, _, _, _ = jnp.linalg.lstsq(a, b, rcond=jnp.finfo(a.dtype).eps)
+        return x
 
     return _dflt_ls_opt

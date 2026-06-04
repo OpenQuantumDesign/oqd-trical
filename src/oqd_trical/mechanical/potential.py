@@ -27,6 +27,57 @@ from .base import Base
 
 ########################################################################################
 
+import jax
+import jax.numpy as jnp
+
+
+@jax.jit
+def polyval2d(x, y, c):
+    """
+    Evaluate a 2-D polynomial at points (x, y).
+    JAX analog to numpy.polynomial.polynomial.polyval2d.
+    """
+    c = jnp.asarray(c)
+    if c.ndim < 2:
+        c = jnp.expand_dims(c, axis=-1)
+
+    x = jnp.asarray(x)
+    y = jnp.asarray(y)
+
+    c_y = c[:, ::-1]
+
+    eval_y = jax.vmap(jnp.polyval, in_axes=(0, None))(c_y, y)
+    eval_x = eval_y[::-1]
+
+    return jnp.polyval(eval_x, x)
+
+
+@jax.jit
+def polyval3d(x, y, z, c):
+    """
+    Evaluate a 3-D polynomial at points (x, y, z).
+    JAX analog to numpy.polynomial.polynomial.polyval3d.
+    """
+    c = jnp.asarray(c)
+    while c.ndim < 3:
+        c = jnp.expand_dims(c, axis=-1)
+
+    x = jnp.asarray(x)
+    y = jnp.asarray(y)
+    z = jnp.asarray(z)
+
+    c_z = c[:, :, ::-1]
+    eval_z = jax.vmap(jax.vmap(jnp.polyval, in_axes=(0, None)), in_axes=(0, None))(
+        c_z, z
+    )
+
+    c_y = eval_z[:, ::-1]
+    eval_y = jax.vmap(jnp.polyval, in_axes=(0, None))(c_y, y)
+
+    c_x = eval_y[::-1]
+
+    return jnp.polyval(c_x, x)
+
 
 class Potential(Base):
     """
@@ -266,6 +317,7 @@ class CoulombPotential(Potential):
 
     def __call__(self, x):
         from jax import numpy as jnp
+
         i, j = (
             np.fromiter(itr.chain(*itr.combinations(range(self.N), 2)), dtype=int)
             .reshape(-1, 2)
@@ -362,9 +414,8 @@ class PolynomialPotential(Potential):
         pass
 
     def __call__(self, x):
-        return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
-            *x.transpose(), self.alpha
-        ).sum()
+        functions = {1: jnp.polyval, 2: polyval2d, 3: polyval3d}
+        return functions[self.dim](*x.transpose(), self.alpha).sum()
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
@@ -492,10 +543,10 @@ class GaussianOpticalPotential(Potential):
     def __call__(self, x):
         delta_x = x - self.focal_point
         w0 = self.beam_waist
-        w = w0 * np.sqrt(1 + (delta_x[:, 0] / self.x_R) ** 2)
+        w = w0 * jnp.sqrt(1 + (delta_x[:, 0] / self.x_R) ** 2)
         V = self.V
-        r = np.sqrt(delta_x[:, 1] ** 2 + delta_x[:, 2] ** 2)
-        e = np.exp(-2 * r**2 / w**2)
+        r = jnp.sqrt(delta_x[:, 1] ** 2 + delta_x[:, 2] ** 2 + 1e-5)
+        e = jnp.exp(-2 * r**2 / w**2)
         return (V * e * w0**2 / w**2).sum()
 
     def first_derivative(self, var):
@@ -630,7 +681,7 @@ class SymbolicPotential(Potential):
         self.params = params
 
         self.symbol = [sympy.Symbol(["x", "y", "z"][i]) for i in range(self.dim)]
-        self.lambdified_expr = sympy.utilities.lambdify(self.symbol, expr)
+        self.lambdified_expr = sympy.utilities.lambdify(self.symbol, expr, "jax")
 
         super(SymbolicPotential, self).__init__(
             self.__call__, self.first_derivative, self.second_derivative, **params
@@ -719,7 +770,7 @@ class AdvancedSymbolicPotential(Potential):
         pass
 
     def __call__(self, x):
-        x = np.array(x)
+        x = jnp.array(x)
         return self.lambdified_expr(*x.flatten())
 
     def first_derivative(self, var):
