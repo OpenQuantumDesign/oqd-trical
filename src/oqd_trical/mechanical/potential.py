@@ -15,7 +15,7 @@
 
 import itertools as itr
 
-import autograd as ag
+import jax
 import numpy as np
 import sympy
 from numpy.polynomial import polynomial as poly
@@ -265,12 +265,13 @@ class CoulombPotential(Potential):
         pass
 
     def __call__(self, x):
+        from jax import numpy as jnp
         i, j = (
             np.fromiter(itr.chain(*itr.combinations(range(self.N), 2)), dtype=int)
             .reshape(-1, 2)
             .transpose()
         )
-        nxij = np.linalg.norm(x[i] - x[j], axis=-1)
+        nxij = jnp.linalg.norm(x[i] - x[j], axis=-1)
         return cst.k_e * self.q**2 * (1 / nxij).sum()
 
     def first_derivative(self, var):
@@ -843,13 +844,13 @@ class AutoDiffPotential(Potential):
         def flatten_expr(x):
             return self.expr(x.reshape(self.dim, -1).transpose())
 
-        return lambda x: ag.jacobian(flatten_expr, 0)(x.transpose().reshape(-1))
+        return lambda x: jax.jacobian(flatten_expr, 0)(x.transpose().reshape(-1))
 
     def hessian(self):
         def flatten_expr(x):
             return self.expr(x.reshape(self.dim, -1).transpose())
 
-        return lambda x: ag.hessian(flatten_expr, 0)(x.transpose().reshape(-1))
+        return lambda x: jax.hessian(flatten_expr, 0)(x.transpose().reshape(-1))
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]

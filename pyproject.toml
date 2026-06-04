@@ -27,7 +27,6 @@ classifiers = [
 ]
 
 dependencies = [
-    "autograd",
     "matplotlib",
     "numpy",
     "scipy",
@@ -38,6 +37,7 @@ dependencies = [
     "dynamiqs>=0.3.1",
     "pytest-cov>=7.1.0",
     "coverage>=7.14.1",
+    "optax>=0.2.5",
 ]
 
 [project.optional-dependencies]

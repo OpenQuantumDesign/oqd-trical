@@ -25,6 +25,11 @@ To develop, clone the repository locally:
 git clone https://github.com/OpenQuantumDesign/oqd-trical
 pip install .
 ```
+or using `uv`
+```bash
+uv venv
+uv sync
+```
 
 ## Getting Started <a name="Getting Started"></a>
 

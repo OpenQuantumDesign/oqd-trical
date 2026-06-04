@@ -19,6 +19,12 @@ import oqd_trical
 import oqd_trical.misc.constants as cst
 from oqd_trical.misc.polynomial import polyval
 
+import jax
+import jax.numpy as jnp
+
+jax.config.update("jax_debug_nans", True)
+jax.config.update("jax_enable_x64", True)
+
 
 def advanced_symbolic_potential_ti():
     import sympy as sym
@@ -54,7 +60,7 @@ def advanced_symbolic_potential_ti():
 
 
 def optical_potential_ti():
-    from autograd import numpy as agnp
+    from jax import numpy as jnp
 
     N = 3  # Number of ions
     dim = 3  # Dimension of system
@@ -76,7 +82,7 @@ def optical_potential_ti():
 
     # function for the potential defined using autograd.numpy
     def expr(x):
-        return agnp.sum(
+        return np.sum(
             mass * (omega_x) ** 2 / 2 * x[:, 0] ** 2
             + mass * (omega_y) ** 2 / 2 * x[:, 1] ** 2
             + mass * (omega_z) ** 2 / 2 * x[:, 2] ** 2
@@ -98,13 +104,13 @@ def optical_potential_ti():
     def intensity_expr(x):
         delta_x = x - focal_point
         x_R = np.pi * beam_waist**2 * refractive_index / wavelength
-        w = beam_waist * agnp.sqrt(1 + (delta_x[:, 0] / x_R) ** 2)
+        w = beam_waist * jnp.sqrt(1 + (delta_x[:, 0] / x_R) ** 2)
         return (
             2
             * power
             / (np.pi * beam_waist**2)
             * (beam_waist / w) ** 2
-            * agnp.exp(-2 * (delta_x[:, 1] ** 2 + delta_x[:, 2] ** 2) / w**2)
+            * jnp.exp(-2 * (delta_x[:, 1] ** 2 + delta_x[:, 2] ** 2) / w**2)
         ).sum()
 
     # Define an instance of the OpticalPotential class for the Gaussian beam defined above
@@ -163,7 +169,7 @@ def ms_potential_ti():
 
 
 def gaussian_optical_potential_ti():
-    from autograd import numpy as agnp
+    from jax import numpy as jnp
 
     N = 3  # Number of ions
     dim = 3  # Dimension of system
@@ -185,7 +191,7 @@ def gaussian_optical_potential_ti():
 
     # function for the potential defined using autograd.numpy
     def expr(x):
-        return agnp.sum(
+        return jnp.sum(
             mass * (omega_x) ** 2 / 2 * x[:, 0] ** 2
             + mass * (omega_y) ** 2 / 2 * x[:, 1] ** 2
             + mass * (omega_z) ** 2 / 2 * x[:, 2] ** 2
@@ -218,7 +224,6 @@ def gaussian_optical_potential_ti():
 
 def symbolic_optical_potential_ti():
     import sympy as sym
-    from autograd import numpy as agnp
 
     N = 3  # Number of ions
     dim = 3  # Dimension of system
@@ -231,7 +236,7 @@ def symbolic_optical_potential_ti():
 
     # function for the potential defined using autograd.numpy
     def expr(x):
-        return agnp.sum(
+        return np.sum(
             mass * (omega_x) ** 2 / 2 * x[:, 0] ** 2
             + mass * (omega_y) ** 2 / 2 * x[:, 1] ** 2
             + mass * (omega_z) ** 2 / 2 * x[:, 2] ** 2
@@ -1806,8 +1811,7 @@ class TestMechanical:
         np.testing.assert_allclose(mic, expected_mic)
 
     def test_polyval(self):
-        from autograd import numpy as agnp
         alpha_fit = polynomial_fit()
-        val = polyval(agnp.array([1,2,3]), alpha_fit)
+        val = polyval(jnp.array([1,2,3]), alpha_fit)
 
         np.testing.assert_allclose(val, np.array([4.125274e-12]))

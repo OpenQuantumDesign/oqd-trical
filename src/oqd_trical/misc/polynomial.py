@@ -19,7 +19,7 @@ Module containing relevant functions regarding polynomials for TrIcal.
 ########################################################################################
 
 import numpy as np
-from autograd import numpy as agnp
+from jax import numpy as jnp
 from numpy.polynomial import polynomial as poly
 
 ########################################################################################
@@ -55,38 +55,38 @@ def multivariate_polyfit(x, vals, deg, l=1, opt=dflt_ls_opt):  # noqa: E741
 def polyval(x, alpha):
     dim = len(alpha.shape)
 
-    x = agnp.moveaxis(
-        agnp.tile(x, agnp.concatenate((alpha.shape, [1, 1]))),
-        agnp.concatenate(
+    x = jnp.moveaxis(
+        jnp.tile(x, jnp.concatenate((jnp.array(alpha.shape), jnp.array([1, 1])  ))),
+        jnp.concatenate(
             (
-                agnp.arange(dim + 2, dtype=int)[-1:-3:-1],
-                agnp.arange(dim + 2, dtype=int)[:-2],
+                jnp.arange(dim + 2, dtype=int)[-1:-3:-1],
+                jnp.arange(dim + 2, dtype=int)[:-2],
             )
         ),
-        agnp.arange(dim + 2, dtype=int),
+        jnp.arange(dim + 2, dtype=int),
     )
 
     idcs = [
-        agnp.moveaxis(
-            agnp.tile(
-                agnp.arange(alpha.shape[i]),
-                agnp.concatenate(
+        jnp.moveaxis(
+            jnp.tile(
+                jnp.arange(alpha.shape[i]),
+                jnp.concatenate(
                     (
-                        agnp.array(alpha.shape)[
-                            agnp.delete(agnp.arange(dim, dtype=int), i)
+                        jnp.array(alpha.shape)[
+                            jnp.delete(jnp.arange(dim, dtype=int), i)
                         ],
-                        [1],
+                        jnp.array([1]),
                     )
                 ),
             ),
             range(dim),
-            np.concatenate((agnp.delete(agnp.arange(dim, dtype=int), i), [i])),
+            np.concatenate((jnp.delete(jnp.arange(dim, dtype=int), i), [i])),
         )
         for i in range(dim)
     ]
 
-    v = agnp.prod(
-        [x[i] ** idcs[i] for i in range(len(alpha.shape))],
+    v = jnp.prod(
+        jnp.array([x[i] ** idcs[i] for i in range(len(alpha.shape))]),
         axis=0,
     )
     return (v * alpha).sum(tuple(range(1, dim + 1)))
