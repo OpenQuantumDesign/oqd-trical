@@ -1,4 +1,5 @@
 # Copyright 2024-2025 Open Quantum Design
+from typing import Callable
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -63,7 +64,7 @@ class TrappedIons(Base):
         self.fp = self.cp + self.ps.sum()
         pass
 
-    def equilibrium_position(self, opt=dflt_opt, **kwargs):
+    def equilibrium_position(self, opt: Callable = dflt_opt, **kwargs) -> np.ndarray:
         """
         Function that calculates the equilibrium position of the ions.
 
@@ -85,7 +86,7 @@ class TrappedIons(Base):
         )
         return self.x_ep
 
-    def normal_modes(self, block_sort=False):
+    def normal_modes(self, block_sort: bool = False) -> (np.ndarray, np.ndarray):
         """
         Function that calculates the normal modes of the system.
 
@@ -149,7 +150,7 @@ class TrappedIons(Base):
         )
         return self.w, self.b
 
-    def principal_axes(self, tol=1e-3):
+    def principal_axes(self, tol: float = 1e-3) -> (np.ndarray, np.ndarray, np.ndarray):
         """
         Function that calculates the principle axes of the system.
 
@@ -218,7 +219,7 @@ class TrappedIons(Base):
         self.__dict__.update(self.params)
         pass
 
-    def mode_ion_coupling(self):
+    def mode_ion_coupling(self) -> np.ndarray:
         if (
             np.isin(
                 np.array(["w_pa", "b_pa", "x_pa"]), np.array(self.__dict__.keys())

@@ -36,6 +36,8 @@ dependencies = [
     "oqd-core",
     "oqd-compiler-infrastructure",
     "dynamiqs>=0.3.1",
+    "pytest-cov>=7.1.0",
+    "coverage>=7.14.1",
 ]
 
 [project.optional-dependencies]
