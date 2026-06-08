@@ -31,6 +31,10 @@ class DynamiqsCodeGeneration(ConversionRule):
     Rule that converts an [`AtomicEmulatorCircuit`][oqd_trical.light_matter.interface.emulator.AtomicEmulatorCircuit]
     to a [`DynamiqsExperiment`][oqd_trical.backend.dynamiqs.interface.DynamiqsExperiment]
 
+    Operators and coefficients are in angular frequency (rad/s) and time t is in
+    seconds, matching the atomic interface; the Hamiltonian is integrated with
+    hbar = 1.
+
     Attributes:
         hilbert_space (Dict[str, int]): Hilbert space of the system.
     """

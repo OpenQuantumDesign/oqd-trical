@@ -42,7 +42,7 @@ class QutipVM(RewriteRule):
         self.hilbert_space = hilbert_space
         self.timestep = timestep
 
-        if initial_state:
+        if initial_state is not None:
             if initial_state.dims[0] != list(self.hilbert_space.size.values()):
                 raise ValueError("Initial state incompatible with Hilbert space")
             self.current_state = initial_state
@@ -87,7 +87,7 @@ class QutipVM(RewriteRule):
         empty_hamiltonian = model.hamiltonian is None
 
         if empty_hamiltonian:
-            self.tspan.extend(list(tspan[1:] + self.tspan[-1]))
+            self.tspan.extend(list(tspan[1:]))
             self.states.extend([self.current_state] * (len(tspan) - 1))
             return
 

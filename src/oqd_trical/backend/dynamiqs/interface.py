@@ -28,8 +28,8 @@ class DynamiqsExperiment(TypeReflectBaseModel):
     Class representing a Dynamiqs experiment represented in terms of atomic operations expressed in terms of their Hamiltonians.
 
     Attributes:
-        base (Operator): Free Hamiltonian.
-        sequence (List[AtomicEmulatorGate]): List of gates to apply.
+        frame (Optional[dq.TimeQArray]): Time-dependent frame transformation, if any.
+        sequence (List[DynamiqsGate]): List of gates to apply.
 
     """
 

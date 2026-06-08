@@ -13,9 +13,12 @@
 # limitations under the License.
 
 import dynamiqs as dq
+import numpy as np
 from dynamiqs import mesolve, sesolve
 from jax import numpy as jnp
 from oqd_compiler_infrastructure import RewriteRule
+
+from oqd_trical.backend.dynamiqs.solver_options import DynamiqsSolverOptions
 
 ########################################################################################
 
@@ -28,7 +31,7 @@ class DynamiqsVM(RewriteRule):
         hilbert_space (Dict[str, int]): Hilbert space of the system.
         timestep (float): Timestep between tracked states of the evolution.
         solver (Literal["SESolver","MESolver"]): Dynamiqs solver to use.
-        solver_options (Dict[str,Any]): Dynamiqs solver options
+        solver_options (DynamiqsSolverOptions): Dynamiqs solver options.
     """
 
     def __init__(
@@ -38,12 +41,12 @@ class DynamiqsVM(RewriteRule):
         *,
         initial_state=None,
         solver="SESolver",
-        solver_options={},
+        solver_options=None,
     ):
         self.hilbert_space = hilbert_space
         self.timestep = timestep
 
-        if initial_state:
+        if initial_state is not None:
             if initial_state.dims != tuple(self.hilbert_space.size.values()):
                 raise ValueError("Initial state incompatible with Hilbert space")
             self.current_state = initial_state
@@ -62,7 +65,9 @@ class DynamiqsVM(RewriteRule):
             "SESolver": sesolve,
             "MESolver": mesolve,
         }[solver]
-        self.solver_options = solver_options
+        self.solver_options = DynamiqsSolverOptions.from_obj(solver_options)
+        self._method = self.solver_options.to_method()
+        self._options = self.solver_options.to_options()
 
     @property
     def result(self):
@@ -78,30 +83,28 @@ class DynamiqsVM(RewriteRule):
         self.frame = model.frame
 
     def map_DynamiqsGate(self, model):
-        tspan = jnp.arange(0, model.duration, self.timestep)
+        # duration and timestep are concrete floats, so build the save times
+        # host-side with numpy and keep traced values out of the solve call
+        t0 = self.tspan[-1]
+        tspan = np.arange(0, model.duration, self.timestep)
+        if tspan.size == 0 or tspan[-1] != model.duration:
+            tspan = np.append(tspan, model.duration)
+        tspan = tspan + t0
 
-        if tspan[-1] != model.duration:
-            tspan = jnp.append(tspan, model.duration)
-
-        tspan = tspan + self.tspan[-1]
-
-        empty_hamiltonian = model.hamiltonian is None
-
-        if empty_hamiltonian:
-            self.tspan.extend(list(tspan[1:] + self.tspan[-1]))
+        if model.hamiltonian is None:
+            self.tspan.extend(tspan[1:].tolist())
             self.states.extend([self.current_state] * (len(tspan) - 1))
             return
 
         res = self.solver(
             model.hamiltonian,
             self.current_state,
-            tspan,
-            solver=self.solver_options["solver"]
-            if "solver" in self.solver_options.keys()
-            else dq.solver.Tsit5(),
+            jnp.asarray(tspan),
+            method=self._method,
+            options=self._options,
         )
 
         self.current_state = res.final_state
 
-        self.tspan.extend(list(tspan[1:]))
+        self.tspan.extend(tspan[1:].tolist())
         self.states.extend(list(res.states[1:]))
