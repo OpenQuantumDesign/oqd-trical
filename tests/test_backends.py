@@ -14,10 +14,14 @@
 
 ########################################################################################
 import dynamiqs as dq
+import numpy as np
 import pytest
 import qutip as qt
+from oqd_dataschema import Datastore, TrICalEmulatorDataGroup
 
 from oqd_trical.backend.dynamiqs.vm import DynamiqsVM
+from oqd_trical.backend.qutip.base import QutipBackend
+from oqd_trical.backend.qutip.interface import QutipExperiment, QutipGate
 from oqd_trical.backend.qutip.vm import QutipVM
 from oqd_trical.light_matter.compiler.analysis import HilbertSpace
 
@@ -50,3 +54,34 @@ class TestInitialStateVM:
         initial_state = dq.tensor(dq.basis(2, 0), dq.basis(3, 0))
 
         DynamiqsVM(hilbert_space=hilbert_space, timestep=1, initial_state=initial_state)
+
+
+class TestQutipDatastore:
+    def test_run_returns_hdf5_roundtrippable_datastore(self, tmp_path):
+        hilbert_space = HilbertSpace(hilbert_space=dict(E0={0, 1}))
+        experiment = QutipExperiment(
+            frame=None,
+            sequence=[QutipGate(hamiltonian=None, duration=1.0)],
+        )
+
+        datastore = QutipBackend(solver_options={"progress_bar": False}).run(
+            experiment, hilbert_space, timestep=0.5
+        )
+
+        assert isinstance(datastore, Datastore)
+        emulation = datastore["emulation"]
+        assert isinstance(emulation, TrICalEmulatorDataGroup)
+        np.testing.assert_allclose(emulation.tspan.data, np.array([0.0, 0.5, 1.0]))
+        assert emulation.states.data.shape == (3, 2)
+        assert emulation.final_state.data.shape == (2,)
+        assert emulation.attrs["backend"] == "qutip"
+        assert emulation.attrs["solver"] == "SESolver"
+        assert emulation.attrs["hilbert_space"] == '{"E0": 2}'
+
+        f = tmp_path / "qutip_run.h5"
+        datastore.model_dump_hdf5(f)
+        loaded = Datastore.model_validate_hdf5(f)
+
+        np.testing.assert_allclose(
+            loaded["emulation"].states.data, emulation.states.data
+        )
