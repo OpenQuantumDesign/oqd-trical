@@ -1,11 +1,11 @@
 # Copyright 2024-2025 Open Quantum Design
-
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,9 +62,17 @@ class QutipVM(RewriteRule):
             "MESolver": MESolver,
         }[solver]
         self.solver_options = solver_options
+        self.solver_name = solver
 
     @property
     def result(self):
+        """Legacy result view as a plain ``dict`` (kept for backwards
+        compatibility).
+
+        New code should prefer the schema-validated
+        :class:`oqd_dataschema.Datastore` returned by
+        :meth:`oqd_trical.backend.qutip.base.QutipBackend.run`.
+        """
         return dict(
             final_state=self.current_state,
             states=self.states,

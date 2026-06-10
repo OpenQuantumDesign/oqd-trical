@@ -12,16 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import datastore  # noqa: F401  - imported for side-effects (Group registration)
-from .base import QutipBackend
-from .codegen import QutipCodeGeneration
-from .datastore import TrICalEmulatorDataGroup, build_emulator_datastore
-from .vm import QutipVM
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _pkg_version
 
-__all__ = [
-    "QutipBackend",
-    "QutipCodeGeneration",
-    "QutipVM",
-    "TrICalEmulatorDataGroup",
-    "build_emulator_datastore",
-]
+try:
+    __version__ = _pkg_version("oqd-trical")
+except PackageNotFoundError:
+    __version__ = "0+unknown"

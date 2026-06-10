@@ -1,11 +1,11 @@
 # Copyright 2024-2025 Open Quantum Design
-
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,9 @@ from oqd_core.backend.base import BackendBase
 from oqd_core.compiler.atomic.canonicalize import canonicalize_atomic_circuit_factory
 from oqd_core.interface.atomic import AtomicCircuit
 
+from oqd_trical._version import __version__
 from oqd_trical.backend.qutip.codegen import QutipCodeGeneration
+from oqd_trical.backend.qutip.datastore import build_emulator_datastore
 from oqd_trical.backend.qutip.vm import QutipVM
 from oqd_trical.light_matter.compiler.analysis import GetHilbertSpace, HilbertSpace
 from oqd_trical.light_matter.compiler.canonicalize import (
@@ -56,6 +58,11 @@ class QutipBackend(BackendBase):
         self.solver = solver
         self.solver_options = solver_options
 
+        # Most recently used fock cutoff, populated by `compile` and used by
+        # `run` to populate the Datastore attrs. May be overridden by
+        # passing `fock_cutoff` to `run`.
+        self._fock_cutoff = None
+
     def compile(self, circuit, fock_cutoff, *, relabel=True):
         """
         Compiles a AtomicCircuit or AtomicEmulatorCircuit to a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
@@ -66,7 +73,7 @@ class QutipBackend(BackendBase):
 
         Returns:
             experiment (QutipExperiment): Compiled [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
-            hilbert_space (Dict[str, int]): Hilbert space of the system.
+            hilbert_space (HilbertSpace): Hilbert space of the system.
         """
         assert isinstance(circuit, (AtomicCircuit, AtomicEmulatorCircuit))
 
@@ -115,19 +122,43 @@ class QutipBackend(BackendBase):
         compiler_p3 = Post(QutipCodeGeneration(hilbert_space=hilbert_space))
         experiment = compiler_p3(intermediate)
 
+        # Stash for the upcoming `run` call.
+        self._fock_cutoff = fock_cutoff
+
         return experiment, hilbert_space
 
-    def run(self, experiment, hilbert_space, timestep, *, initial_state=None):
+    def run(
+        self,
+        experiment,
+        hilbert_space,
+        timestep,
+        *,
+        initial_state=None,
+        fock_cutoff=None,
+    ):
         """
-        Runs a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+        Runs a [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment]
+        and returns the result as a schema-validated
+        [`Datastore`][oqd_dataschema.Datastore].
 
         Args:
             experiment (QutipExperiment): [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment] to be executed.
-            hilbert_space (Dict[str, int]): Hilbert space of the system.
+            hilbert_space (HilbertSpace): Hilbert space of the system.
             timestep (float): Timestep between tracked states of the evolution.
+            initial_state: Optional initial state. If ``None``, every
+                subsystem is initialized to its ground state.
+            fock_cutoff: Optional override for the Fock cutoff used to
+                label the run metadata. Defaults to the value passed to
+                the most recent :meth:`compile` call.
 
         Returns:
-            result (Dict[str,Any]): Result of execution of [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+            result (Datastore): Schema-validated datastore wrapping a
+            single [`TrICalEmulatorDataGroup`][oqd_trical.backend.qutip.datastore.TrICalEmulatorDataGroup]
+            named ``"emulation"``. The group holds ``tspan``, ``states``,
+            ``final_state`` and (optionally) ``frame`` datasets plus the
+            run metadata in ``attrs``. The whole datastore can be saved
+            to disk with :meth:`Datastore.model_dump_hdf5` and reloaded
+            with :meth:`Datastore.model_validate_hdf5`.
         """
         vm = Pre(
             QutipVM(
@@ -140,5 +171,23 @@ class QutipBackend(BackendBase):
         )
 
         vm(experiment)
+        run_vm = vm.children[0]
 
-        return vm.children[0].result
+        cutoff = fock_cutoff if fock_cutoff is not None else self._fock_cutoff
+        # If the caller never invoked `compile` and did not pass a cutoff,
+        # fall back to an empty dict (no Fock modes labelled).
+        if cutoff is None:
+            cutoff = {}
+
+        return build_emulator_datastore(
+            states=run_vm.states,
+            tspan=run_vm.tspan,
+            final_state=run_vm.current_state,
+            frame=getattr(run_vm, "frame", None),
+            hilbert_space=hilbert_space,
+            solver=run_vm.solver_name,
+            timestep=timestep,
+            fock_cutoff=cutoff,
+            backend="qutip",
+            version=__version__,
+        )

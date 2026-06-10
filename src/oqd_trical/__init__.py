@@ -13,5 +13,6 @@
 # limitations under the License.
 
 from . import backend, light_matter, mechanical, misc
+from ._version import __version__
 
-__all__ = ["backend", "light_matter", "mechanical", "misc"]
+__all__ = ["backend", "light_matter", "mechanical", "misc", "__version__"]
