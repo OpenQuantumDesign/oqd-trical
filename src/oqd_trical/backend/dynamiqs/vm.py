@@ -14,8 +14,13 @@
 
 import dynamiqs as dq
 from dynamiqs import mesolve, sesolve
+from dynamiqs.progress_meter import NoProgressMeter
 from jax import numpy as jnp
 from oqd_compiler_infrastructure import RewriteRule
+
+# dynamiqs 0.3.1 named the integration method parameter 'solver'; 0.3.2 renamed it
+# to 'method'. Detect which name to use at import time so calls stay compatible.
+_METHOD_KWARG = "solver" if hasattr(dq, "solver") else "method"
 
 ########################################################################################
 
@@ -28,7 +33,13 @@ class DynamiqsVM(RewriteRule):
         hilbert_space (Dict[str, int]): Hilbert space of the system.
         timestep (float): Timestep between tracked states of the evolution.
         solver (Literal["SESolver","MESolver"]): Dynamiqs solver to use.
-        solver_options (Dict[str,Any]): Dynamiqs solver options
+        solver_options (Dict[str,Any]): Dynamiqs solver options. Recognised keys:
+            - ``"solver"``: integration method passed to sesolve/mesolve (e.g.
+              ``dq.Tsit5()``). Defaults to the dynamiqs built-in default.
+            - ``"progress_meter"``: ``False`` / ``True`` / an
+              ``AbstractProgressMeter`` instance. Defaults to
+              ``NoProgressMeter()`` (no output) to avoid exhausting file
+              descriptors when the backend is called from Jupyter/ipykernel.
     """
 
     def __init__(
@@ -92,13 +103,20 @@ class DynamiqsVM(RewriteRule):
             self.states.extend([self.current_state] * (len(tspan) - 1))
             return
 
+        solver_kwargs = {}
+        if "solver" in self.solver_options:
+            solver_kwargs[_METHOD_KWARG] = self.solver_options["solver"]
+
+        options = dq.Options(
+            progress_meter=self.solver_options.get("progress_meter", NoProgressMeter())
+        )
+
         res = self.solver(
             model.hamiltonian,
             self.current_state,
             tspan,
-            solver=self.solver_options["solver"]
-            if "solver" in self.solver_options.keys()
-            else dq.solver.Tsit5(),
+            **solver_kwargs,
+            options=options,
         )
 
         self.current_state = res.final_state
