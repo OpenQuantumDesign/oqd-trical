@@ -18,6 +18,7 @@ from oqd_core.compiler.atomic.canonicalize import canonicalize_atomic_circuit_fa
 from oqd_core.interface.atomic import AtomicCircuit
 
 from oqd_trical.backend.dynamiqs.codegen import DynamiqsCodeGeneration
+from oqd_trical.backend.dynamiqs.solver_options import DynamiqsSolverOptions
 from oqd_trical.backend.dynamiqs.vm import DynamiqsVM
 from oqd_trical.light_matter.compiler.analysis import GetHilbertSpace, HilbertSpace
 from oqd_trical.light_matter.compiler.canonicalize import (
@@ -37,7 +38,9 @@ class DynamiqsBackend(BackendBase):
         save_intermediate (bool): Whether compiler saves the intermediate representation of the atomic circuit
         approx_pass (PassBase): Pass of approximations to apply to the system.
         solver (Literal["SESolver","MESolver"]): Dynamiqs solver to use.
-        solver_options (Dict[str,Any]): Dynamiqs solver options
+        solver_options (DynamiqsSolverOptions): Dynamiqs solver options. Accepts a
+            [`DynamiqsSolverOptions`][oqd_trical.backend.dynamiqs.solver_options.DynamiqsSolverOptions],
+            a dict of its fields, or None for the documented defaults.
         intermediate (AtomicEmulatorCircuit): Intermediate representation of the atomic circuit during compilation
     """
 
@@ -46,7 +49,7 @@ class DynamiqsBackend(BackendBase):
         save_intermediate=True,
         approx_pass=None,
         solver="SESolver",
-        solver_options={},
+        solver_options=None,
     ):
         super().__init__()
 
@@ -54,7 +57,7 @@ class DynamiqsBackend(BackendBase):
         self.intermediate = None
         self.approx_pass = approx_pass
         self.solver = solver
-        self.solver_options = solver_options
+        self.solver_options = DynamiqsSolverOptions.from_obj(solver_options)
 
     def compile(self, circuit, fock_cutoff, *, relabel=True):
         """
@@ -87,7 +90,6 @@ class DynamiqsBackend(BackendBase):
 
         get_hilbert_space = GetHilbertSpace()
         analysis = Post(get_hilbert_space)
-        analysis(intermediate)
 
         if relabel:
             analysis(intermediate)
@@ -105,7 +107,7 @@ class DynamiqsBackend(BackendBase):
         hilbert_space = HilbertSpace(hilbert_space=_hilbert_space)
 
         if any(map(lambda x: x is None, hilbert_space.hilbert_space.values())):
-            raise "Hilbert space not fully specified."
+            raise ValueError("Hilbert space not fully specified.")
 
         relabeller = Post(RelabelStates(hilbert_space.get_relabel_rules()))
         intermediate = relabeller(intermediate)
@@ -136,6 +138,43 @@ class DynamiqsBackend(BackendBase):
                 timestep=timestep,
                 solver=self.solver,
                 solver_options=self.solver_options,
+                initial_state=initial_state,
+            )
+        )
+
+        vm(experiment)
+
+        return vm.children[0].result
+
+    def run_task(self, task, *, initial_state=None):
+        """
+        Runs an AtomicCircuit carried by a Task.
+
+        Mirrors the Task entry point of oqd-analog-emulator's QutipBackend. The
+        Fock cutoff and timestep are taken from the task args' fock_trunc and dt;
+        the Diffrax options come from the
+        [`TaskArgsAtomicEmulator`][oqd_trical.backend.dynamiqs.task.TaskArgsAtomicEmulator]
+        solver_options, falling back to the backend's own solver_options when unset.
+
+        Args:
+            task (Task): Task whose program is an AtomicCircuit and whose args are a
+                [`TaskArgsAtomicEmulator`][oqd_trical.backend.dynamiqs.task.TaskArgsAtomicEmulator].
+
+        Returns:
+            result (Dict[str,Any]): Result of execution, as returned by run().
+        """
+        args = task.args
+        solver = getattr(args, "solver", self.solver)
+        solver_options = getattr(args, "solver_options", None) or self.solver_options
+
+        experiment, hilbert_space = self.compile(task.program, args.fock_trunc)
+
+        vm = Pre(
+            DynamiqsVM(
+                hilbert_space=hilbert_space,
+                timestep=args.dt,
+                solver=solver,
+                solver_options=solver_options,
                 initial_state=initial_state,
             )
         )

@@ -104,7 +104,7 @@ class QutipBackend(BackendBase):
         hilbert_space = HilbertSpace(hilbert_space=_hilbert_space)
 
         if any(map(lambda x: x is None, hilbert_space.hilbert_space.values())):
-            raise "Hilbert space not fully specified."
+            raise ValueError("Hilbert space not fully specified.")
 
         relabeller = Post(RelabelStates(hilbert_space.get_relabel_rules()))
         intermediate = relabeller(intermediate)

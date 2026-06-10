@@ -13,12 +13,14 @@
 # limitations under the License.
 
 from . import dynamiqs, qutip
-from .dynamiqs import DynamiqsBackend
+from .dynamiqs import DynamiqsBackend, DynamiqsSolverOptions, TaskArgsAtomicEmulator
 from .qutip import QutipBackend
 
 __all__ = [
     "qutip",
     "dynamiqs",
     "DynamiqsBackend",
+    "DynamiqsSolverOptions",
+    "TaskArgsAtomicEmulator",
     "QutipBackend",
 ]
