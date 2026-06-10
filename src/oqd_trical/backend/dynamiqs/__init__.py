@@ -14,10 +14,14 @@
 
 from .base import DynamiqsBackend
 from .codegen import DynamiqsCodeGeneration
+from .solver import DynamiqsSolverOptions
+from .task import TaskArgsAtomicEmulator
 from .vm import DynamiqsVM
 
 __all__ = [
     "DynamiqsBackend",
     "DynamiqsCodeGeneration",
+    "DynamiqsSolverOptions",
+    "TaskArgsAtomicEmulator",
     "DynamiqsVM",
 ]

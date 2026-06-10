@@ -5,7 +5,7 @@ Backends are used to execute the AtomicCircuit.
 ## Supported Backends
 
 - [QuTiP](https://qutip.readthedocs.io/en/latest/) <div style="float:right;"> [![](https://img.shields.io/badge/Implementation-7C4DFF)][oqd_trical.backend.qutip.QutipBackend] </div>
-- [Dynamiqs](https://qutip.readthedocs.io/en/latest/) <div style="float:right;"> [![](https://img.shields.io/badge/Implementation-7C4DFF)][oqd_trical.backend.dynamiqs.DynamiqsBackend] </div>
+- [Dynamiqs](https://www.dynamiqs.org/) <div style="float:right;"> [![](https://img.shields.io/badge/Implementation-7C4DFF)][oqd_trical.backend.dynamiqs.DynamiqsBackend] </div>
 
 ## Compile
 
@@ -32,3 +32,7 @@ Executes the compatible form of the AtomicCircuit with the backend using a tree 
 - Dynamiqs uses [`DynamiqsVM`][oqd_trical.backend.dynamiqs.vm.DynamiqsVM] as its tree walking interpreter.
 
 ///
+
+## Dynamiqs units and solver options
+
+Energies, Rabi frequencies, and detunings are in **rad/s**; pulse durations are in **seconds**. Configure Diffrax integration via [`DynamiqsSolverOptions`][oqd_trical.backend.dynamiqs.solver.DynamiqsSolverOptions] on [`DynamiqsBackend`][oqd_trical.backend.dynamiqs.DynamiqsBackend] (see `solver.py` for defaults).
