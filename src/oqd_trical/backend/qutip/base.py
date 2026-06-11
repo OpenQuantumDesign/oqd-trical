@@ -17,6 +17,7 @@ from oqd_core.backend.base import BackendBase
 from oqd_core.compiler.atomic.canonicalize import canonicalize_atomic_circuit_factory
 from oqd_core.interface.atomic import AtomicCircuit
 
+from oqd_trical.backend.dataschema import emulation_result_to_datastore
 from oqd_trical.backend.qutip.codegen import QutipCodeGeneration
 from oqd_trical.backend.qutip.vm import QutipVM
 from oqd_trical.light_matter.compiler.analysis import GetHilbertSpace, HilbertSpace
@@ -127,7 +128,10 @@ class QutipBackend(BackendBase):
             timestep (float): Timestep between tracked states of the evolution.
 
         Returns:
-            result (Dict[str,Any]): Result of execution of [`QutipExperiment`][oqd_trical.backend.qutip.interface.QutipExperiment].
+            datastore (Datastore): Result of execution as an
+                [`oqd_dataschema.Datastore`][oqd_dataschema.datastore.Datastore]
+                with a single [`TrICalEmulatorDataGroup`][oqd_trical.backend.dataschema.TrICalEmulatorDataGroup]
+                under the `emulation` key.
         """
         vm = Pre(
             QutipVM(
@@ -141,4 +145,9 @@ class QutipBackend(BackendBase):
 
         vm(experiment)
 
-        return vm.children[0].result
+        return emulation_result_to_datastore(
+            vm.children[0].result,
+            solver=self.solver,
+            timestep=timestep,
+            backend="qutip",
+        )
