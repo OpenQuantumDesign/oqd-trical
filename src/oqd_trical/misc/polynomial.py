@@ -202,45 +202,15 @@ def multivariate_polyfit(
     return _multivariate_polyfit_jit(x, vals, deg_tuple, l, opt)
 
 
+@jax.jit
 def polyval(x: ArrayLike, alpha: ArrayLike) -> jax.Array:
     x = jnp.asarray(x)
     alpha = jnp.asarray(alpha)
-    dim = len(alpha.shape)
+    dim = alpha.ndim
 
-    x = jnp.moveaxis(
-        jnp.tile(x, jnp.concatenate((jnp.array(alpha.shape), jnp.array([1, 1])))),
-        jnp.concatenate(
-            (
-                jnp.arange(dim + 2, dtype=int)[-1:-3:-1],
-                jnp.arange(dim + 2, dtype=int)[:-2],
-            )
-        ),
-        jnp.arange(dim + 2, dtype=int),
-    )
+    if x.ndim == 1:
+        x = x[:, None] if dim == 1 else x[None, :]
 
-    idcs = [
-        jnp.moveaxis(
-            jnp.tile(
-                jnp.arange(alpha.shape[i]),
-                jnp.concatenate(
-                    (
-                        jnp.array(alpha.shape)[
-                            jnp.delete(jnp.arange(dim, dtype=int), i)
-                        ],
-                        jnp.array([1]),
-                    )
-                ),
-            ),
-            range(dim),
-            jnp.concatenate(
-                (jnp.delete(jnp.arange(dim, dtype=int), i), jnp.array([i]))
-            ),
-        )
-        for i in range(dim)
-    ]
-
-    v = jnp.prod(
-        jnp.array([x[i] ** idcs[i] for i in range(len(alpha.shape))]),
-        axis=0,
-    )
-    return (v * alpha).sum(tuple(range(1, dim + 1)))
+    powers = jnp.asarray(np.indices(alpha.shape).reshape(dim, -1).T)
+    terms = jnp.prod(x[:, None, :] ** powers[None, :, :], axis=-1)
+    return jnp.sum(terms * alpha.reshape(-1), axis=-1)

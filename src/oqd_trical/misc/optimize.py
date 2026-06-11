@@ -97,6 +97,7 @@ def dflt_ls_opt(deg: Sequence[int]) -> Callable[[ArrayLike, ArrayLike], jax.Arra
         (Callable): Default optimization function that finds the best polynomial, of the specified degree, fit for the data .
     """
 
+    @jax.jit
     def _dflt_ls_opt(a, b):
         a = jnp.asarray(a)
         b = jnp.asarray(b)
