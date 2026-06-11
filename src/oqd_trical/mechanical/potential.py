@@ -16,67 +16,17 @@
 import itertools as itr
 
 import jax
+import jax.numpy as jnp
 import numpy as np
 import sympy
-from numpy.polynomial import polynomial as poly
 
 from oqd_trical.misc import constants as cst
 
 ########################################################################################
-from .base import Base
+from oqd_trical.misc.polynomial import polyder, polyval1d, polyval2d, polyval3d
 
 ########################################################################################
-
-import jax
-import jax.numpy as jnp
-
-
-@jax.jit
-def polyval2d(x, y, c):
-    """
-    Evaluate a 2-D polynomial at points (x, y).
-    JAX analog to numpy.polynomial.polynomial.polyval2d.
-    """
-    c = jnp.asarray(c)
-    if c.ndim < 2:
-        c = jnp.expand_dims(c, axis=-1)
-
-    x = jnp.asarray(x)
-    y = jnp.asarray(y)
-
-    c_y = c[:, ::-1]
-
-    eval_y = jax.vmap(jnp.polyval, in_axes=(0, None))(c_y, y)
-    eval_x = eval_y[::-1]
-
-    return jnp.polyval(eval_x, x)
-
-
-@jax.jit
-def polyval3d(x, y, z, c):
-    """
-    Evaluate a 3-D polynomial at points (x, y, z).
-    JAX analog to numpy.polynomial.polynomial.polyval3d.
-    """
-    c = jnp.asarray(c)
-    while c.ndim < 3:
-        c = jnp.expand_dims(c, axis=-1)
-
-    x = jnp.asarray(x)
-    y = jnp.asarray(y)
-    z = jnp.asarray(z)
-
-    c_z = c[:, :, ::-1]
-    eval_z = jax.vmap(jax.vmap(jnp.polyval, in_axes=(0, None)), in_axes=(0, None))(
-        c_z, z
-    )
-
-    c_y = eval_z[:, ::-1]
-    eval_y = jax.vmap(jnp.polyval, in_axes=(0, None))(c_y, y)
-
-    c_x = eval_y[::-1]
-
-    return jnp.polyval(c_x, x)
+from .base import Base
 
 
 class Potential(Base):
@@ -414,19 +364,18 @@ class PolynomialPotential(Potential):
         pass
 
     def __call__(self, x):
-        functions = {1: jnp.polyval, 2: polyval2d, 3: polyval3d}
+        functions = {1: polyval1d, 2: polyval2d, 3: polyval3d}
         return functions[self.dim](*x.transpose(), self.alpha).sum()
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if isinstance(var, str) else var[1:][0])
 
-        beta = poly.polyder(self.alpha, axis=a)
+        beta = polyder(self.alpha, axis=a)
 
         def dphi_dai(x):
-            return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
-                *x[i], beta
-            )
+            functions = {1: polyval1d, 2: polyval2d, 3: polyval3d}
+            return functions[self.dim](*x[i], beta)
 
         return dphi_dai
 
@@ -436,17 +385,14 @@ class PolynomialPotential(Potential):
         i = int(var1[1:] if isinstance(var1, str) else var1[1:][0])
         j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
 
-        beta = poly.polyder(self.alpha, axis=a)
-        gamma = poly.polyder(beta, axis=b)
+        beta = polyder(self.alpha, axis=a)
+        gamma = polyder(beta, axis=b)
 
         if i == j:
 
             def d2phi_daidbj(x):
-                return {
-                    1: poly.polyval,
-                    2: poly.polyval2d,
-                    3: poly.polyval3d,
-                }[self.dim](*x[i], gamma)
+                functions = {1: polyval1d, 2: polyval2d, 3: polyval3d}
+                return functions[self.dim](*x[i], gamma)
         else:
 
             def d2phi_daidbj(x):
@@ -869,7 +815,7 @@ class AutoDiffPotential(Potential):
     Object representing a functionally defined potential for the system of ions that uses automatic differentiation to calculate derivatives of the potential.
 
     Args:
-        expr (Callable): function of the potential that is defined using the numpy submodule of autograd package.
+        expr (Callable): function of the potential that is defined using jax.numpy.
 
     Keyword Args:
         dim (int): Dimension of system.
@@ -931,7 +877,7 @@ class OpticalPotential(AutoDiffPotential):
     Object representing a general optical potential functionally using automatic differentiation to calculate the derivatives.
 
     Args:
-        intensity_expr (Callable): function of the expression for intensity of the optical potential that is defined using the numpy submodule of autograd package.
+        intensity_expr (Callable): function of the expression for intensity of the optical potential that is defined using jax.numpy.
         wavelength (float): Wavelength of the optical potential.
 
     Keyword Args:

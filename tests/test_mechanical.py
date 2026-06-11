@@ -13,15 +13,13 @@
 # limitations under the License.
 
 ########################################################################################
-import pytest
+import jax
+import jax.numpy as jnp
 import numpy as np
+
 import oqd_trical
 import oqd_trical.misc.constants as cst
 from oqd_trical.misc.polynomial import polyval
-from scipy import optimize as opt
-
-import jax
-import jax.numpy as jnp
 
 jax.config.update("jax_debug_nans", True)
 jax.config.update("jax_enable_x64", True)
@@ -298,14 +296,12 @@ def symbolic_optical_potential_ti():
 
 
 def polynomial_alpha():
-    N = 3  # Number of ions
     mass = 171 * cst.m_u  # Mass of an ion
 
     # Trapping strength (in rad/s)
     omega_x = 2 * np.pi * 0.4e6  # Direction x
     omega_y = 2 * np.pi * 0.36e6  # Direction y
     omega_z = 2 * np.pi * 0.08e6  # Direction z
-    omega = np.array([omega_x, omega_y, omega_z])
 
     # Coefficients of the multivariate polynomial consistent with the trapping strength above for a harmonic potential
     alpha = np.zeros((3, 3, 3))
@@ -371,6 +367,7 @@ class TestMechanical:
 
         # Calculate equilibrium position
         x_ep = ti.equilibrium_position()
+        assert isinstance(x_ep, np.ndarray)
 
         reference_x_ep = np.array(
             [

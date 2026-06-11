@@ -17,16 +17,17 @@ Module containing default optimization function generators for TrICal.
 """
 
 ########################################################################################
+from collections.abc import Callable, Sequence
+
 import jax
 import jax.numpy as jnp
 import optax
-import numpy as np
-from scipy import optimize as opt
+from jax.typing import ArrayLike
 
 ########################################################################################
 
 
-def dflt_opt(ti, **kwargs):
+def dflt_opt(ti, **kwargs) -> Callable[[Callable[[jax.Array], jax.Array]], jax.Array]:
     """
     Default optimization function generator for equilibrium_position method of TrappedIons class.
 
@@ -85,12 +86,12 @@ def dflt_opt(ti, **kwargs):
     return _dflt_opt
 
 
-def dflt_ls_opt(deg):
+def dflt_ls_opt(deg: Sequence[int]) -> Callable[[ArrayLike, ArrayLike], jax.Array]:
     """
     Default optimization function generator for multivariate_polyfit function.
 
     Args:
-        deg (np.ndarray[int]): Degree of polynomial used in the fit.
+        deg (Sequence[int]): Degree of polynomial used in the fit.
 
     Returns:
         (Callable): Default optimization function that finds the best polynomial, of the specified degree, fit for the data .
