@@ -17,9 +17,8 @@ from typing import Union
 
 from oqd_compiler_infrastructure import Chain, FixedPoint, Post, Pre, RewriteRule
 from oqd_core.compiler.math.passes import canonicalize_math_expr
-from oqd_core.interface.math import (
-    MathNum,
-)
+from oqd_core.interface.atomic import Beam
+from oqd_core.interface.math import MathFunc, MathNum
 
 from oqd_trical.light_matter.interface.operator import (
     CoefficientAdd,
@@ -33,6 +32,34 @@ from oqd_trical.light_matter.interface.operator import (
     PrunedOperator,
     WaveCoefficient,
 )
+
+########################################################################################
+
+
+class WaveCoersion(RewriteRule):
+    def map_Beam(self, model):
+        if not isinstance(model.rabi, MathFunc) or not isinstance(
+            model.rabi.func, "abs"
+        ):
+            rabi = MathFunc(func="abs", expr=model.rabi)
+            phase = model.phase + MathFunc(
+                func="atan2",
+                expr=[
+                    MathFunc(func="imag", expr=model.rabi),
+                    MathFunc(func="real", expr=model.rabi),
+                ],
+            )
+
+        return Beam(
+            transition=model.transition,
+            rabi=rabi,
+            detuning=model.detuning,
+            phase=phase,
+            polarization=model.polarization,
+            wavevector=model.wavevector,
+            target=model.target,
+        )
+
 
 ########################################################################################
 

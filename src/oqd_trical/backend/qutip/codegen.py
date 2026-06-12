@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import math
 
 import numpy as np
 import qutip as qt
@@ -125,17 +124,35 @@ class QutipCodeGeneration(ConversionRule):
         )
 
     def map_MathFunc(self, model, operands):
-        if getattr(math, model.func, None):
-            return lambda t: getattr(math, model.func)(operands["expr"](t))
+        if model.func in [
+            "abs",
+            "sin",
+            "cos",
+            "tan",
+            "exp",
+            "log",
+            "sinh",
+            "cosh",
+            "tanh",
+            "atan",
+            "acos",
+            "asin",
+            "atanh",
+            "asinh",
+            "acosh",
+            "conj",
+            "real",
+            "imag",
+            "atan2",
+        ]:
+            if isinstance(operands["expr"], list):
+                return lambda t: getattr(np, model.func)(
+                    *[o(t) for o in operands["expr"]]
+                )
+            return lambda t: getattr(np, model.func)(operands["expr"](t))
 
         if model.func == "heaviside":
             return lambda t: np.heaviside(operands["expr"](t), 1)
-
-        if model.func == "conj":
-            return lambda t: np.conj(operands["expr"](t))
-
-        if model.func == "abs":
-            return lambda t: np.abs(operands["expr"](t))
 
         raise ValueError(f"Unsupported function {model.func}")
 
