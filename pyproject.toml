@@ -48,6 +48,10 @@ docs = [
 ]
 tests = ["pytest"]
 
+
+[project.scripts]
+trical_bloodstone = "oqd_trical.visualization.bloodstone:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["oqd_trical*"]
