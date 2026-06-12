@@ -1,17 +1,15 @@
 # Copyright 2024-2025 Open Quantum Design
+from collections.abc import Callable
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-
 #     http://www.apache.org/licenses/LICENSE-2.0
-
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import numpy as np
 
 from oqd_trical.misc import constants as cst
@@ -63,7 +61,7 @@ class TrappedIons(Base):
         self.fp = self.cp + self.ps.sum()
         pass
 
-    def equilibrium_position(self, opt=dflt_opt, **kwargs):
+    def equilibrium_position(self, opt: Callable = dflt_opt, **kwargs) -> np.ndarray:
         """
         Function that calculates the equilibrium position of the ions.
 
@@ -80,12 +78,12 @@ class TrappedIons(Base):
         def _ndfp(x):
             return ndfp(x.reshape(self.dim, self.N).transpose())
 
-        self.x_ep = (
+        self.x_ep = np.asarray(
             opt(self, **kwargs)(_ndfp).reshape(self.dim, self.N).transpose() * self.l
         )
         return self.x_ep
 
-    def normal_modes(self, block_sort=False):
+    def normal_modes(self, block_sort: bool = False) -> tuple[np.ndarray, np.ndarray]:
         """
         Function that calculates the normal modes of the system.
 
@@ -149,7 +147,9 @@ class TrappedIons(Base):
         )
         return self.w, self.b
 
-    def principal_axes(self, tol=1e-3):
+    def principal_axes(
+        self, tol: float = 1e-3
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Function that calculates the principle axes of the system.
 
@@ -218,7 +218,7 @@ class TrappedIons(Base):
         self.__dict__.update(self.params)
         pass
 
-    def mode_ion_coupling(self):
+    def mode_ion_coupling(self) -> np.ndarray:
         if (
             np.isin(
                 np.array(["w_pa", "b_pa", "x_pa"]), np.array(self.__dict__.keys())

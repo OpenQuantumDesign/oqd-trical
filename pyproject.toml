@@ -27,7 +27,6 @@ classifiers = [
 ]
 
 dependencies = [
-    "autograd",
     "matplotlib",
     "numpy",
     "scipy",
@@ -36,6 +35,10 @@ dependencies = [
     "oqd-core",
     "oqd-compiler-infrastructure",
     "dynamiqs>=0.3.1",
+    "pytest-cov>=7.1.0",
+    "coverage>=7.14.1",
+    "optax>=0.2.5",
+    "jax>=0.4.27",
 ]
 
 [project.optional-dependencies]
@@ -47,6 +50,7 @@ docs = [
     "mdx_truly_sane_lists",
 ]
 tests = ["pytest"]
+gpu = ["jax[cuda13]"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

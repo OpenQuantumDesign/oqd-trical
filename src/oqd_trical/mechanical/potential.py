@@ -14,18 +14,170 @@
 
 
 import itertools as itr
+from functools import partial
 
-import autograd as ag
+import jax
+import jax.numpy as jnp
 import numpy as np
 import sympy
-from numpy.polynomial import polynomial as poly
 
 from oqd_trical.misc import constants as cst
 
 ########################################################################################
-from .base import Base
+from oqd_trical.misc.polynomial import polyder, polyval1d, polyval2d, polyval3d
 
 ########################################################################################
+from .base import Base
+
+
+@jax.jit
+def _coulomb_potential(x, pair_i, pair_j, q):
+    nxij = jnp.linalg.norm(x[pair_i] - x[pair_j], axis=-1)
+    return cst.k_e * q**2 * jnp.sum(1 / nxij)
+
+
+@partial(jax.jit, static_argnames=["axis", "ion"])
+def _coulomb_first_derivative(x, other_indices, axis, ion, q):
+    xia = x[ion, axis]
+    xja = x[other_indices, axis]
+    nxij = jnp.linalg.norm(x[ion] - x[other_indices], axis=-1)
+    return cst.k_e * q**2 * jnp.sum((xja - xia) / nxij**3)
+
+
+@partial(
+    jax.jit,
+    static_argnames=["axis_a", "axis_b", "ion_i", "ion_j"],
+)
+def _coulomb_second_derivative(
+    x, other_indices, axis_a, axis_b, ion_i, ion_j, q
+):
+    if ion_i == ion_j:
+        xia = x[ion_i, axis_a]
+        xka = x[other_indices, axis_a]
+        xib = x[ion_i, axis_b]
+        xkb = x[other_indices, axis_b]
+        nxik = jnp.linalg.norm(x[ion_i] - x[other_indices], axis=-1)
+        if axis_a == axis_b:
+            return cst.k_e * q**2 * jnp.sum(
+                -1 / nxik**3 + 3 * (xka - xia) ** 2 / nxik**5
+            )
+        return cst.k_e * q**2 * jnp.sum(
+            3 * (xka - xia) * (xkb - xib) / nxik**5
+        )
+
+    xia = x[ion_i, axis_a]
+    xja = x[ion_j, axis_a]
+    xib = x[ion_i, axis_b]
+    xjb = x[ion_j, axis_b]
+    nxij = jnp.linalg.norm(x[ion_i] - x[ion_j])
+    if axis_a == axis_b:
+        return cst.k_e * q**2 * (
+            1 / nxij**3 - 3 * (xja - xia) ** 2 / nxij**5
+        )
+    return cst.k_e * q**2 * (-3 * (xja - xia) * (xjb - xib) / nxij**5)
+
+
+@partial(jax.jit, static_argnames=["dim"])
+def _polynomial_potential(x, alpha, dim):
+    functions = {1: polyval1d, 2: polyval2d, 3: polyval3d}
+    return jnp.sum(functions[dim](*jnp.asarray(x).transpose(), alpha))
+
+
+@partial(jax.jit, static_argnames=["dim", "ion"])
+def _polynomial_derivative(x, coefficients, dim, ion):
+    functions = {1: polyval1d, 2: polyval2d, 3: polyval3d}
+    return functions[dim](*jnp.asarray(x)[ion], coefficients)
+
+
+@jax.jit
+def _gaussian_optical_potential(x, focal_point, beam_waist, x_R, V):
+    delta_x = x - focal_point
+    w = beam_waist * jnp.sqrt(1 + (delta_x[:, 0] / x_R) ** 2)
+    r = jnp.sqrt(delta_x[:, 1] ** 2 + delta_x[:, 2] ** 2 + 1e-5)
+    e = jnp.exp(-2 * r**2 / w**2)
+    return jnp.sum(V * e * beam_waist**2 / w**2)
+
+
+@partial(jax.jit, static_argnames=["axis", "ion"])
+def _gaussian_first_derivative(x, focal_point, beam_waist, x_R, V, axis, ion):
+    delta_x = x[ion] - focal_point
+    w = beam_waist * jnp.sqrt(1 + (delta_x[0] / x_R) ** 2)
+    r = jnp.sqrt(delta_x[1] ** 2 + delta_x[2] ** 2)
+    e = jnp.exp(-2 * r**2 / w**2)
+    if axis == 0:
+        return (2 * V * e * beam_waist**4 * delta_x[0] * (2 * r**2 - w**2)) / (
+            w**6 * x_R**2
+        )
+    return -4 * V * e * beam_waist**2 * delta_x[axis] / w**4
+
+
+@partial(
+    jax.jit,
+    static_argnames=["axis_a", "axis_b", "ion_i", "ion_j"],
+)
+def _gaussian_second_derivative(
+    x, focal_point, beam_waist, x_R, V, axis_a, axis_b, ion_i, ion_j
+):
+    if ion_i != ion_j:
+        return jnp.asarray(0.0)
+
+    delta_x = x[ion_i] - focal_point
+    w = beam_waist * jnp.sqrt(1 + (delta_x[0] / x_R) ** 2)
+    r = jnp.sqrt(delta_x[1] ** 2 + delta_x[2] ** 2)
+    e = jnp.exp(-2 * r**2 / w**2)
+
+    if axis_a == axis_b == 0:
+        return (
+            -2
+            * V
+            * beam_waist**4
+            * (
+                w**6 * x_R**2
+                - 4 * w**4 * beam_waist**2 * delta_x[0] ** 2
+                + 8 * w**2 * beam_waist**2 * delta_x[0] ** 2 * r**2
+                - 2
+                * r**2
+                * (
+                    w**4 * x_R**2
+                    - 4 * w**2 * beam_waist**2 * delta_x[0] ** 2
+                    + 4 * beam_waist**2 * delta_x[0] ** 2 * r**2
+                )
+            )
+            * e
+            / (w**10 * x_R**4)
+        )
+    if axis_a == axis_b:
+        return (
+            -4
+            * V
+            * beam_waist**2
+            * (w**2 - 4 * delta_x[axis_a] ** 2)
+            * e
+            / w**6
+        )
+    if axis_a == 0:
+        return (
+            16
+            * V
+            * beam_waist**4
+            * delta_x[0]
+            * delta_x[axis_b]
+            * (w**2 - r**2)
+            * e
+            / (w**8 * x_R**2)
+        )
+    if axis_b == 0:
+        return (
+            16
+            * V
+            * beam_waist**4
+            * delta_x[0]
+            * delta_x[axis_a]
+            * (w**2 - r**2)
+            * e
+            / (w**8 * x_R**2)
+        )
+    return 16 * V * beam_waist**2 * delta_x[1] * delta_x[2] * e / w**6
 
 
 class Potential(Base):
@@ -56,9 +208,9 @@ class Potential(Base):
 
     def __add__(self, other):
         for i in np.intersect1d(list(self.params.keys()), list(other.params.keys())):
-            assert (
-                self.params[i] == other.params[i]
-            ), "Potentials with incompatible dimensions"
+            assert self.params[i] == other.params[i], (
+                "Potentials with incompatible dimensions"
+            )
 
         params = {}
         params.update(self.params)
@@ -77,9 +229,9 @@ class Potential(Base):
 
     def __sub__(self, other):
         for i in np.intersect1d(list(self.params.keys()), list(other.params.keys())):
-            assert (
-                self.params[i] == other.params[i]
-            ), "Potentials with incompatible dimensions"
+            assert self.params[i] == other.params[i], (
+                "Potentials with incompatible dimensions"
+            )
 
         params = {}
         params.update(self.params)
@@ -160,17 +312,16 @@ class Potential(Base):
         """
 
         def grad_phi(x):
-            grad_phi_x = np.empty(self.N * self.dim)
+            return jnp.asarray(
+                [
+                    self.dphi(var)(x)
+                    for var in itr.product(
+                        ["x", "y", "z"][: self.dim], np.arange(self.N, dtype=int)
+                    )
+                ]
+            )
 
-            i = 0
-            for var in itr.product(
-                ["x", "y", "z"][: self.dim], np.arange(self.N, dtype=int)
-            ):
-                grad_phi_x[i] = self.dphi(var)(x)
-                i += 1
-            return grad_phi_x
-
-        return grad_phi
+        return jax.jit(grad_phi)
 
     def hessian(self):
         """
@@ -181,22 +332,14 @@ class Potential(Base):
         """
 
         def hess_phi(x):
-            hess_phi_x = np.empty((self.N * self.dim, self.N * self.dim))
+            variables = list(
+                itr.product(["x", "y", "z"][: self.dim], np.arange(self.N, dtype=int))
+            )
+            return jnp.asarray(
+                [[self.d2phi(var1, var2)(x) for var2 in variables] for var1 in variables]
+            )
 
-            i = 0
-            for var1 in itr.product(
-                ["x", "y", "z"][: self.dim], np.arange(self.N, dtype=int)
-            ):
-                j = 0
-                for var2 in itr.product(
-                    ["x", "y", "z"][: self.dim], np.arange(self.N, dtype=int)
-                ):
-                    hess_phi_x[i, j] = self.d2phi(var1, var2)(x)
-                    j += 1
-                i += 1
-            return hess_phi_x
-
-        return hess_phi
+        return jax.jit(hess_phi)
 
     def nondimensionalize(self, l):  # noqa: E741
         """
@@ -258,6 +401,13 @@ class CoulombPotential(Potential):
     def __init__(self, N, **kwargs):
         params = {"dim": 3, "N": N, "q": cst.e}
         params.update(kwargs)
+        pair_indices = (
+            np.fromiter(itr.chain(*itr.combinations(range(N), 2)), dtype=int)
+            .reshape(-1, 2)
+            .transpose()
+        )
+        self.pair_i = pair_indices[0]
+        self.pair_j = pair_indices[1]
 
         super(CoulombPotential, self).__init__(
             self.__call__, self.first_derivative, self.second_derivative, **params
@@ -265,13 +415,7 @@ class CoulombPotential(Potential):
         pass
 
     def __call__(self, x):
-        i, j = (
-            np.fromiter(itr.chain(*itr.combinations(range(self.N), 2)), dtype=int)
-            .reshape(-1, 2)
-            .transpose()
-        )
-        nxij = np.linalg.norm(x[i] - x[j], axis=-1)
-        return cst.k_e * self.q**2 * (1 / nxij).sum()
+        return _coulomb_potential(x, self.pair_i, self.pair_j, self.q)
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
@@ -279,10 +423,7 @@ class CoulombPotential(Potential):
         j = np.delete(np.arange(self.N, dtype=int), i)
 
         def dphi_dai(x):
-            xia = x[i, a]
-            xja = x[j, a]
-            nxij = np.linalg.norm(x[i] - x[j], axis=-1)
-            return cst.k_e * self.q**2 * ((xja - xia) / nxij**3).sum()
+            return _coulomb_first_derivative(x, j, a, i, self.q)
 
         return dphi_dai
 
@@ -291,43 +432,10 @@ class CoulombPotential(Potential):
         b = {"x": 0, "y": 1, "z": 2}[var2[0]]
         i = int(var1[1:] if isinstance(var1, str) else var1[1:][0])
         j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
+        k = np.delete(np.arange(self.N, dtype=int), i)
 
         def d2phi_daidbj(x):
-            if i == j:
-                k = np.delete(np.arange(self.N, dtype=int), i)
-                xia = x[i, a]
-                xka = x[k, a]
-                xib = x[i, b]
-                xkb = x[k, b]
-                nxik = np.linalg.norm(x[i] - x[k], axis=-1)
-                if a == b:
-                    return (
-                        cst.k_e
-                        * self.q**2
-                        * (-1 / nxik**3 + 3 * (xka - xia) ** 2 / nxik**5).sum()
-                    )
-                else:
-                    return (
-                        cst.k_e
-                        * self.q**2
-                        * (3 * (xka - xia) * (xkb - xib) / nxik**5).sum()
-                    )
-            else:
-                xia = x[i, a]
-                xja = x[j, a]
-                xib = x[i, b]
-                xjb = x[j, b]
-                nxij = np.linalg.norm(x[i] - x[j])
-                if a == b:
-                    return (
-                        cst.k_e
-                        * self.q**2
-                        * (1 / nxij**3 - 3 * (xja - xia) ** 2 / nxij**5)
-                    )
-                else:
-                    return (
-                        cst.k_e * self.q**2 * (-3 * (xja - xia) * (xjb - xib) / nxij**5)
-                    )
+            return _coulomb_second_derivative(x, k, a, b, i, j, self.q)
 
         return d2phi_daidbj
 
@@ -361,20 +469,16 @@ class PolynomialPotential(Potential):
         pass
 
     def __call__(self, x):
-        return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
-            *x.transpose(), self.alpha
-        ).sum()
+        return _polynomial_potential(x, self.alpha, self.dim)
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if isinstance(var, str) else var[1:][0])
 
-        beta = poly.polyder(self.alpha, axis=a)
+        beta = polyder(self.alpha, axis=a)
 
         def dphi_dai(x):
-            return {1: poly.polyval, 2: poly.polyval2d, 3: poly.polyval3d}[self.dim](
-                *x[i], beta
-            )
+            return _polynomial_derivative(x, beta, self.dim, i)
 
         return dphi_dai
 
@@ -384,17 +488,13 @@ class PolynomialPotential(Potential):
         i = int(var1[1:] if isinstance(var1, str) else var1[1:][0])
         j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
 
-        beta = poly.polyder(self.alpha, axis=a)
-        gamma = poly.polyder(beta, axis=b)
+        beta = polyder(self.alpha, axis=a)
+        gamma = polyder(beta, axis=b)
 
         if i == j:
 
             def d2phi_daidbj(x):
-                return {
-                    1: poly.polyval,
-                    2: poly.polyval2d,
-                    3: poly.polyval3d,
-                }[self.dim](*x[i], gamma)
+                return _polynomial_derivative(x, gamma, self.dim, i)
         else:
 
             def d2phi_daidbj(x):
@@ -489,32 +589,18 @@ class GaussianOpticalPotential(Potential):
         pass
 
     def __call__(self, x):
-        delta_x = x - self.focal_point
-        w0 = self.beam_waist
-        w = w0 * np.sqrt(1 + (delta_x[:, 0] / self.x_R) ** 2)
-        V = self.V
-        r = np.sqrt(delta_x[:, 1] ** 2 + delta_x[:, 2] ** 2)
-        e = np.exp(-2 * r**2 / w**2)
-        return (V * e * w0**2 / w**2).sum()
+        return _gaussian_optical_potential(
+            x, self.focal_point, self.beam_waist, self.x_R, self.V
+        )
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if isinstance(var, str) else var[1:][0])
 
         def dphi_dai(x):
-            V = self.V
-            w0 = self.beam_waist
-            xR = self.x_R
-            delta_x = x[i] - self.focal_point
-            w = w0 * np.sqrt(1 + (delta_x[0] / xR) ** 2)
-            r = np.sqrt(delta_x[1] ** 2 + delta_x[2] ** 2)
-            e = np.exp(-2 * r**2 / w**2)
-            if a == 0:
-                return (2 * V * e * w0**4 * delta_x[0] * (2 * r**2 - w**2)) / (
-                    w**6 * xR**2
-                )
-            else:
-                return -4 * V * e * w0**2 * delta_x[a] / w**4
+            return _gaussian_first_derivative(
+                x, self.focal_point, self.beam_waist, self.x_R, self.V, a, i
+            )
 
         return dphi_dai
 
@@ -525,63 +611,9 @@ class GaussianOpticalPotential(Potential):
         j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
 
         def d2phi_daidbj(x):
-            V = self.V
-            w0 = self.beam_waist
-            xR = self.x_R
-            delta_x = x[i] - self.focal_point
-            w = w0 * np.sqrt(1 + (delta_x[0] / xR) ** 2)
-            r = np.sqrt(delta_x[1] ** 2 + delta_x[2] ** 2)
-            e = np.exp(-2 * r**2 / w**2)
-            if i != j:
-                return 0
-            else:
-                if a == b == 0:
-                    return (
-                        -2
-                        * V
-                        * w0**4
-                        * (
-                            w**6 * xR**2
-                            - 4 * w**4 * w0**2 * delta_x[0] ** 2
-                            + 8 * w**2 * w0**2 * delta_x[0] ** 2 * r**2
-                            - 2
-                            * r**2
-                            * (
-                                w**4 * xR**2
-                                - 4 * w**2 * w0**2 * delta_x[0] ** 2
-                                + 4 * w0**2 * delta_x[0] ** 2 * r**2
-                            )
-                        )
-                        * e
-                        / (w**10 * xR**4)
-                    )
-                elif a == b:
-                    return -4 * V * w0**2 * (w**2 - 4 * delta_x[a] ** 2) * e / w**6
-
-                elif a == 0:
-                    return (
-                        16
-                        * V
-                        * w0**4
-                        * delta_x[0]
-                        * delta_x[b]
-                        * (w**2 - r**2)
-                        * e
-                        / (w**8 * xR**2)
-                    )
-                elif b == 0:
-                    return (
-                        16
-                        * V
-                        * w0**4
-                        * delta_x[0]
-                        * delta_x[a]
-                        * (w**2 - r**2)
-                        * e
-                        / (w**8 * xR**2)
-                    )
-                else:
-                    return 16 * V * w0**2 * delta_x[1] * delta_x[2] * e / w**6
+            return _gaussian_second_derivative(
+                x, self.focal_point, self.beam_waist, self.x_R, self.V, a, b, i, j
+            )
 
         return d2phi_daidbj
 
@@ -629,7 +661,9 @@ class SymbolicPotential(Potential):
         self.params = params
 
         self.symbol = [sympy.Symbol(["x", "y", "z"][i]) for i in range(self.dim)]
-        self.lambdified_expr = sympy.utilities.lambdify(self.symbol, expr)
+        self.lambdified_expr = jax.jit(
+            sympy.utilities.lambdify(self.symbol, expr, "jax")
+        )
 
         super(SymbolicPotential, self).__init__(
             self.__call__, self.first_derivative, self.second_derivative, **params
@@ -637,19 +671,22 @@ class SymbolicPotential(Potential):
         pass
 
     def __call__(self, x):
-        return self.lambdified_expr(*x.transpose()).sum()
+        return jnp.sum(self.lambdified_expr(*jnp.asarray(x).transpose()))
 
     def evaluate(self, x):
-        return self.lambdified_expr(*x.transpose())
+        return self.lambdified_expr(*jnp.asarray(x).transpose())
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
         i = int(var[1:] if isinstance(var, str) else var[1:][0])
+        derivative = jax.jit(
+            sympy.utilities.lambdify(
+                self.symbol, sympy.diff(self.expr, self.symbol[a]), "jax"
+            )
+        )
 
         def dphi_dai(x):
-            return sympy.utilities.lambdify(
-                self.symbol, sympy.diff(self.expr, self.symbol[a])
-            )(*x[i])
+            return derivative(*jnp.asarray(x)[i])
 
         return dphi_dai
 
@@ -660,11 +697,16 @@ class SymbolicPotential(Potential):
         j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
 
         if i == j:
+            derivative = jax.jit(
+                sympy.utilities.lambdify(
+                    self.symbol,
+                    sympy.diff(self.expr, self.symbol[a], self.symbol[b]),
+                    "jax",
+                )
+            )
 
             def d2phi_daidbj(x):
-                return sympy.utilities.lambdify(
-                    self.symbol, sympy.diff(self.expr, self.symbol[a], self.symbol[b])
-                )(*x[i])
+                return derivative(*jnp.asarray(x)[i])
         else:
 
             def d2phi_daidbj(x):
@@ -710,7 +752,9 @@ class AdvancedSymbolicPotential(Potential):
                 for j in range(N)
             ]
         ).flatten()
-        self.lambdified_expr = sympy.utilities.lambdify(self.symbol, expr)
+        self.lambdified_expr = jax.jit(
+            sympy.utilities.lambdify(self.symbol, expr, "jax")
+        )
 
         super(AdvancedSymbolicPotential, self).__init__(
             self.__call__, self.first_derivative, self.second_derivative, **params
@@ -718,18 +762,21 @@ class AdvancedSymbolicPotential(Potential):
         pass
 
     def __call__(self, x):
-        x = np.array(x)
+        x = jnp.asarray(x)
         return self.lambdified_expr(*x.flatten())
 
     def first_derivative(self, var):
         a = var[0]
         i = int(var[1:] if isinstance(var, str) else var[1:][0])
+        axis = {"x": 0, "y": 1, "z": 2}[a]
+        derivative = jax.jit(
+            sympy.utilities.lambdify(
+                self.symbol, sympy.diff(self.expr, self.symbol[i * self.dim + axis]), "jax"
+            )
+        )
 
         def dphi_dai(x):
-            x = np.array(x)
-            return sympy.utilities.lambdify(
-                self.symbol, sympy.diff(self.expr, a + str(i))
-            )(*x.flatten())
+            return derivative(*jnp.asarray(x).flatten())
 
         return dphi_dai
 
@@ -738,12 +785,22 @@ class AdvancedSymbolicPotential(Potential):
         b = var2[0]
         i = int(var1[1:] if isinstance(var1, str) else var1[1:][0])
         j = int(var2[1:] if isinstance(var2, str) else var2[1:][0])
+        axis_a = {"x": 0, "y": 1, "z": 2}[a]
+        axis_b = {"x": 0, "y": 1, "z": 2}[b]
+        derivative = jax.jit(
+            sympy.utilities.lambdify(
+                self.symbol,
+                sympy.diff(
+                    self.expr,
+                    self.symbol[i * self.dim + axis_a],
+                    self.symbol[j * self.dim + axis_b],
+                ),
+                "jax",
+            )
+        )
 
         def d2phi_daidbj(x):
-            x = np.array(x)
-            return sympy.utilities.lambdify(
-                self.symbol, sympy.diff(self.expr, a + str(i), b + str(j))
-            )(*x.flatten())
+            return derivative(*jnp.asarray(x).flatten())
 
         return d2phi_daidbj
 
@@ -817,7 +874,7 @@ class AutoDiffPotential(Potential):
     Object representing a functionally defined potential for the system of ions that uses automatic differentiation to calculate derivatives of the potential.
 
     Args:
-        expr (Callable): function of the potential that is defined using the numpy submodule of autograd package.
+        expr (Callable): function of the potential that is defined using jax.numpy.
 
     Keyword Args:
         dim (int): Dimension of system.
@@ -843,13 +900,25 @@ class AutoDiffPotential(Potential):
         def flatten_expr(x):
             return self.expr(x.reshape(self.dim, -1).transpose())
 
-        return lambda x: ag.jacobian(flatten_expr, 0)(x.transpose().reshape(-1))
+        jacobian = jax.jit(jax.jacobian(flatten_expr, 0))
+
+        @jax.jit
+        def grad(x):
+            return jacobian(jnp.asarray(x).transpose().reshape(-1))
+
+        return grad
 
     def hessian(self):
         def flatten_expr(x):
             return self.expr(x.reshape(self.dim, -1).transpose())
 
-        return lambda x: ag.hessian(flatten_expr, 0)(x.transpose().reshape(-1))
+        hessian = jax.jit(jax.hessian(flatten_expr, 0))
+
+        @jax.jit
+        def hess(x):
+            return hessian(jnp.asarray(x).transpose().reshape(-1))
+
+        return hess
 
     def first_derivative(self, var):
         a = {"x": 0, "y": 1, "z": 2}[var[0]]
@@ -879,7 +948,7 @@ class OpticalPotential(AutoDiffPotential):
     Object representing a general optical potential functionally using automatic differentiation to calculate the derivatives.
 
     Args:
-        intensity_expr (Callable): function of the expression for intensity of the optical potential that is defined using the numpy submodule of autograd package.
+        intensity_expr (Callable): function of the expression for intensity of the optical potential that is defined using jax.numpy.
         wavelength (float): Wavelength of the optical potential.
 
     Keyword Args:
